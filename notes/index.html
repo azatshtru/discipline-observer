@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="../style.css">
+    <title>Notes</title>
+</head>
+<body>
+    <h1># Notes</h1>
+    <div class="horizontal-flex mobile-break-flex">
+        <div class="horizontal-flex width-fifth">
+            <button class="chip">workout</button>
+            <button class="chip">frontend</button>
+            <button class="chip">startup</button>
+            <button class="chip">resources to read</button>
+        </div>
+        <div class="horizontal-flex flex-1">
+            <button class="note-button tonal-button">
+                <span class="material-symbols-outlined">notes</span>    
+                Chest workout
+            </button>
+            <button class="note-button tonal-button">
+                <span class="material-symbols-outlined">notes</span>    
+                Frontend as a study of principles rather than tools.
+            </button>
+            <button class="note-button tonal-button">
+                <span class="material-symbols-outlined">notes</span>    
+                Markdown Database for effective note taking
+            </button>
+            <button class="note-button tonal-button">
+                <span class="material-symbols-outlined">notes</span>    
+                Frontend course structure
+            </button>
+            <button class="note-button tonal-button">
+                <span class="material-symbols-outlined">notes</span>    
+                Quotes I like
+            </button>
+        </div>
+    </div>
+    <div class="nodisplay overlayed-10 sidepeek tablet-full-width">
+        <div id="markdown-render-box" class="background-white padding-20 fullsize"></div>
+        <button id="markdown-edit-button" class="icon-button overlayed-10 bottom-right">
+            <span class="material-symbols-outlined">edit</span>
+            Edit
+        </button>
+        <button id="markdown-render-close-button" class="icon-button overlayed-10 top-right">
+            <span class="material-symbols-outlined">close</span>
+            Close
+        </button>
+    </div>
+    <div class="nodisplay overlayed-10 sidepeek tablet-full-width">
+        <textarea id="markdown-textarea" class="font-1-em padding-10 fullsize" style="resize: none;" name="template"></textarea>
+        <button id="markdown-submit-button" class="icon-button overlayed-10 bottom-right">
+            <span class="material-symbols-outlined">done</span>
+            Save
+        </button>
+    </div>
+    <script src="./index.js"></script>
+</body>
+</html>
