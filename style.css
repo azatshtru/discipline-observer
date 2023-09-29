@@ -4,6 +4,13 @@
     font-family: 'Space Mono', monospace;
 }
 
+textarea {
+    resize: none;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+}
+
 .heading {
     font-size: 3.1em;
 }
@@ -12,7 +19,7 @@
     font-size: 1.9em;
 }
 
-.background-white {
+.bordered-bg-white {
     background: white;
     border: 2px solid black;
 }
@@ -77,6 +84,13 @@ a.icon-button {
     align-content: flex-start;
 }
 
+.vertical-flex {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-content: flex-start;
+}
+
 .width-fifth {
     flex: 0 1 20%;
 }
@@ -98,6 +112,11 @@ a.icon-button {
     position: fixed;
 }
 
+.overlayed-20 {
+    z-index: 20;
+    position: fixed;
+}
+
 .bottom-10 {
     bottom: 20%;
 }
@@ -107,6 +126,11 @@ a.icon-button {
     top: 0;
     width: 60vw;
     height: 100vh;
+
+    overflow-y: none;
+    padding-left: 1.1rem;
+    padding-right: 1.3rem;
+    box-sizing: border-box;
 }
 
 .bottom-right {
@@ -114,22 +138,25 @@ a.icon-button {
     bottom: 30px;
 }
 
-.top-right {
-    right: 40px;
-    top: 30px;
+.padding-block-15 {
+    padding-block: 15px;
 }
 
-.padding-10 {
-    padding: 10px;
+.padding-bottom-2em {
+    padding-bottom: .5rem;
 }
 
-.padding-20 {
-    padding: 20px;
+.padding-footer {
+    padding-bottom: 1in;
 }
 
 .fullsize {
     width: 100%;
     height: 100%;
+}
+
+.scroll-y-overflowed {
+    overflow-y: scroll;
 }
 
 .font-1-em {

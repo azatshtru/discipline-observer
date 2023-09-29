@@ -39,20 +39,22 @@
             </button>
         </div>
     </div>
-    <div class="nodisplay overlayed-10 sidepeek tablet-full-width">
-        <div id="markdown-render-box" class="background-white padding-20 fullsize"></div>
-        <button id="markdown-edit-button" class="icon-button overlayed-10 bottom-right">
+    <div class="nodisplay overlayed-10 sidepeek scroll-y-overflowed padding-block-15 tablet-full-width vertical-flex bordered-bg-white">
+        <div class="horizontal-flex">
+            <button id="markdown-render-close-button" class="icon-button">
+                <span class="material-symbols-outlined">close</span>
+                Close
+            </button>
+        </div>
+        <div id="markdown-render-box" class="fullsize"></div>
+        <button id="markdown-edit-button" class="icon-button overlayed-20 bottom-right">
             <span class="material-symbols-outlined">edit</span>
             Edit
         </button>
-        <button id="markdown-render-close-button" class="icon-button overlayed-10 top-right">
-            <span class="material-symbols-outlined">close</span>
-            Close
-        </button>
     </div>
-    <div class="nodisplay overlayed-10 sidepeek tablet-full-width">
-        <textarea id="markdown-textarea" class="font-1-em padding-10 fullsize" style="resize: none;" name="template"></textarea>
-        <button id="markdown-submit-button" class="icon-button overlayed-10 bottom-right">
+    <div class="nodisplay overlayed-10 sidepeek tablet-full-width padding-bottom-2em bordered-bg-white">
+        <textarea id="markdown-textarea" class="scroll-y-overflowed padding-block-15 fullsize font-1-em padding-footer" name="template"></textarea>
+        <button id="markdown-submit-button" class="icon-button overlayed-20 bottom-right">
             <span class="material-symbols-outlined">done</span>
             Save
         </button>
