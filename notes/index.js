@@ -1,25 +1,72 @@
+let notesDataObjectModel = {
+    notes: [
+        {
+            content: `# Hi guys
+kaise`,
+        },
+        {
+            content: "Hello guys",
+        },
+        {
+            content: "# here is some content",
+        },
+    ],
+    tags: []
+}
+
+const getTitle = (x) => {
+    if (x.content.trim() == '') { return 'untitled' }
+    return x.content.match(/[\w\d].*/gim)[0];
+}
+
+const notesContainer = document.querySelector('#notes-container');
+notesDataObjectModel.notes.forEach((x, i) => {
+    const noteButton = document.createElement('div');
+    noteButton.classList.add('note-button', 'tonal-button');
+
+    const noteIcon = document.createElement('span');
+    noteIcon.className = 'material-symbols-outlined';
+    noteIcon.textContent = 'notes';
+
+    noteButton.appendChild(noteIcon);
+    const noteTitle = document.createTextNode(getTitle(x));
+    noteButton.appendChild(noteTitle);
+
+    noteButton.dataset.noteIndex = i;
+
+    notesContainer.appendChild(noteButton);
+});
+
+let currentActiveNote;
+
 const markdownRenderBox = document.querySelector('#markdown-render-box');
 const markdownEditButton = document.querySelector('#markdown-edit-button');
 const markdownSubmitButton = document.querySelector('#markdown-submit-button');
 const markdownTextarea = document.querySelector('#markdown-textarea');
 
-const h1Regex = /^# (.*$)/gim;
-const paraRegex = /(^[\w\d].*)\n/gim;
+const h1Regex = /^#(.*$)/gim;
+const paraRegex = /(^[\w\d].*)/gim;
 const lineBreakRegex = /^\n$/gim;
+const tagRegex = /^@(.*$)/gim;
 
 function parseMarkdown(mardownText){
-    const htmlText = mardownText.replace(h1Regex, '<h1>$1</h1>').replace(paraRegex, '<p>$1</p>').replace(lineBreakRegex, '<br />');
+    const htmlText = mardownText
+        .replace(h1Regex, '<h1>$1</h1>')
+        .replace(paraRegex, '<p>$1</p>')
+        .replace(lineBreakRegex, '<br />')
+        .replace(tagRegex, '<span class="chip inverted-color">$1</span>');
     return htmlText.trim();
 }
 
 markdownEditButton.addEventListener('click', () => {
-    //read data from server
+    markdownTextarea.value = notesDataObjectModel.notes[currentActiveNote].content;
     markdownTextarea.parentElement.style.display = 'initial';
     markdownEditButton.parentElement.style.display = 'none';
 });
 
 markdownSubmitButton.addEventListener('click', () => {
     const htmlString = parseMarkdown(markdownTextarea.value);
+    notesDataObjectModel.notes[currentActiveNote].content = markdownTextarea.value;
     markdownRenderBox.parentElement.style.display = 'initial';
     markdownRenderBox.innerHTML = htmlString;
 
@@ -33,31 +80,11 @@ markdownSubmitButton.addEventListener('click', () => {
 const noteButtons = document.querySelectorAll('.note-button');
 noteButtons.forEach(x => x.addEventListener('click', () => {
     markdownRenderBox.parentElement.style.display = 'initial';
+    currentActiveNote = x.dataset.noteIndex;
+    markdownRenderBox.innerHTML = parseMarkdown(notesDataObjectModel.notes[currentActiveNote].content);
 }));
 
 const markdownRenderCloseButton = document.querySelector('#markdown-render-close-button');
 markdownRenderCloseButton.addEventListener('click', () => {
     markdownRenderBox.parentElement.style.display = 'none';
 });
-
-/* 
-# nothing will begin unless I start writing this shit out.
-
-I am trying to type fast and believe me I am but fuck this shit taking too long to even begin being functional.
-
-ok lets try to reach the end of the page.
-
-I will have to type something really filler up.
-
-I can't seem to think anything.
-# here's a heading
-# here's another
-
-I wonder if two headings one below the other looks appealing or not.
-
-but fuck this shit anything to make it to the end of the page like it's a real fucking piece of text. And yep I sweared into a note but man this is taking a toll on me.
-here's one more filler heading.
-
-and here we go at the end of the fucking page.
-and for the most part this seems to be working, only I can't see the upper part so. 
-*/
