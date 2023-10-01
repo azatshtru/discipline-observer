@@ -10,7 +10,7 @@
 <body>
     <h1># Notes</h1>
     <div class="horizontal-flex mobile-break-flex">
-        <div class="horizontal-flex width-fifth">
+        <div id="tags-container" class="horizontal-flex width-fifth">
             <button class="chip">workout</button>
             <button class="chip">frontend</button>
             <button class="chip">startup</button>
@@ -46,13 +46,13 @@
                 Close
             </button>
         </div>
-        <div id="markdown-render-box" class="fullsize"></div>
+        <div id="markdown-render-box" class="fullsize padding-top-2em"></div>
         <button id="markdown-edit-button" class="icon-button overlayed-20 bottom-right">
             <span class="material-symbols-outlined">edit</span>
             Edit
         </button>
     </div>
-    <div class="nodisplay overlayed-10 sidepeek tablet-full-width padding-bottom-2em bordered-bg-white">
+    <div class="nodisplay overlayed-10 sidepeek tablet-full-width padding-bottom-half bordered-bg-white">
         <textarea id="markdown-textarea" class="scroll-y-overflowed padding-block-15 fullsize font-1-em padding-footer" name="template"></textarea>
         <button id="markdown-submit-button" class="icon-button overlayed-20 bottom-right">
             <span class="material-symbols-outlined">done</span>

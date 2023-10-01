@@ -149,12 +149,16 @@ a.icon-button {
     padding-block: 15px;
 }
 
-.padding-bottom-2em {
+.padding-bottom-half {
     padding-bottom: .5rem;
 }
 
 .padding-footer {
     padding-bottom: 1in;
+}
+
+.padding-top-2em {
+    padding-top: 1.7rem;
 }
 
 .fullsize {
