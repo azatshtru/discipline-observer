@@ -1,25 +1,29 @@
 let notesDataObjectModel = {
-    notes: [
-        {
-            content: `# Hi guys
-kaise`,
-            tags: [],
-        },
-        {
-            content: "Hello guys",
-            tags: [],
-        },
-        {
-            content: "# here is some content",
-            tags: [],
-        },
-    ],
+    notes: [],
     tags: {},
 }
+
+const markdownRenderBox = document.querySelector('#markdown-render-box');
+const markdownEditButton = document.querySelector('#markdown-edit-button');
+const markdownSubmitButton = document.querySelector('#markdown-submit-button');
+const markdownTextarea = document.querySelector('#markdown-textarea');
+const tagsContainer = document.querySelector('#tags-container');
+const notesContainer = document.querySelector('#notes-container');
+const markdownRenderCloseButton = document.querySelector('#markdown-render-close-button');
+const addNoteButton = document.querySelector('#add-note-button');
 
 const getTitle = (x) => {
     if (x.trim() == '') { return 'untitled' }
     return x.match(/[\w\d].*/gim)[0];
+}
+
+const handleTaglistChanges = () => {
+    if (notesDataObjectModel.tags.length == 0){
+        tagsContainer.innerHTML = `<p>No tags yet. <br /> <br />
+Use the '@' symbol in your documents to create tags. <br /><br /> 
+Tags show up here and allow you to filter your notes easily.
+</p>` 
+    }
 }
 
 const removeTagIfEmpty = (x) => {
@@ -28,6 +32,8 @@ const removeTagIfEmpty = (x) => {
         document.querySelector(`[data-tagname="${x}"]`).remove();
     }
 }
+
+let currentActiveNote;
 
 function tagChip(content){
     const chip = document.createElement('button');
@@ -49,28 +55,24 @@ function tonalNoteButton(content){
     const noteTitle = document.createTextNode(content);
     noteButton.appendChild(noteTitle);
 
+    noteButton.addEventListener('click', () => {
+        markdownRenderBox.parentElement.style.display = 'initial';
+        currentActiveNote = noteButton.dataset.noteIndex;
+        markdownRenderBox.innerHTML = parseMarkdown(notesDataObjectModel.notes[currentActiveNote].content);
+    });
+
     return noteButton;
 }
 
-const tagsContainer = document.querySelector('#tags-container');
 Object.keys(notesDataObjectModel.tags)?.forEach(x => {
     tagsContainer.appendChild(tagChip(x));
 });
 
-const notesContainer = document.querySelector('#notes-container');
 notesDataObjectModel.notes?.forEach((x, i) => {
     const noteButton = tonalNoteButton(getTitle(x.content));
     noteButton.dataset.noteIndex = i;
     notesContainer.appendChild(noteButton);
 });
-
-let currentActiveNote;
-let currentActiveTaglist;
-
-const markdownRenderBox = document.querySelector('#markdown-render-box');
-const markdownEditButton = document.querySelector('#markdown-edit-button');
-const markdownSubmitButton = document.querySelector('#markdown-submit-button');
-const markdownTextarea = document.querySelector('#markdown-textarea');
 
 const h1Regex = /^#(.*$)/gim;
 const paraRegex = /(^[\w\d].*)/gim;
@@ -93,7 +95,7 @@ markdownEditButton.addEventListener('click', () => {
 });
 
 markdownSubmitButton.addEventListener('click', () => {
-    currentActiveTaglist.forEach(x => {
+    notesDataObjectModel.notes[currentActiveNote].tags.forEach(x => {
         notesDataObjectModel.tags[x] = notesDataObjectModel.tags[x].filter(item => item !== currentActiveNote);
         removeTagIfEmpty(x);
     });
@@ -126,15 +128,21 @@ markdownSubmitButton.addEventListener('click', () => {
     markdownTextarea.parentElement.style.display = 'none';
 });
 
-const noteButtons = document.querySelectorAll('.note-button');
-noteButtons.forEach(x => x.addEventListener('click', () => {
-    markdownRenderBox.parentElement.style.display = 'initial';
-    currentActiveNote = x.dataset.noteIndex;
-    currentActiveTaglist = notesDataObjectModel.notes[currentActiveNote].tags;
-    markdownRenderBox.innerHTML = parseMarkdown(notesDataObjectModel.notes[currentActiveNote].content);
-}));
-
-const markdownRenderCloseButton = document.querySelector('#markdown-render-close-button');
 markdownRenderCloseButton.addEventListener('click', () => {
     markdownRenderBox.parentElement.style.display = 'none';
+});
+
+addNoteButton.addEventListener('click', () => {
+    notesDataObjectModel.notes.push(
+        {
+            content: `# Untitled document\n\nEdit this with your ideas :)`,
+            tags: [],
+        }
+    );
+
+    const noteButton = tonalNoteButton(getTitle(notesDataObjectModel.notes[notesDataObjectModel.notes.length-1].content));
+    noteButton.dataset.noteIndex = notesDataObjectModel.notes.length-1;
+    notesContainer.appendChild(noteButton);
+
+    noteButton.click();
 });

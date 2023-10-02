@@ -8,35 +8,18 @@
     <title>Notes</title>
 </head>
 <body>
-    <h1># Notes</h1>
+    <div class="horizontal-flex padding-right-2em">
+        <h1># Notes</h1>
+        <div class="flex-1"></div>
+        <button id="add-note-button" class="icon-button inset-bottom-shadow-4px font-wt500">
+            <span class="material-symbols-outlined">add</span>
+            New Note
+        </button>
+    </div>
     <div class="horizontal-flex mobile-break-flex">
         <div id="tags-container" class="horizontal-flex width-fifth">
-            <button class="chip">workout</button>
-            <button class="chip">frontend</button>
-            <button class="chip">startup</button>
-            <button class="chip">resources to read</button>
         </div>
         <div id="notes-container" class="horizontal-flex flex-1">
-            <button class="note-button tonal-button">
-                <span class="material-symbols-outlined">notes</span>    
-                Chest workout
-            </button>
-            <button class="note-button tonal-button">
-                <span class="material-symbols-outlined">notes</span>    
-                Frontend as a study of principles rather than tools.
-            </button>
-            <button class="note-button tonal-button">
-                <span class="material-symbols-outlined">notes</span>    
-                Markdown Database for effective note taking
-            </button>
-            <button class="note-button tonal-button">
-                <span class="material-symbols-outlined">notes</span>    
-                Frontend course structure
-            </button>
-            <button class="note-button tonal-button">
-                <span class="material-symbols-outlined">notes</span>    
-                Quotes I like
-            </button>
         </div>
     </div>
     <div class="nodisplay overlayed-10 sidepeek scroll-y-overflowed padding-block-15 tablet-full-width vertical-flex bordered-bg-white">
