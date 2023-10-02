@@ -11,6 +11,8 @@ const tagsContainer = document.querySelector('#tags-container');
 const notesContainer = document.querySelector('#notes-container');
 const markdownRenderCloseButton = document.querySelector('#markdown-render-close-button');
 const addNoteButton = document.querySelector('#add-note-button');
+const noTagsMessage = document.querySelector('#no-tags-msg');
+const tagSearchBox = document.querySelector('#tag-search');
 
 const getTitle = (x) => {
     if (x.trim() == '') { return 'untitled' }
@@ -18,11 +20,16 @@ const getTitle = (x) => {
 }
 
 const handleTaglistChanges = () => {
-    if (notesDataObjectModel.tags.length == 0){
-        tagsContainer.innerHTML = `<p>No tags yet. <br /> <br />
-Use the '@' symbol in your documents to create tags. <br /><br /> 
-Tags show up here and allow you to filter your notes easily.
-</p>` 
+    if (Object.keys(notesDataObjectModel.tags).length == 0){
+        noTagsMessage.classList.remove("nodisplay");
+    } else {
+        noTagsMessage.classList.add("nodisplay");
+    }
+
+    if (Object.keys(notesDataObjectModel.tags).length >= 10){
+        tagSearchBox.classList.remove("nodisplay");
+    } else {
+        tagSearchBox.classList.add("nodisplay");
     }
 }
 
@@ -67,6 +74,7 @@ function tonalNoteButton(content){
 Object.keys(notesDataObjectModel.tags)?.forEach(x => {
     tagsContainer.appendChild(tagChip(x));
 });
+handleTaglistChanges();
 
 notesDataObjectModel.notes?.forEach((x, i) => {
     const noteButton = tonalNoteButton(getTitle(x.content));
@@ -98,6 +106,7 @@ markdownSubmitButton.addEventListener('click', () => {
     notesDataObjectModel.notes[currentActiveNote].tags.forEach(x => {
         notesDataObjectModel.tags[x] = notesDataObjectModel.tags[x].filter(item => item !== currentActiveNote);
         removeTagIfEmpty(x);
+        handleTaglistChanges();
     });
     notesDataObjectModel.notes[currentActiveNote].tags = [];
     const editedActiveTaglist = markdownTextarea.value.match(tagRegex);
@@ -107,6 +116,7 @@ markdownSubmitButton.addEventListener('click', () => {
         notesDataObjectModel.notes[currentActiveNote].tags.push(currentTag);
         if (!(currentTag in notesDataObjectModel.tags)) { 
             notesDataObjectModel.tags[currentTag] = [currentActiveNote];
+            handleTaglistChanges();
             tagsContainer.appendChild(tagChip(currentTag));
         } else {
             notesDataObjectModel.tags[currentTag].push(currentActiveNote);
