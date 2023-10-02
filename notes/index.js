@@ -92,7 +92,7 @@ function parseMarkdown(mardownText){
         .replace(h1Regex, '<h1>$1</h1>')
         .replace(paraRegex, '<p>$1</p>')
         .replace(lineBreakRegex, '<br />')
-        .replace(tagRegex, '<span class="chip inverted-color">$1</span>');
+        .replace(tagRegex, '<span class="chip inverted-color display-inline-block">$1</span>');
     return htmlText.trim();
 }
 
