@@ -106,6 +106,7 @@ a.icon-button {
     box-shadow: inset 0px -4px gainsboro;
 }
 
+*[data-selected="1"],
 .inverted-color {
     background: black;
     color: white;

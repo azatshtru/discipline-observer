@@ -14,6 +14,11 @@ const addNoteButton = document.querySelector('#add-note-button');
 const noTagsMessage = document.querySelector('#no-tags-msg');
 const tagSearchBox = document.querySelector('#tag-search');
 
+let currentActiveNote;
+let ghostTags = [];
+let activeTags = [];
+let filteredNotes = {};
+
 const getTitle = (x) => {
     if (x.trim() == '') { return 'untitled' }
     return x.match(/[\w\d].*/gim)[0];
@@ -40,13 +45,70 @@ const removeTagIfEmpty = (x) => {
     }
 }
 
-let currentActiveNote;
+function clearFilter() {
+    ghostTags = [...activeTags];
+    activeTags = [];
+    filteredNotes = {};
+    [...notesContainer.children].forEach(x => x.classList.remove('nodisplay'));
+    document.querySelectorAll(`[data-selected="1"]`).forEach(x => x.dataset.selected = '0');
+}
+
+function handleFiltering() {
+    [...notesContainer.children].forEach(x => x.classList.add('nodisplay'));
+    for(const noteIndex in filteredNotes){
+        if(filteredNotes[noteIndex] === activeTags.length){
+            notesContainer.children[noteIndex].classList.remove('nodisplay');
+        }
+        if(filteredNotes[noteIndex] === 0){
+            delete filteredNotes[noteIndex];
+        }
+    }
+}
+
+function ghostFilter() {
+    for(const tag of ghostTags){
+        if(!(tag in notesDataObjectModel.tags)) { continue; }
+        activeTags.push(tag);
+        notesDataObjectModel.tags[tag].forEach(x => {
+            if (x in filteredNotes) { filteredNotes[x] += 1; }
+            else { filteredNotes[x] = 1; }
+        });
+        document.querySelector(`[data-tagname="${tag}"]`).dataset.selected = '1';
+    }
+    if(activeTags.length === 0){ clearFilter(); }
+    else { handleFiltering(); }
+}
+
+const selectTag = (tag) => {
+    if(activeTags.includes(tag.dataset.tagname)){
+        tag.dataset.selected = '0';
+        activeTags = activeTags.filter(x => x != tag.dataset.tagname);
+        notesDataObjectModel.tags[tag.dataset.tagname].forEach(x => {
+            if (x in filteredNotes) {
+                filteredNotes[x] -= 1;
+            }
+        });
+    } else {
+        tag.dataset.selected = '1';
+        activeTags.push(tag.dataset.tagname);
+        notesDataObjectModel.tags[tag.dataset.tagname].forEach(x => {
+            if (x in filteredNotes) { filteredNotes[x] += 1; }
+            else { filteredNotes[x] = 1; }
+        });
+    }
+    if(activeTags.length === 0){ clearFilter(); }
+    else { handleFiltering(); }
+}
 
 function tagChip(content){
     const chip = document.createElement('button');
     chip.className = 'chip';
     chip.textContent = content;
     chip.dataset.tagname = content;
+    chip.dataset.selected = '0';
+
+    chip.addEventListener('click', () => selectTag(chip));
+
     return chip;
 }
 
@@ -97,6 +159,7 @@ function parseMarkdown(mardownText){
 }
 
 markdownEditButton.addEventListener('click', () => {
+    clearFilter();
     markdownTextarea.value = notesDataObjectModel.notes[currentActiveNote].content;
     markdownTextarea.parentElement.style.display = 'initial';
     markdownEditButton.parentElement.style.display = 'none';
@@ -136,6 +199,8 @@ markdownSubmitButton.addEventListener('click', () => {
     markdownRenderBox.appendChild(footer);
 
     markdownTextarea.parentElement.style.display = 'none';
+
+    ghostFilter();
 });
 
 markdownRenderCloseButton.addEventListener('click', () => {
@@ -143,6 +208,8 @@ markdownRenderCloseButton.addEventListener('click', () => {
 });
 
 addNoteButton.addEventListener('click', () => {
+    clearFilter();
+
     notesDataObjectModel.notes.push(
         {
             content: `# Untitled document\n\nEdit this with your ideas :)`,
