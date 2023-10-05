@@ -1,4 +1,4 @@
-let notesDataObjectModel = {
+const notesDataObjectModel = {
     notes: [],
     tags: {},
 }
@@ -15,10 +15,58 @@ const noTagsMessage = document.querySelector('#no-tags-msg');
 const tagSearchBox = document.querySelector('#tag-search');
 
 let currentActiveNote;
-let ghostTags = [];
-let activeTags = [];
-let filteredNotes = {};
 let currentlyEditing = false;
+
+const activeTagsState = {
+    activeTags: [],
+    previousTags: [],
+    filteredNotes: [],
+
+    subscribers: [],
+
+    subscribe(fn){
+        this.subscribers.push(fn);
+    },
+ 
+    clearFilters() {
+        this.previousTags = [...this.activeTags];
+        this.activeTags = [];
+        this.filteredNotes = [];
+    },
+
+    filter() {
+        const semiFilteredNotes = {};
+        for(const tag of this.previousTags){
+            if(!(tag in notesDataObjectModel.tags)) { continue; }
+            this.activeTags.push(tag);
+            notesDataObjectModel.tags[tag].forEach(x => {
+                if (x in semiFilteredNotes) { semiFilteredNotes[x] += 1; }
+                else { semiFilteredNotes[x] = 1; }
+            });
+        }
+        for(const i in semiFilteredNotes){
+            if (semiFilteredNotes[i] === this.activeTags.length){
+                this.filteredNotes.push(i);
+            }
+        } 
+        this.publish();
+    },
+
+    selectTag(tag){
+        if(this.activeTags.includes(tag)){
+            this.activeTags = this.activeTags.filter(x => x !== tag);
+        } else {
+            this.activeTags.push(tag);
+        }
+        this.clearFilters();
+        this.filter();
+        this.publish();
+    },
+
+    publish(){
+        for(const fn of this.subscribers){ fn(); }
+    }
+};
 
 const getTitle = (x) => {
     if (x.trim() == '') { return 'untitled' }
@@ -46,60 +94,18 @@ const removeTagIfEmpty = (x) => {
     }
 }
 
-function clearFilter() {
-    ghostTags = [...activeTags];
-    activeTags = [];
-    filteredNotes = {};
-    [...notesContainer.children].forEach(x => x.classList.remove('nodisplay'));
+function updateFilterchipUI() {
     document.querySelectorAll(`[data-selected="1"]`).forEach(x => x.dataset.selected = '0');
+    activeTagsState.activeTags.forEach(tag => document.querySelector(`[data-tagname="${tag}"]`).dataset.selected = '1');
 }
+activeTagsState.subscribe(updateFilterchipUI);
 
-function handleFiltering() {
+function updateFilteredNoteUI() {
     [...notesContainer.children].forEach(x => x.classList.add('nodisplay'));
-    for(const noteIndex in filteredNotes){
-        if(filteredNotes[noteIndex] === activeTags.length){
-            notesContainer.children[noteIndex].classList.remove('nodisplay');
-        }
-        if(filteredNotes[noteIndex] === 0){
-            delete filteredNotes[noteIndex];
-        }
-    }
+    activeTagsState.filteredNotes.forEach(noteIndex => notesContainer.children[noteIndex].classList.remove('nodisplay'));
+    if(activeTagsState.activeTags.length === 0){[...notesContainer.children].forEach(x => x.classList.remove('nodisplay'))};
 }
-
-function ghostFilter() {
-    for(const tag of ghostTags){
-        if(!(tag in notesDataObjectModel.tags)) { continue; }
-        activeTags.push(tag);
-        notesDataObjectModel.tags[tag].forEach(x => {
-            if (x in filteredNotes) { filteredNotes[x] += 1; }
-            else { filteredNotes[x] = 1; }
-        });
-        document.querySelector(`[data-tagname="${tag}"]`).dataset.selected = '1';
-    }
-    if(activeTags.length === 0){ clearFilter(); }
-    else { handleFiltering(); }
-}
-
-const selectTag = (tag) => {
-    if(activeTags.includes(tag.dataset.tagname)){
-        tag.dataset.selected = '0';
-        activeTags = activeTags.filter(x => x != tag.dataset.tagname);
-        notesDataObjectModel.tags[tag.dataset.tagname].forEach(x => {
-            if (x in filteredNotes) {
-                filteredNotes[x] -= 1;
-            }
-        });
-    } else {
-        tag.dataset.selected = '1';
-        activeTags.push(tag.dataset.tagname);
-        notesDataObjectModel.tags[tag.dataset.tagname].forEach(x => {
-            if (x in filteredNotes) { filteredNotes[x] += 1; }
-            else { filteredNotes[x] = 1; }
-        });
-    }
-    if(activeTags.length === 0){ clearFilter(); }
-    else { handleFiltering(); }
-}
+activeTagsState.subscribe(updateFilteredNoteUI);
 
 function tagChip(content){
     const chip = document.createElement('button');
@@ -110,7 +116,7 @@ function tagChip(content){
 
     chip.addEventListener('click', () => {
         if(currentlyEditing){ return; }
-        selectTag(chip);
+        activeTagsState.selectTag(chip.dataset.tagname);
     });
 
     return chip;
@@ -165,7 +171,7 @@ function parseMarkdown(mardownText){
 }
 
 markdownEditButton.addEventListener('click', () => {
-    clearFilter();
+    activeTagsState.clearFilters();
     markdownTextarea.value = notesDataObjectModel.notes[currentActiveNote].content;
     markdownTextarea.parentElement.style.display = 'initial';
     markdownEditButton.parentElement.style.display = 'none';
@@ -206,7 +212,7 @@ markdownSubmitButton.addEventListener('click', () => {
 
     markdownTextarea.parentElement.style.display = 'none';
 
-    ghostFilter();
+    activeTagsState.filter();
 });
 
 markdownRenderCloseButton.addEventListener('click', () => {
@@ -215,7 +221,7 @@ markdownRenderCloseButton.addEventListener('click', () => {
 });
 
 addNoteButton.addEventListener('click', () => {
-    clearFilter();
+    activeTagsState.clearFilters();
 
     notesDataObjectModel.notes.push(
         {
