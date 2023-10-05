@@ -18,6 +18,7 @@ let currentActiveNote;
 let ghostTags = [];
 let activeTags = [];
 let filteredNotes = {};
+let currentlyEditing = false;
 
 const getTitle = (x) => {
     if (x.trim() == '') { return 'untitled' }
@@ -107,7 +108,10 @@ function tagChip(content){
     chip.dataset.tagname = content;
     chip.dataset.selected = '0';
 
-    chip.addEventListener('click', () => selectTag(chip));
+    chip.addEventListener('click', () => {
+        if(currentlyEditing){ return; }
+        selectTag(chip);
+    });
 
     return chip;
 }
@@ -125,9 +129,11 @@ function tonalNoteButton(content){
     noteButton.appendChild(noteTitle);
 
     noteButton.addEventListener('click', () => {
+        if(currentlyEditing){ return; }
         markdownRenderBox.parentElement.style.display = 'initial';
         currentActiveNote = noteButton.dataset.noteIndex;
         markdownRenderBox.innerHTML = parseMarkdown(notesDataObjectModel.notes[currentActiveNote].content);
+        currentlyEditing = true;
     });
 
     return noteButton;
@@ -205,6 +211,7 @@ markdownSubmitButton.addEventListener('click', () => {
 
 markdownRenderCloseButton.addEventListener('click', () => {
     markdownRenderBox.parentElement.style.display = 'none';
+    currentlyEditing = false;
 });
 
 addNoteButton.addEventListener('click', () => {
