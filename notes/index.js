@@ -2,6 +2,7 @@ const notesDataObjectModel = {
     notes: [],
     tags: {},
 }
+//Add press and hold on note button to delete note.
 
 const h1Regex = /^#(.*$)/gim;
 const paraRegex = /(^[\w\d].*)/gim;
@@ -49,6 +50,12 @@ const state = {
         return this.activeTags.reduce((intersection, v) => notesDataObjectModel.tags[v].filter(x => intersection.includes(x)), notesDataObjectModel.tags[this.activeTags[0]]).map(x => notesDataObjectModel.notes[x]);
     },
 
+    searchedTags() {
+        this.hydrateActiveTags();
+        if(this.tagSearchText.trim() == '' || Object.keys(notesDataObjectModel.tags).length < 10){ return Object.keys(notesDataObjectModel.tags); }
+        return Object.keys(notesDataObjectModel.tags).filter(x => x.includes(this.tagSearchText));
+    },
+    
     addActiveTag(tag){
         this.activeTags.push(tag);
         this.publish();
@@ -94,6 +101,11 @@ const state = {
         this.noteViewMode = v;
         this.publish();
     },
+
+    setSearchText(searchStr){
+        this.tagSearchText = searchStr;
+        this.publish();
+    }
 }
 
 const markdownRenderBox = document.querySelector('#markdown-render-box');
@@ -147,7 +159,7 @@ function renderTags(s){
     if (completeTaglist.length >= 10){ tagSearchBox.classList.remove("nodisplay"); } 
     else { tagSearchBox.classList.add("nodisplay"); }
 
-    completeTaglist?.forEach(x => tagsContainer.appendChild(tagChip(x, chip => {
+    [...new Set([...s.searchedTags(), ...s.activeTags])]?.forEach(x => tagsContainer.appendChild(tagChip(x, chip => {
         if(state.noteViewMode != 'none') { return }
         if(chip.selected == '0'){ state.addActiveTag(chip.tagname) }
         else { state.removeActiveTag(chip.tagname) }
@@ -195,3 +207,4 @@ addNoteButton.addEventListener('click', () => {
 });
 markdownRenderCloseButton.addEventListener('click', () => state.setViewMode('none'));
 markdownEditButton.addEventListener('click', () => state.setViewMode('edit'));
+tagSearchBox.querySelector('input').addEventListener('input', () => state.setSearchText(tagSearchBox.querySelector('input').value));
