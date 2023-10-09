@@ -159,7 +159,8 @@ function beginNoteDeletion (i) {
 
 function cancelNoteDeletion (i) {
     clearTimeout(deleteTimerId);
-    document.querySelector(`[data-note-index="${i}"]`).noteButton.style.transition = `background-position-x .2s ease-out`;
+    const noteButton = document.querySelector(`[data-note-index="${i}"]`);
+    noteButton.style.transition = `background-position-x .2s ease-out`;
 
     setTimeout(() => noteButton.style.backgroundPositionX = '100%', 1);
     setTimeout(() => state.publish(), 200);
