@@ -113,6 +113,36 @@ a.icon-button {
     font-weight: 500;
 }
 
+.inverted-span {
+    mix-blend-mode: difference;
+    color: white;
+    -webkit-user-select: none;
+    user-select: none; 
+
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.pressnhold {
+    background: linear-gradient(to right, black 50%, whitesmoke 50%);
+    background-size: 200% 100%;
+    
+    background-position-x: 100%;
+    transition: background-position-x 2.5s cubic-bezier(.4,.61,.41,.98);
+    
+    user-select: none;
+}
+
+@keyframes pressnhold-fill {
+    0% {
+        background-position-x: 100%;
+    }
+    100% {
+        background-position-x: 0%;
+    }
+}
+
 .display-inline-block {
     display: inline-block;
     margin-bottom: 3px;

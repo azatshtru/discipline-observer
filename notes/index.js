@@ -1,8 +1,8 @@
 const notesDataObjectModel = {
     notes: [],
     tags: {},
+    deletedIndices: [],
 }
-//Add press and hold on note button to delete note.
 
 const h1Regex = /^#(.*$)/gim;
 const paraRegex = /(^[\w\d].*)/gim;
@@ -46,8 +46,9 @@ const state = {
 
     filteredNotes() {
         this.hydrateActiveTags();
-        if(this.activeTags.length === 0){ return notesDataObjectModel.notes; }
-        return this.activeTags.reduce((intersection, v) => notesDataObjectModel.tags[v].filter(x => intersection.includes(x)), notesDataObjectModel.tags[this.activeTags[0]]).map(x => notesDataObjectModel.notes[x]);
+        if(this.activeTags.length === 0){ return notesDataObjectModel.notes.filter(x => !notesDataObjectModel.deletedIndices.includes(x.index)); }
+        return this.activeTags.reduce((intersection, v) => notesDataObjectModel.tags[v].filter(x => intersection.includes(x)), notesDataObjectModel.tags[this.activeTags[0]])
+            .map(x => notesDataObjectModel.notes[x]).filter(x => !notesDataObjectModel.deletedIndices.includes(x.index));
     },
 
     searchedTags() {
@@ -82,13 +83,19 @@ const state = {
     },
 
     addNewNote() {
-        notesDataObjectModel.notes.push(
-            {
-                content: `# Untitled document\n\nEdit this with your ideas :)`,
-                tags: [],
-                index: notesDataObjectModel.notes.length,
-            }
-        );
+        if(notesDataObjectModel.deletedIndices.length === 0){
+            this.currentActiveNoteIndex = notesDataObjectModel.notes.length;
+            notesDataObjectModel.notes.push(
+                {
+                    content: `# Untitled document\n\nEdit this with your ideas :)`,
+                    tags: [],
+                    index: notesDataObjectModel.notes.length,
+                }
+            );
+        } else {
+            this.currentActiveNoteIndex = notesDataObjectModel.deletedIndices[0];
+            notesDataObjectModel.deletedIndices.shift();
+        }
         this.publish();
     },
 
@@ -105,6 +112,13 @@ const state = {
     setSearchText(searchStr){
         this.tagSearchText = searchStr;
         this.publish();
+    },
+
+    deleteNote(i){
+        notesDataObjectModel.deletedIndices.push(i);
+        console.log(notesDataObjectModel.deletedIndices);
+        this.currentActiveNoteIndex = i;
+        this.updateNotes(`# Untitled document\n\nEdit this with your ideas :)`);
     }
 }
 
@@ -131,6 +145,26 @@ function tagChip(content, callback){
     return chip;
 }
 
+let deleteTimerId;
+function beginNoteDeletion (i) {
+    state.setViewMode('none');
+
+    const noteButton = document.querySelector(`[data-note-index="${i}"]`);
+    noteButton.innerHTML = `<span class="inverted-span">${noteButton.innerHTML}</span>`;
+    noteButton.classList.add('pressnhold');
+    
+    setTimeout(() => noteButton.style.backgroundPositionX = '0%', 1);
+    deleteTimerId = setTimeout(() => state.deleteNote(parseInt(i)), 2700);
+}
+
+function cancelNoteDeletion (i) {
+    clearTimeout(deleteTimerId);
+    document.querySelector(`[data-note-index="${i}"]`).noteButton.style.transition = `background-position-x .2s ease-out`;
+
+    setTimeout(() => noteButton.style.backgroundPositionX = '100%', 1);
+    setTimeout(() => state.publish(), 200);
+}
+
 function noteButton(content, index, callback){
     const noteButton = document.createElement('div');
     noteButton.classList.add('note-button', 'tonal-button');
@@ -141,6 +175,13 @@ function noteButton(content, index, callback){
 
     noteButton.dataset.noteIndex = index;
     noteButton.addEventListener('click', () => callback());
+    
+    ['mousedown', 'touchstart'].forEach(e => noteButton.addEventListener(e, () => {
+        if(state.noteViewMode != 'none') { return }
+        deleteTimerId = setTimeout(() => beginNoteDeletion(noteButton.dataset.noteIndex), 500);
+    }));
+    ['mouseup', 'mouseleave', 'touchcancel', 'touchend'].forEach(e => noteButton.addEventListener(e, () => cancelNoteDeletion(noteButton.dataset.noteIndex)));
+
     return noteButton;
 }
 
@@ -202,7 +243,6 @@ markdownSubmitButton.addEventListener('click', () => {
 });
 addNoteButton.addEventListener('click', () => {
     state.addNewNote();
-    state.setCurrentActiveNoteIndex(notesDataObjectModel.notes.length-1);
     state.setViewMode('view');
 });
 markdownRenderCloseButton.addEventListener('click', () => state.setViewMode('none'));
