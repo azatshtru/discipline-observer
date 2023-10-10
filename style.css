@@ -136,15 +136,6 @@ a.icon-button {
     user-select: none;
 }
 
-@keyframes pressnhold-fill {
-    0% {
-        background-position-x: 100%;
-    }
-    100% {
-        background-position-x: 0%;
-    }
-}
-
 .display-inline-block {
     display: inline-block;
     margin-bottom: 3px;

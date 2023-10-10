@@ -37,6 +37,7 @@ const state = {
 
     hydrateActiveTags(){
         this.activeTags = this.activeTags.filter(x => x in notesDataObjectModel.tags);
+        if(Object.keys(notesDataObjectModel.tags).length < 10) { this.tagSearchText = ''; }
     },
 
     publish(){
@@ -116,7 +117,6 @@ const state = {
 
     deleteNote(i){
         notesDataObjectModel.deletedIndices.push(i);
-        console.log(notesDataObjectModel.deletedIndices);
         this.currentActiveNoteIndex = i;
         this.updateNotes(`# Untitled document\n\nEdit this with your ideas :)`);
     }
@@ -237,6 +237,11 @@ function editNote(s){
     } else { markdownTextarea.parentElement.style.display = 'none'; }
 }
 state.subscribe(editNote);
+
+function updateTagSearchBox(s){
+    tagSearchBox.querySelector('input').value = s.tagSearchText;
+}
+state.subscribe(updateTagSearchBox);
 
 markdownSubmitButton.addEventListener('click', () => {
     state.updateNotes(markdownTextarea.value);
