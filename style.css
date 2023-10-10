@@ -63,6 +63,8 @@ a.icon-button {
 
     border: none;
     border-radius: 20px;
+
+    user-select: none;
 }
 
 .chip {

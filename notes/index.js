@@ -153,7 +153,7 @@ function beginNoteDeletion (i) {
     noteButton.innerHTML = `<span class="inverted-span">${noteButton.innerHTML}</span>`;
     noteButton.classList.add('pressnhold');
     
-    setTimeout(() => noteButton.style.backgroundPositionX = '0%', 1);
+    setTimeout(() => noteButton.style.backgroundPositionX = '0%', 100);
     deleteTimerId = setTimeout(() => state.deleteNote(parseInt(i)), 2700);
 }
 
