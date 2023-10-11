@@ -177,7 +177,8 @@ function noteButton(content, index, callback){
     noteButton.dataset.noteIndex = index;
     noteButton.addEventListener('click', () => callback());
     
-    ['mousedown', 'touchstart'].forEach(e => noteButton.addEventListener(e, () => {
+    ['mousedown', 'touchstart'].forEach(e => noteButton.addEventListener(e, (ev) => {
+        if(ev.touches?.length > 1) { return }
         if(deleteTimerId) {clearTimeout(deleteTimerId)}
         if(state.noteViewMode != 'none') { return }
         deleteTimerId = setTimeout(() => beginNoteDeletion(noteButton.dataset.noteIndex), 500);
