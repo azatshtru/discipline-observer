@@ -1,7 +1,6 @@
 const notesDataObjectModel = {
-    notes: [],
+    notes: {},
     tags: {},
-    deletedIndices: [],
 }
 
 const h1Regex = /^#(.*$)/gim;
@@ -47,9 +46,9 @@ const state = {
 
     filteredNotes() {
         this.hydrateActiveTags();
-        if(this.activeTags.length === 0){ return notesDataObjectModel.notes.filter(x => !notesDataObjectModel.deletedIndices.includes(x.index)); }
+        if(this.activeTags.length === 0){ return Object.values(notesDataObjectModel.notes) }
         return this.activeTags.reduce((intersection, v) => notesDataObjectModel.tags[v].filter(x => intersection.includes(x)), notesDataObjectModel.tags[this.activeTags[0]])
-            .map(x => notesDataObjectModel.notes[x]).filter(x => !notesDataObjectModel.deletedIndices.includes(x.index));
+            .map(x => notesDataObjectModel.notes[x]);
     },
 
     searchedTags() {
@@ -84,19 +83,13 @@ const state = {
     },
 
     addNewNote() {
-        if(notesDataObjectModel.deletedIndices.length === 0){
-            this.currentActiveNoteIndex = notesDataObjectModel.notes.length;
-            notesDataObjectModel.notes.push(
-                {
-                    content: `# Untitled document\n\nEdit this with your ideas :)`,
-                    tags: [],
-                    index: notesDataObjectModel.notes.length,
-                }
-            );
-        } else {
-            this.currentActiveNoteIndex = notesDataObjectModel.deletedIndices[0];
-            notesDataObjectModel.deletedIndices.shift();
+        const t = Date.now().toString(36);
+        notesDataObjectModel.notes[t] = {
+            content: `# Untitled document\n\nEdit this with your ideas :)`,
+            tags: [],
+            index: t,
         }
+        this.currentActiveNoteIndex = Object.keys(notesDataObjectModel.notes).slice(-1)[0];
         this.publish();
     },
 
@@ -116,9 +109,10 @@ const state = {
     },
 
     deleteNote(i){
-        notesDataObjectModel.deletedIndices.push(i);
         this.currentActiveNoteIndex = i;
-        this.updateNotes(`# Untitled document\n\nEdit this with your ideas :)`);
+        this.updateNotes('');
+        delete notesDataObjectModel.notes[i];
+        this.publish();
     }
 }
 
@@ -146,24 +140,25 @@ function tagChip(content, callback){
 }
 
 let deleteTimerId;
+let deletionAnimId;
 function beginNoteDeletion (i) {
     state.setViewMode('none');
 
     const noteButton = document.querySelector(`[data-note-index="${i}"]`);
     noteButton.innerHTML = `<span class="inverted-span">${noteButton.innerHTML}</span>`;
     noteButton.classList.add('pressnhold');
-    
-    setTimeout(() => noteButton.style.backgroundPositionX = '0%', 100);
-    deleteTimerId = setTimeout(() => state.deleteNote(parseInt(i)), 2700);
+
+    deletionAnimId = setTimeout(() => noteButton.style.backgroundPositionX = '0%', 100);
+    deleteTimerId = setTimeout(() => state.deleteNote(i), 2700);
 }
 
 function cancelNoteDeletion (i) {
     clearTimeout(deleteTimerId);
+    clearTimeout(deletionAnimId);
     const noteButton = document.querySelector(`[data-note-index="${i}"]`);
     noteButton.style.transition = `background-position-x .2s ease-out`;
 
-    setTimeout(() => noteButton.style.backgroundPositionX = '100%', 1);
-    setTimeout(() => state.publish(), 200);
+    setTimeout(() => noteButton.style.backgroundPositionX = '100%');
 }
 
 function noteButton(content, index, callback){
