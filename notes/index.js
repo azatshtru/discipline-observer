@@ -1,3 +1,5 @@
+import { download, upload, downloadDocument } from "../firebase.js"
+
 const notesDataObjectModel = {
     notes: {},
     tags: {},
@@ -79,6 +81,8 @@ const state = {
             if(x in notesDataObjectModel.tags){ notesDataObjectModel.tags[x].push(this.currentActiveNoteIndex) }
             else { notesDataObjectModel.tags[x] = [this.currentActiveNoteIndex] }
         });
+        upload(['base', 'tags'], notesDataObjectModel.tags);
+        upload(['notes', this.currentActiveNoteIndex], notesDataObjectModel.notes[this.currentActiveNoteIndex]);
         this.publish();
     },
 
@@ -115,6 +119,17 @@ const state = {
         this.publish();
     }
 }
+
+function getDataFromServer(){
+    download(['notes'], 100)
+    .then(x => {
+        x.forEach(doc => notesDataObjectModel.notes[doc.id] = doc.data());
+        return downloadDocument(['base', 'tags']);
+    })
+    .then(x => notesDataObjectModel.tags = x.data())
+    .then(() => state.publish());
+}
+getDataFromServer();
 
 const markdownRenderBox = document.querySelector('#markdown-render-box');
 const markdownEditButton = document.querySelector('#markdown-edit-button');
