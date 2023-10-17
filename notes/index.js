@@ -1,4 +1,4 @@
-import { download, upload, downloadDocument } from "../firebase.js"
+import { downloadWhere, upload, downloadDocument, downloadFirst, paginatedDownload } from "../firebase.js"
 
 const notesDataObjectModel = {
     notes: {},
@@ -53,7 +53,7 @@ const state = {
 
         const temp = intersected.filter(x => !(x in notesDataObjectModel.notes));
         if(temp.length > 0) {
-            download(['notes'], ['index', 'in', temp], temp.length).then(x => {
+            downloadWhere(['notes'], ['index', 'in', temp], temp.length).then(x => {
                 x.forEach(doc => notesDataObjectModel.notes[doc.id] = doc.data());
                 this.publish();
             });
@@ -132,6 +132,30 @@ const state = {
 downloadDocument(['base', 'tags']).then(x => {
     if(x.exists()) { notesDataObjectModel.tags = x.data() }
     state.publish();
+});
+
+let lastDownloadedNote;
+let donePagination = false;
+async function fillNotesDOM() {
+    if (donePagination) { return }
+    const docs = await paginatedDownload(lastDownloadedNote, 'index', 10, ['notes']);
+    if (docs.docs.length < 10) { donePagination = true }
+
+    docs.forEach(x => notesDataObjectModel.notes[x.id] = x.data());
+    lastDownloadedNote = docs.docs[docs.docs.length-1]; 
+    state.publish();
+
+    if (document.body.offsetHeight - window.innerHeight < 0.1) {
+        await fillNotesDOM();
+    }
+}
+window.addEventListener('scroll', () => {
+    if (window.scrollY / (document.body.offsetHeight - window.innerHeight) > 0.5) { fillNotesDOM() }
+});
+downloadFirst(['notes']).then(x => {
+    x.forEach(doc => notesDataObjectModel.notes[doc.id] = doc.data())
+    lastDownloadedNote = x[x.length-1];
+    fillNotesDOM();
 });
 
 const markdownRenderBox = document.querySelector('#markdown-render-box');
