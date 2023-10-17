@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-analytics.js";
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js'
-import { getFirestore, query, limit, getDoc, getDocs, setDoc, collection, doc } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js'
+import { getFirestore, query, where, limit, getDoc, getDocs, setDoc, collection, doc } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js'
 
 const firebaseConfig = {
     apiKey: "AIzaSyDpTRESudXQYfc3bsYHaLj3FSOcN9iW7Dg",
@@ -16,9 +16,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export async function download(path, n=1){
+export async function download(path, qList=[], n=1){
     const ref = collection(db, 'users', 'Adwait', ...path);
-    const q = query(ref, limit(n));
+    const q = query(ref, where(...qList), limit(n));
     const querySnapshot = await getDocs(q);
     return querySnapshot;
 }

@@ -49,8 +49,17 @@ const state = {
     filteredNotes() {
         this.hydrateActiveTags();
         if(this.activeTags.length === 0){ return Object.values(notesDataObjectModel.notes) }
-        return this.activeTags.reduce((intersection, v) => notesDataObjectModel.tags[v].filter(x => intersection.includes(x)), notesDataObjectModel.tags[this.activeTags[0]])
-            .map(x => notesDataObjectModel.notes[x]);
+        const intersected = this.activeTags.reduce((intersection, v) => notesDataObjectModel.tags[v].filter(x => intersection.includes(x)), notesDataObjectModel.tags[this.activeTags[0]])
+
+        const temp = intersected.filter(x => !(x in notesDataObjectModel.notes));
+        if(temp.length > 0) {
+            download(['notes'], ['index', 'in', temp], temp.length).then(x => {
+                x.forEach(doc => notesDataObjectModel.notes[doc.id] = doc.data());
+                this.publish();
+            });
+        }
+
+        return intersected.filter(x => x in notesDataObjectModel.notes).map(x => notesDataObjectModel.notes[x]);
     },
 
     searchedTags() {
@@ -120,16 +129,10 @@ const state = {
     }
 }
 
-function getDataFromServer(){
-    download(['notes'], 100)
-    .then(x => {
-        x.forEach(doc => notesDataObjectModel.notes[doc.id] = doc.data());
-        return downloadDocument(['base', 'tags']);
-    })
-    .then(x => notesDataObjectModel.tags = x.data())
-    .then(() => state.publish());
-}
-getDataFromServer();
+downloadDocument(['base', 'tags']).then(x => {
+    if(x.exists()) { notesDataObjectModel.tags = x.data() }
+    state.publish();
+});
 
 const markdownRenderBox = document.querySelector('#markdown-render-box');
 const markdownEditButton = document.querySelector('#markdown-edit-button');
