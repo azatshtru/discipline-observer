@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-analytics.js";
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js'
-import { getFirestore, query, where, limit, orderBy, startAfter, getDoc, getDocs, setDoc, collection, doc } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js'
+import { getFirestore, query, where, limit, orderBy, startAfter, getDoc, getDocs, setDoc, deleteDoc, collection, doc } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js'
 
 import { firebaseConfigObject } from "./setup.js";
 
@@ -37,4 +37,8 @@ export async function paginatedDownload(start, order, lim, path){
 export async function upload(path=[], data){
     const ref = doc(db, 'users', 'Adwait', ...path);
     await setDoc(ref, data);
+}
+
+export async function deleteDocument(path=[]){
+    await deleteDoc(doc(db, 'users', 'Adwait', ...path));
 }

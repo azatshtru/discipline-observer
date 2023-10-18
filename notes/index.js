@@ -1,4 +1,4 @@
-import { downloadWhere, upload, downloadDocument, downloadFirst, paginatedDownload } from "../firebase.js"
+import { downloadWhere, upload, downloadDocument, deleteDocument, downloadFirst, paginatedDownload } from "../firebase.js"
 
 const notesDataObjectModel = {
     notes: {},
@@ -52,7 +52,6 @@ const state = {
         const intersected = this.activeTags.reduce((intersection, v) => notesDataObjectModel.tags[v].filter(x => intersection.includes(x)), notesDataObjectModel.tags[this.activeTags[0]])
 
         const temp = intersected.filter(x => !(x in notesDataObjectModel.notes));
-        console.log(temp);
         if(temp.length > 0) {
             downloadWhere(['notes'], ['index', 'in', temp], temp.length).then(x => {
                 x.forEach(doc => notesDataObjectModel.notes[doc.id] = doc.data());
@@ -92,7 +91,7 @@ const state = {
             else { notesDataObjectModel.tags[x] = [this.currentActiveNoteIndex] }
         });
         upload(['base', 'tags'], notesDataObjectModel.tags);
-        upload(['notes', this.currentActiveNoteIndex], notesDataObjectModel.notes[this.currentActiveNoteIndex]);
+        if(str.trim() != '') { upload(['notes', this.currentActiveNoteIndex], notesDataObjectModel.notes[this.currentActiveNoteIndex]); }
         this.publish();
     },
 
@@ -125,6 +124,7 @@ const state = {
     deleteNote(i){
         this.currentActiveNoteIndex = i;
         this.updateNotes('');
+        deleteDocument(['notes', i]);
         delete notesDataObjectModel.notes[i];
         this.publish();
     }
