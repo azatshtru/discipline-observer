@@ -52,6 +52,7 @@ const state = {
         const intersected = this.activeTags.reduce((intersection, v) => notesDataObjectModel.tags[v].filter(x => intersection.includes(x)), notesDataObjectModel.tags[this.activeTags[0]])
 
         const temp = intersected.filter(x => !(x in notesDataObjectModel.notes));
+        console.log(temp);
         if(temp.length > 0) {
             downloadWhere(['notes'], ['index', 'in', temp], temp.length).then(x => {
                 x.forEach(doc => notesDataObjectModel.notes[doc.id] = doc.data());
@@ -138,8 +139,8 @@ let lastDownloadedNote;
 let donePagination = false;
 async function fillNotesDOM() {
     if (donePagination) { return }
-    const docs = await paginatedDownload(lastDownloadedNote, 'index', 10, ['notes']);
-    if (docs.docs.length < 10) { donePagination = true }
+    const docs = await paginatedDownload(lastDownloadedNote, 'index', 50, ['notes']);
+    if (docs.docs.length < 50) { donePagination = true }
 
     docs.forEach(x => notesDataObjectModel.notes[x.id] = x.data());
     lastDownloadedNote = docs.docs[docs.docs.length-1]; 
