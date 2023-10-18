@@ -3,15 +3,9 @@ import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.0/firebase
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js'
 import { getFirestore, query, where, limit, orderBy, startAfter, getDoc, getDocs, setDoc, collection, doc } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js'
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDpTRESudXQYfc3bsYHaLj3FSOcN9iW7Dg",
-    authDomain: "dash-12112.firebaseapp.com",
-    projectId: "dash-12112",
-    storageBucket: "dash-12112.appspot.com",
-    messagingSenderId: "203082346324",
-    appId: "1:203082346324:web:4f4b8bb1ac6afed447a2c1",
-    measurementId: "G-46XL0XVQMX"
-};
+import { firebaseConfigObject } from "./setup.js";
+
+const firebaseConfig = firebaseConfigObject;
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
