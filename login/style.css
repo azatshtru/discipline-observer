@@ -36,6 +36,12 @@ body {
     gap: 15px;
 }
 
+.container > p {
+    font-family: 'Red Hat Mono', monospace;
+    font-size: large;
+    align-self: center;
+}
+
 .container > form * {
     font-family: 'Red Hat Mono', monospace;
 }

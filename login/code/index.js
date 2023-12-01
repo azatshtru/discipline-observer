@@ -49,10 +49,37 @@ function authcell() {
 
 for(let i = 0; i < 6; i++){
     const cell = authcell();
-    authcellList.push(cell)
+    authcellList.push(cell);
     authcodeCellContainer.appendChild(cell);
 }
 
-authcodeForm.onsubmit = e => {
-
+function getCodeFromCells () {
+    let code = '';
+    authcellList.forEach(c => code+=c.value);
+    return code;
 }
+
+const urlParams = new URLSearchParams(window.location.search);
+const requestEmail = urlParams.get('email');
+
+authcodeForm.onsubmit = e => {
+    e.preventDefault();
+    if(/^\d{6}$/gm.test(getCodeFromCells())) {
+        fetch('http://localhost:14159/authcode', {
+            method: 'POST',
+            body: new URLSearchParams({
+                email: requestEmail,
+                authcode: getCodeFromCells(),
+            }),
+        }).then(r => {
+
+        });
+    }
+}
+
+fetch('http://localhost:14159/sendmail', {
+    method: 'POST',
+    body: new URLSearchParams({
+        email: requestEmail,
+    }),
+}).then(r => console.log(r));
