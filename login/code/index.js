@@ -1,4 +1,5 @@
 import { signIn } from "../../firebase.js";
+import { authenticationServerObject } from "../../setup.js";
 
 const authContainer = document.querySelector('.auth-container');
 const authcodeForm = document.forms['authcodeform'];
@@ -78,7 +79,7 @@ authcodeForm.onsubmit = e => {
     e.preventDefault();
     if(/^\d{6}$/gm.test(getAuthcodeFromCells())) {
         toggleLoadingScreen();
-        fetch('http://localhost:23924/authcode', {
+        fetch(authenticationServerObject.authcodeDomain, {
             method: 'POST',
             body: new URLSearchParams({
                 email: requestEmail,
@@ -100,7 +101,7 @@ authcodeForm.onsubmit = e => {
                 authcellPointer = 0;
                 alert('A problem occurred while signing you in.');
             })
-        }).catch(e => {
+        }).catch(error => {
             toggleLoadingScreen();
             authcellList.forEach(x => x.value = '');
             authcellPointer = 0;
@@ -116,7 +117,7 @@ authcodeForm.onsubmit = e => {
     }
 }
 
-fetch('http://localhost:14159/sendmail', {
+fetch(authenticationServerObject.sendmailDomain, {
     method: 'POST',
     body: new URLSearchParams({
         email: requestEmail,
