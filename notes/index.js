@@ -1,4 +1,12 @@
-import { downloadWhere, upload, downloadDocument, deleteDocument, downloadFirst, paginatedDownload } from "../firebase.js"
+import { downloadWhere, upload, downloadDocument, deleteDocument, downloadFirst, paginatedDownload, setAuthInit, getAuthUser } from "../firebase.js"
+
+const firebaseDelegates = [];
+
+setAuthInit((user) => { firebaseDelegates.forEach(async (f) => await f()); }, () => window.location.replace('/login'));
+
+async function callFirebase(f){
+    getAuthUser() ? await f() : firebaseDelegates.push(f);
+}
 
 const notesDataObjectModel = {
     notes: {},
@@ -130,10 +138,10 @@ const state = {
     }
 }
 
-downloadDocument(['base', 'tags']).then(x => {
+callFirebase(async () => downloadDocument(['base', 'tags']).then(x => {
     if(x.exists()) { notesDataObjectModel.tags = x.data() }
     state.publish();
-});
+}));
 
 let lastDownloadedNote;
 let donePagination = false;
@@ -153,11 +161,11 @@ async function fillNotesDOM() {
 window.addEventListener('scroll', () => {
     if (window.scrollY / (document.body.offsetHeight - window.innerHeight) > 0.5) { fillNotesDOM() }
 });
-downloadFirst(['notes']).then(x => {
+callFirebase(async () => downloadFirst(['notes']).then((x) => {
     x.forEach(doc => notesDataObjectModel.notes[doc.id] = doc.data())
     lastDownloadedNote = x[x.length-1];
     fillNotesDOM();
-});
+}));
 
 const markdownRenderBox = document.querySelector('#markdown-render-box');
 const markdownEditButton = document.querySelector('#markdown-edit-button');

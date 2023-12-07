@@ -1,5 +1,9 @@
+import { signIn } from "../../firebase.js";
+
+const authContainer = document.querySelector('.auth-container');
 const authcodeForm = document.forms['authcodeform'];
 const authcodeCellContainer = document.querySelector('#authcode');
+const loadingScreen = document.querySelector('.loading-screen');
 
 const authcellList = [];
 let authcellPointer = 0;
@@ -53,27 +57,62 @@ for(let i = 0; i < 6; i++){
     authcodeCellContainer.appendChild(cell);
 }
 
-function getCodeFromCells () {
+function getAuthcodeFromCells () {
     let code = '';
     authcellList.forEach(c => code+=c.value);
     return code;
 }
 
+function toggleLoadingScreen() {
+    loadingScreen.style.display = loadingScreen.style.display=='none'?'flex':'none';
+    authContainer.style.display = authContainer.style.display=='none'?'flex':'none';
+}
+
 const urlParams = new URLSearchParams(window.location.search);
+if(!urlParams.get('email')) {
+    window.location.replace('/login');
+}
 const requestEmail = urlParams.get('email');
 
 authcodeForm.onsubmit = e => {
     e.preventDefault();
-    if(/^\d{6}$/gm.test(getCodeFromCells())) {
-        fetch('http://localhost:14159/authcode', {
+    if(/^\d{6}$/gm.test(getAuthcodeFromCells())) {
+        toggleLoadingScreen();
+        fetch('http://localhost:23924/authcode', {
             method: 'POST',
             body: new URLSearchParams({
                 email: requestEmail,
-                authcode: getCodeFromCells(),
+                authcode: getAuthcodeFromCells(),
             }),
         }).then(r => {
-
+            return r.json();
+        }).then(async (r) => {
+            if('error' in r){
+                throw new Error(r['error']);
+            }
+            signIn(r['token'], (user) => {
+                window.location.replace('/');
+                console.log('signed in');
+                console.log(user);
+            }, (code, message) => {
+                toggleLoadingScreen();
+                authcellList.forEach(x => x.value = '');
+                authcellPointer = 0;
+                alert('A problem occurred while signing you in.');
+            })
+        }).catch(e => {
+            toggleLoadingScreen();
+            authcellList.forEach(x => x.value = '');
+            authcellPointer = 0;
+            if(error.message == 'ERRI7T'){
+                alert('the login code you entered was wrong.')
+            }
+            if(error.message == 'ERRE4E'){
+                alert('the login code you entered has expired.')
+            }
         });
+    } else {
+        alert('invalid code entered.');
     }
 }
 
@@ -83,3 +122,10 @@ fetch('http://localhost:14159/sendmail', {
         email: requestEmail,
     }),
 }).then(r => console.log(r));
+
+loadingScreen.style.display = 'none';
+
+setTimeout(() => {
+    alert('your login session has expired, please login again.')
+    window.location.replace('/login');
+}, 5*60*1000);
