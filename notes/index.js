@@ -98,7 +98,7 @@ const state = {
             if(x in notesDataObjectModel.tags){ notesDataObjectModel.tags[x].push(this.currentActiveNoteIndex) }
             else { notesDataObjectModel.tags[x] = [this.currentActiveNoteIndex] }
         });
-        upload(['base', 'tags'], notesDataObjectModel.tags);
+        callFirebase(async () => upload(['base', 'tags'], notesDataObjectModel.tags));
         if(str.trim() != '') { upload(['notes', this.currentActiveNoteIndex], notesDataObjectModel.notes[this.currentActiveNoteIndex]); }
         this.publish();
     },
@@ -162,9 +162,11 @@ window.addEventListener('scroll', () => {
     if (window.scrollY / (document.body.offsetHeight - window.innerHeight) > 0.5) { fillNotesDOM() }
 });
 callFirebase(async () => downloadFirst(['notes']).then((x) => {
-    x.forEach(doc => notesDataObjectModel.notes[doc.id] = doc.data())
-    lastDownloadedNote = x[x.length-1];
-    fillNotesDOM();
+    if(x.length > 0) {
+        x.forEach(doc => notesDataObjectModel.notes[doc.id] = doc.data())
+        lastDownloadedNote = x[x.length-1];
+        fillNotesDOM();
+    }
 }));
 
 const markdownRenderBox = document.querySelector('#markdown-render-box');
