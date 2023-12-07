@@ -87,14 +87,13 @@ authcodeForm.onsubmit = e => {
             }),
         }).then(r => {
             return r.json();
-        }).then(async (r) => {
+        }).then(async(r) => {
             if('error' in r){
                 throw new Error(r['error']);
             }
+            localStorage.setItem(`code${requestEmail}`, getAuthcodeFromCells());
             signIn(r['token'], (user) => {
                 window.location.replace('/');
-                console.log('signed in');
-                console.log(user);
             }, (code, message) => {
                 toggleLoadingScreen();
                 authcellList.forEach(x => x.value = '');
@@ -103,6 +102,7 @@ authcodeForm.onsubmit = e => {
             })
         }).catch(error => {
             toggleLoadingScreen();
+            console.log(error)
             authcellList.forEach(x => x.value = '');
             authcellPointer = 0;
             if(error.message == 'ERRI7T'){
@@ -122,7 +122,21 @@ fetch(authenticationServerObject.sendmailDomain, {
     body: new URLSearchParams({
         email: requestEmail,
     }),
-}).then(r => console.log(r));
+}).then(r => {
+    return r.json();
+}).then(r => {
+    if(r['code'] === 'LT5'){
+        const authcode = localStorage.getItem(`code${requestEmail}`);
+        if(authcode && authcode.trim().length == 6){
+            authcellList.forEach((x, i) => x.value = authcode.charAt(i));
+            authcodeForm.requestSubmit();
+        }
+    }
+    if(r['code'] === 'EMLNUL'){
+        alert('some problem occurred, please try again');
+        window.location.replace('/login')
+    }
+});
 
 loadingScreen.style.display = 'none';
 

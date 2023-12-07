@@ -2,7 +2,7 @@ import { downloadWhere, upload, downloadDocument, deleteDocument, downloadFirst,
 
 const firebaseDelegates = [];
 
-setAuthInit((user) => { firebaseDelegates.forEach(async (f) => await f()); }, () => window.location.replace('/login'));
+const unsubscribeAuthState = setAuthInit((user) => { firebaseDelegates.forEach(async (f) => await f()); }, () => window.location.replace('/login'));
 
 async function callFirebase(f){
     getAuthUser() ? await f() : firebaseDelegates.push(f);
