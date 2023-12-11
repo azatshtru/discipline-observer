@@ -50,6 +50,11 @@ a.icon-button {
     align-self: center;
 }
 
+.no-deco-link {
+    text-decoration: none;
+    color: black;
+}
+
 .tonal-button {
     display: flex;
     align-items: center;
@@ -220,6 +225,10 @@ a.icon-button {
 
 .padding-right-2em {
     padding-right: 1.7rem;
+}
+
+.margin-inline-half-em {
+    margin-inline: 0.3em;
 }
 
 .fullsize {

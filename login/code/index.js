@@ -91,7 +91,6 @@ authcodeForm.onsubmit = e => {
             if('error' in r){
                 throw new Error(r['error']);
             }
-            localStorage.setItem(`code${requestEmail}`, getAuthcodeFromCells());
             signIn(r['token'], (user) => {
                 window.location.replace('/');
             }, (code, message) => {
@@ -126,27 +125,21 @@ fetch(authenticationServerObject.sendmailDomain, {
     return r.json();
 }).then(r => {
     if(r['code'] === 'LT5'){
-        const authcode = localStorage.getItem(`code${requestEmail}`);
-        if(authcode && authcode.trim().length == 6){
-            authcellList.forEach((x, i) => x.value = authcode.charAt(i));
-            authcodeForm.requestSubmit();
-        } else {
-            fetch(authenticationServerObject.sendmailDomain, {
-                method: 'POST',
-                body: new URLSearchParams({
-                    email: requestEmail,
-                    altdevice: '1',
-                }),
-            }).then(r => {
-                return r.json();
-            }).then(r => {
-                if(r['code'] != 'OK2') {
-                    throw new Error();
-                }
-            }).catch(() => {
-                alert('some problem occurred while sending you an email, please use your older login code.');
-            })
-        }
+        fetch(authenticationServerObject.sendmailDomain, {
+            method: 'POST',
+            body: new URLSearchParams({
+                email: requestEmail,
+                altdevice: '1',
+            }),
+        }).then(r => {
+            return r.json();
+        }).then(r => {
+            if(r['code'] != 'OK2') {
+                throw new Error();
+            }
+        }).catch(() => {
+            alert('some problem occurred while sending you an email, please use your older login code.');
+        })
     }
     if(r['code'] === 'EMLNUL'){
         alert('some problem occurred, please try again');
