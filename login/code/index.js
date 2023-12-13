@@ -101,7 +101,6 @@ authcodeForm.onsubmit = e => {
             })
         }).catch(error => {
             toggleLoadingScreen();
-            console.log(error)
             authcellList.forEach(x => x.value = '');
             authcellPointer = 0;
             if(error.message == 'ERRI7T'){
@@ -109,6 +108,15 @@ authcodeForm.onsubmit = e => {
             }
             if(error.message == 'ERRE4E'){
                 alert('the login code you entered has expired.')
+            }
+            if(error.message == 'ERRIXT' || error.message == 'ERRN0F'){
+                alert('wrong login code entered multiple times in a row.')
+                window.location.replace('/login');
+            }
+            if(error.message == 'BLOCKD') {
+                console.log(error);
+                alert('too many auth requests sent, take a breath.')
+                window.location.replace('/login');
             }
         });
     } else {
@@ -137,14 +145,21 @@ fetch(authenticationServerObject.sendmailDomain, {
             if(r['code'] != 'OK2') {
                 throw new Error();
             }
-        }).catch(() => {
-            alert('some problem occurred while sending you an email, please use your older login code.');
+        }).catch(e => {
+            console.log(e);
+            alert('some problem occurred while sending you an email.');
         })
     }
     if(r['code'] === 'EMLNUL'){
         alert('some problem occurred, please try again');
         window.location.replace('/login')
     }
+    if('error' in r){
+        throw new Error(r['error']);
+    }
+}).catch(e => {
+    console.log(e);
+    alert('some problem occurred while sending you an email.');
 });
 
 loadingScreen.style.display = 'none';
