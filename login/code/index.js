@@ -108,6 +108,7 @@ authcodeForm.onsubmit = e => {
             }
             if(error.message == 'ERRE4E'){
                 alert('the login code you entered has expired.')
+                window.location.replace('/login');
             }
             if(error.message == 'ERRIXT' || error.message == 'ERRN0F'){
                 alert('wrong login code entered multiple times in a row.')
