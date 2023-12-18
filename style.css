@@ -72,6 +72,19 @@ a.icon-button {
     user-select: none;
 }
 
+.underline-link {
+    border: none;
+    background-color: white;
+
+    text-decoration: underline;
+    font-size: medium;
+    color: gainsboro;
+}
+
+.underline-link:hover {
+    color: gray;
+}
+
 .chip {
     background: none;
 
@@ -205,6 +218,11 @@ a.icon-button {
 .bottom-right {
     right: 40px;
     bottom: 30px;
+}
+
+.top-right {
+    right: 20px;
+    top: 15px;
 }
 
 .padding-block-15 {
