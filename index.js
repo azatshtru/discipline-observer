@@ -57,6 +57,7 @@ state.subscribe((s) => {
 
 configButton.onclick = () => state.setConfigDisplay('initial');
 configCloseButton.onclick = () => state.setConfigDisplay('none');
+
 downloadNotezipButton.onclick = () => alert('feature available soon.')
 downloadConfigButton.onclick = () => alert('feature available soon.')
 

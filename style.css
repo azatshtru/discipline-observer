@@ -29,6 +29,11 @@ textarea {
     border: 2px solid black;
 }
 
+.dashed-border {
+    background: white;
+    border: 2px dashed gainsboro;
+}
+
 a.icon-button {
     text-decoration: none;
     color: initial;
@@ -268,6 +273,18 @@ a.icon-button {
     margin-inline: 0.3em;
 }
 
+.margin-inline-doc {
+    margin-inline: 20vw;
+}
+
+.pad-1em {
+    padding: 1em;
+}
+
+.padin-half-em {
+    padding-inline: 0.4em;
+}
+
 .fullsize {
     width: 100%;
     height: 100%;
@@ -320,6 +337,10 @@ a.icon-button {
 @media (max-width: 621px){
     .mobile-break-flex {
         flex-direction: column;
+    }
+
+    .margin-inline-doc {
+        margin-inline: 2em;
     }
 }
 
