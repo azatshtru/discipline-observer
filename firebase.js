@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-analytics.js";
-import { getAuth, signInWithCustomToken, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js'
+import { getAuth, signInWithCustomToken, signOut, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js'
 import { getFirestore, query, where, limit, orderBy, startAfter, getDoc, getDocs, setDoc, deleteDoc, collection, doc } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js'
 
 import { firebaseConfigObject } from "./setup.js";
@@ -21,6 +21,10 @@ export function setAuthInit(inCallback, outCallback) {
 
 export function getAuthUser(){
     return auth.currentUser;
+}
+
+export function updateUser(update, success, failure) {
+    updateProfile(getAuthUser(), update).then(() => success()).catch((error) => failure(error));
 }
 
 export function signIn(token, callback, errorCallback) {
