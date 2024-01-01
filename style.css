@@ -20,6 +20,10 @@ textarea {
     font-size: 1.9em;
 }
 
+.underline {
+    text-decoration: underline;
+}
+
 .bordered-bg-white {
     background: white;
     border: 2px solid black;
@@ -120,6 +124,21 @@ a.icon-button {
 
     border: none;
     outline: none;
+}
+
+.underline-input-field {
+    border: 2px dashed gainsboro;
+    border-bottom: 3px solid black;
+    font-size: medium;
+    padding-top: 10px;
+    padding-bottom: 8px;
+    padding-inline: 25px;
+    font-style: italic;
+    width: calc(max(200px, 50%));
+}
+
+.underline-input-field::placeholder {
+    font-style: italic;
 }
 
 .inset-bottom-shadow-4px{
@@ -270,6 +289,10 @@ a.icon-button {
     font-weight: 500;
 }
 
+.font-wt700 {
+    font-weight: 700;
+}
+
 .font-mono {
     font-family: 'Red Hat Mono', monospace;
 }
@@ -288,6 +311,10 @@ a.icon-button {
 
 .nodisplay {
     display: none;
+}
+
+.opacity-low {
+    opacity: 0.15;
 }
 
 @media (max-width: 621px){
