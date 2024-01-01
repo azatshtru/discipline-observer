@@ -93,7 +93,7 @@ const state = {
         });
         notesDataObjectModel.notes[this.currentActiveNoteIndex].content = str;
         notesDataObjectModel.notes[this.currentActiveNoteIndex].tags = [];
-        str.match(tagRegex)?.map(x => x.slice(1).trim()).forEach(x => {
+        [...new Set(str.match(tagRegex))]?.map(x => x.slice(1).trim()).forEach(x => {
             notesDataObjectModel.notes[this.currentActiveNoteIndex].tags.push(x);
             if(x in notesDataObjectModel.tags){ notesDataObjectModel.tags[x].push(this.currentActiveNoteIndex) }
             else { notesDataObjectModel.tags[x] = [this.currentActiveNoteIndex] }
