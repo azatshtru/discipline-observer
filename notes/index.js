@@ -16,7 +16,8 @@ const notesDataObjectModel = {
 const h1Regex = /^#(.*$)/gim;
 const paraRegex = /(^[\w\d].*)/gim;
 const lineBreakRegex = /^\n$/gim;
-const tagRegex = /^@(.*$)/gim;
+const tagLineRegex = /^@(.*$)/gim;
+const tagRegex = /@.*?(?=@|$)/gim;
 
 const getTitle = (x) => {
     if (x.trim() == '') { return 'untitled' }
@@ -27,8 +28,8 @@ function parseMarkdown(mardownText){
     const htmlText = mardownText
         .replace(h1Regex, '<h1>$1</h1>')
         .replace(paraRegex, '<p>$1</p>')
-        .replace(lineBreakRegex, '<br />')
-        .replace(tagRegex, '<span class="chip inverted-color display-inline-block">$1</span>');
+        .replace(lineBreakRegex, '<br>')
+        .replace(tagLineRegex, (v) => v.replace(tagRegex, ' <span class="chip inverted-color display-inline-block">$&</span> ')+'<br>');
     return htmlText.trim();
 }
 
@@ -93,7 +94,9 @@ const state = {
         });
         notesDataObjectModel.notes[this.currentActiveNoteIndex].content = str;
         notesDataObjectModel.notes[this.currentActiveNoteIndex].tags = [];
-        [...new Set(str.match(tagRegex))]?.map(x => x.slice(1).trim()).forEach(x => {
+        const localTaglist = [...new Set(str.match(tagLineRegex)?.map(x => x.split('@'))
+            .flat().map(x => x.trim()).filter(x => x != ""))];
+        localTaglist?.map(x => x.trim()).forEach(x => {
             notesDataObjectModel.notes[this.currentActiveNoteIndex].tags.push(x);
             if(x in notesDataObjectModel.tags){ notesDataObjectModel.tags[x].push(this.currentActiveNoteIndex) }
             else { notesDataObjectModel.tags[x] = [this.currentActiveNoteIndex] }
