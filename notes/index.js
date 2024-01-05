@@ -14,6 +14,8 @@ const notesDataObjectModel = {
 }
 
 const h1Regex = /^#(.*$)/gim;
+const h2Regex = /^##(.*$)/gim;
+const h3Regex = /^###(.*$)/gim;
 const paraRegex = /(^[\w\d].*)/gim;
 const lineBreakRegex = /^\n$/gim;
 const tagLineRegex = /^@(.*$)/gim;
@@ -26,7 +28,7 @@ const getTitle = (x) => {
 
 function parseMarkdown(mardownText){
     const htmlText = mardownText
-        .replace(h1Regex, '<h1>$1</h1>')
+        .replace(h3Regex, '<h3>$1</h3>').replace(h2Regex, '<h2>$1</h2>').replace(h1Regex, '<h1>$1</h1>')
         .replace(paraRegex, '<p>$1</p>')
         .replace(lineBreakRegex, '<br>')
         .replace(tagLineRegex, (v) => v.replace(tagRegex, ' <span class="chip inverted-color display-inline-block">$&</span> ')+'<br>');
