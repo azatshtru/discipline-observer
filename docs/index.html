@@ -32,5 +32,23 @@
     <p>For example, <span class="bordered-bg-white padin-half-em">@important</span> is rendered as:</p>
     <div class="dashed-border pad-1em"><span class="chip inverted-color display-inline-block">important</span></div>
     <p>If you select some tags, only the notes that contain all of your selected tags show up.</p>
+    <h2>Checkboxes</h2>
+    <p>A pair of square-brackets ([]) in the start of a line can be used to create a checkbox.</p>
+    <p><span class="bordered-bg-white padin-half-em">[ ]Buy flowers</span> is rendered as:</p>
+    <div class="dashed-border pad-1em">
+        <div class="horizontal-flex cross-centered">
+            <button class="checkbox-outline" data-check="o"><span class="material-symbols-outlined">check</span></button>
+            <p>Buy Flowers</p>
+        </div>
+    </div>
+    <p>Checkboxes change their state from unchecked to checked (or the other way around) when tapped or clicked.</p>
+    <p>In markdown, a "checked" checkbox can be created by writing an 'x' between the pair of square-brackets ([x]). </p>
+    <p><span class="bordered-bg-white padin-half-em">[x]Buy flowers</span> is rendered as:</p>
+    <div class="dashed-border pad-1em">
+        <div class="horizontal-flex cross-centered">
+            <button class="checkbox-outline" data-check="x"><span class="material-symbols-outlined">check</span></button>
+            <p>Buy Flowers</p>
+        </div>
+    </div>
 </body>
 </html>
