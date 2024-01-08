@@ -146,6 +146,44 @@ a.icon-button {
     font-style: italic;
 }
 
+.checkbox-outline {
+    border-radius: 2px;
+    box-shadow: inset 0px -2px black;
+    border: 2px solid black;
+    
+    width: 27px;
+    height: 28px;
+    font-size: 1.5em;
+    font-weight: 900;
+    margin-top: 0.77em;
+}
+
+.checkbox-outline + p {
+    margin: 0;
+    margin-top: 1.3em;
+    margin-left: 0.3em;
+}
+
+.checkbox-outline > span {
+    transform:translate(-3px, -1px);
+    font-size:1.2em;
+    font-weight:900;
+}
+
+.checkbox-outline[data-check="o"] {
+    color: transparent;
+    background: white;
+}
+  
+.checkbox-outline[data-check="x"] {
+    color: white;
+    background: radial-gradient(grey 50%, gainsboro 60%);
+    background-size: 11% 11%;
+    box-shadow: -2px 2px black;
+    transform: rotate(-6deg);
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
 .inset-bottom-shadow-4px{
     box-shadow: inset 0px -4px gainsboro;
 }

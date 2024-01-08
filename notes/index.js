@@ -21,19 +21,22 @@ const paraRegex = /(^[\w\d].*)/gim;
 const lineBreakRegex = /^\n$/gim;
 const tagLineRegex = /^@(.*$)/gim;
 const tagRegex = /@.*?(?=@|$)/gim;
+const checkboxRegex = /^(?:\s*\-?\s*\[)(\s?|x)\](.*$)/gim
 
 const getTitle = (x) => {
     if (x.trim() == '') { return 'untitled' }
     return x.match(/[\w\d].*/gim)[0];
 }
 
-function parseMarkdown(mardownText){
-    const htmlText = mardownText
+function parseMarkdown(markdownText){
+    const htmlText = markdownText
         .replace(h3Regex, '<h3>$1</h3>').replace(h2Regex, '<h2>$1</h2>')
         .replace(h0Regex, '<h1 class="heading">$1</h1>').replace(h1Regex, '<h1>$1</h1>')
         .replace(paraRegex, '<p>$1</p>')
         .replace(lineBreakRegex, '<br>')
-        .replace(tagLineRegex, (v) => v.replace(tagRegex, ' <span class="chip inverted-color display-inline-block">$&</span> ')+'<br>');
+        .replace(tagLineRegex, (v) => v.replace(tagRegex, ' <span class="chip inverted-color display-inline-block">$&</span> ')+'<br>')
+        .replace(checkboxRegex, (v, p1, p2) => `<div class="horizontal-flex cross-centered"><button class="checkbox-outline" data-check="${p1=='x'?'x':'o'}"><span class="material-symbols-outlined">check</span></button><p>${p2}</p></div>`)
+            
     return htmlText.trim();
 }
 
@@ -299,6 +302,23 @@ function updateTagSearchBox(s){
     tagSearchBox.querySelector('input').value = s.tagSearchText;
 }
 state.subscribe(updateTagSearchBox);
+
+function updateCheckboxes(s) {
+    document.querySelectorAll('.checkbox-outline').forEach((x, i) => {
+        x.dataset.checkindex = i.toString();
+        x.onclick = () => {
+            let content = notesDataObjectModel.notes[s.currentActiveNoteIndex].content;
+            const checkboxes = content.matchAll(checkboxRegex);
+            for(let i = 0; i<x.dataset.checkindex; i++) {checkboxes.next()}
+            const checkbox = checkboxes.next().value;
+            const i = checkbox.index + checkbox[0].search(/\[/);
+            const v = x.dataset.check=='x'?' ':'x';
+            content = content.slice(0, i+1).concat(v).concat(content.slice(i+1+(content[i+1]==']'?0:1), content.length));
+            state.updateNotes(content);
+        }
+    })
+}
+state.subscribe(updateCheckboxes);
 
 markdownSubmitButton.addEventListener('click', () => {
     state.updateNotes(markdownTextarea.value);
