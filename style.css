@@ -5,6 +5,14 @@
     font-family: 'Red Hat Mono', monospace;
 }
 
+body {
+    background-color: white;
+}
+
+button {
+    color: black;
+}
+
 textarea {
     resize: none;
     border: none;
@@ -155,12 +163,14 @@ a.icon-button {
     height: 28px;
     font-size: 1.5em;
     font-weight: 900;
-    margin-top: 0.77em;
+    margin-top: 0.2em;
+    margin-bottom: 0.64em;
 }
 
 .checkbox-outline + p {
     margin: 0;
-    margin-top: 1.3em;
+    margin-top: 0.4em;
+    margin-bottom: 1em;;
     margin-left: 0.3em;
 }
 
@@ -233,6 +243,10 @@ a.icon-button {
     flex-direction: column;
     gap: 5px;
     align-content: flex-start;
+}
+
+.nowrap {
+    flex-wrap: nowrap;
 }
 
 .width-fifth {

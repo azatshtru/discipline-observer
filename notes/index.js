@@ -17,15 +17,16 @@ const h0Regex = /^#!(.*$)/gim;
 const h1Regex = /^#(.*$)/gim;
 const h2Regex = /^##(.*$)/gim;
 const h3Regex = /^###(.*$)/gim;
-const paraRegex = /(^[\w\d].*)/gim;
+const paraRegex = /(^[\p{L}\p{N}\w\d].*)/gimu;
 const lineBreakRegex = /^\n$/gim;
 const tagLineRegex = /^@(.*$)/gim;
 const tagRegex = /@.*?(?=@|$)/gim;
-const checkboxRegex = /^(?:\s*\-?\s*\[)(\s?|x)\](.*$)/gim
+const checkboxRegex = /^(\s*\-?\s*\[)(\s?|x)\](.*$)/gim
 
 const getTitle = (x) => {
     if (x.trim() == '') { return 'untitled' }
-    return x.match(/[\w\d].*/gim)[0];
+    x = x.replace(/^\s*\-?\s*\[x\]/, '');
+    return x.match(/[\p{L}\p{N}\w\d].*/gimu)[0];
 }
 
 function parseMarkdown(markdownText){
@@ -35,7 +36,7 @@ function parseMarkdown(markdownText){
         .replace(paraRegex, '<p>$1</p>')
         .replace(lineBreakRegex, '<br>')
         .replace(tagLineRegex, (v) => v.replace(tagRegex, ' <span class="chip inverted-color display-inline-block">$&</span> ')+'<br>')
-        .replace(checkboxRegex, (v, p1, p2) => `<div class="horizontal-flex cross-centered"><button class="checkbox-outline" data-check="${p1=='x'?'x':'o'}"><span class="material-symbols-outlined">check</span></button><p>${p2}</p></div>`)
+        .replace(checkboxRegex, (v, p1, p2, p3) => `<div class="horizontal-flex cross-centered nowrap"><button class="checkbox-outline" data-check="${p2=='x'?'x':'o'}"><span class="material-symbols-outlined">check</span></button><p>${p3}</p></div>`)
             
     return htmlText.trim();
 }
