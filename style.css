@@ -20,6 +20,21 @@ textarea {
     box-sizing: border-box;
 }
 
+table {
+    margin-top: 5px;
+    border: 2px solid black;
+    font-size: 0.9em;
+    text-align: center;
+    border-collapse: collapse;
+}
+  
+td {
+    border: 1px solid gainsboro;
+    width: fit-content;
+    padding: 8px;
+    padding-inline: 16px;
+}
+
 .heading {
     font-size: 3.1em;
 }

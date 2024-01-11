@@ -22,6 +22,8 @@ const lineBreakRegex = /^\n$/gim;
 const tagLineRegex = /^@(.*$)/gim;
 const tagRegex = /@.*?(?=@|$)/gim;
 const checkboxRegex = /^(\s*\-?\s*\[)(\s?|x)\](.*$)/gim
+const tableRowRegex = /^\|(.+)\|$/gim;
+const tableRegex = /^([^\|].*\n)((\|.+\|\n?)+)/gim;
 
 const getTitle = (x) => {
     if (x.trim() == '') { return 'untitled' }
@@ -37,6 +39,8 @@ function parseMarkdown(markdownText){
         .replace(lineBreakRegex, '<br>')
         .replace(tagLineRegex, (v) => v.replace(tagRegex, ' <span class="chip inverted-color display-inline-block">$&</span> ')+'<br>')
         .replace(checkboxRegex, (v, p1, p2, p3) => `<div class="horizontal-flex cross-centered nowrap"><button class="checkbox-outline" data-check="${p2=='x'?'x':'o'}"><span class="material-symbols-outlined">check</span></button><p>${p3}</p></div>`)
+        .replace(tableRegex, '$1<table>\n$2\n</table><br>\n')
+        .replace(tableRowRegex, (v, p1) => `<tr>${p1.split('\|').map(x => `<td>${x}</td>`).join('')}</tr>`)
             
     return htmlText.trim();
 }
