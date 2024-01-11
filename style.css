@@ -328,6 +328,10 @@ a.icon-button {
     padding-bottom: 1in;
 }
 
+.padding-3in {
+    padding-bottom: 3in;
+}
+
 .padding-top-2em {
     padding-top: 1.7rem;
 }
