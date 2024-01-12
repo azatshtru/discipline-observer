@@ -405,6 +405,10 @@ a.icon-button {
     opacity: 0.15;
 }
 
+.nobreakspan {
+    white-space: nowrap;
+}
+
 @media (max-width: 621px){
     .mobile-break-flex {
         flex-direction: column;
