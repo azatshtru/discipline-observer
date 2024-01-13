@@ -21,9 +21,9 @@ textarea {
 }
 
 table {
-    margin-top: 5px;
+    margin-block: 5px;
     border: 2px solid black;
-    font-size: 0.9em;
+    font-size: 0.88em;
     text-align: center;
     border-collapse: collapse;
 }
@@ -31,8 +31,8 @@ table {
 td {
     border: 1px solid gainsboro;
     width: fit-content;
-    padding: 8px;
-    padding-inline: 16px;
+    padding: 0.35em;
+    padding-inline: 0.7em;
 }
 
 .heading {
