@@ -7,6 +7,7 @@
 
 body {
     background-color: white;
+    color: black;
 }
 
 button {
@@ -18,9 +19,13 @@ textarea {
     border: none;
     outline: none;
     box-sizing: border-box;
+    background-color: white;
+    color: black;
 }
 
 table {
+    background-color: white;
+    color: black;
     margin-block: 5px;
     border: 2px solid black;
     font-size: 0.88em;
@@ -55,6 +60,7 @@ td {
 .dashed-border {
     background: white;
     border: 2px dashed gainsboro;
+    min-width: min-content;
 }
 
 a.icon-button {
@@ -143,6 +149,9 @@ a.icon-button {
     padding-block: 10px;
     padding-left: 16px;
     padding-right: 10px;
+
+    background-color: white;
+    color: black;
 }
 
 .icon-input-field > input {
@@ -163,6 +172,9 @@ a.icon-button {
     padding-inline: 25px;
     font-style: italic;
     width: calc(max(200px, 50%));
+
+    background-color: white;
+    color: black;
 }
 
 .underline-input-field::placeholder {
@@ -326,10 +338,6 @@ a.icon-button {
 
 .padding-footer {
     padding-bottom: 1in;
-}
-
-.padding-3in {
-    padding-bottom: 3in;
 }
 
 .padding-top-2em {

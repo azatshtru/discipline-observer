@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../style.css">
     <title>ryth docs</title>
 </head>
-<body class="margin-inline-doc padding-3in">
+<body class="margin-inline-doc padding-footer">
     <div class="horizontal-flex cross-centered">
         <a href="/" class="no-deco-link">
             <span class="material-symbols-outlined heading font-wt500">close</span>
@@ -49,6 +49,51 @@
             <button class="checkbox-outline" data-check="x"><span class="material-symbols-outlined">check</span></button>
             <p>Buy Flowers</p>
         </div>
+    </div>
+    <h2>Tables</h2>
+    <p>A line starting and ending with a pipe (|) is rendered as a row of some strictly tabular data. Each element of the table-row is separated by a pipe, and several table-rows can be chained together to create a table.</p>
+    <p><span style="padding-bottom:0.14em" class="bordered-bg-white padin-half-em nobreakspan">|A. Turing|1912|London|</span> is rendered as:</p>
+    <div class="dashed-border pad-1em">
+    <table>
+        <tr>
+            <td>A. Turing</td>
+            <td>1912</td>
+            <td>London</td>
+        </tr>
+    </table>
+    </div><br>
+    <h3 class="underline">the y-axis?</h3>
+    <p>To create full tables, rows can be written in consecutive lines.</p>
+    <div style="padding:0.5em;width:max-content;" class="bordered-bg-white padin-half-em nobreakspan">
+        |particle|class|charge|<br>
+        |strange|quark|-1/3|<br>
+        |gluon|boson|0|<br>
+        |muon|lepton|-1|<br>
+    </div>
+    <p>The above markdown text is rendered as:</p>
+    <div class="dashed-border pad-1em">
+    <table>
+        <tr>
+            <td>particle</td>
+            <td>class</td>
+            <td>charge</td>
+        </tr>
+        <tr>
+            <td>strange</td>
+            <td>quark</td>
+            <td>-1/3</td>
+        </tr>
+        <tr>
+            <td>gluon</td>
+            <td>boson</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>muon</td>
+            <td>lepton</td>
+            <td>-1</td>
+        </tr>
+    </table>
     </div>
 </body>
 </html>
