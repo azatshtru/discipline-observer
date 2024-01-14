@@ -24,7 +24,7 @@ const tagRegex = /@.*?(?=@|$)/gim;
 const checkboxRegex = /^(\s*\-?\s*\[)(\s?|x)\](.*$)/gim;
 const tableRegex = /^\|(.*\n\|)*.*/gim;
 const ulistRegex = /^\-(.*\n(^[^\S\n\r]*\n)?\-)*.*/gim;
-const olistRegex = /^\d(\.|\))(.*\n(^[^\S\n\r]*\n)?\d(\.|\)))*.*/gim;
+const olistRegex = /^\d+(\.|\))(.*\n(^[^\S\n\r]*\n)?\d+(\.|\)))*.*/gim;
 
 const getTitle = (x) => {
     if (x.trim() == '') { return 'untitled' }
@@ -36,7 +36,7 @@ function parseMarkdown(markdownText){
     const htmlText = markdownText
         .replace(h3Regex, '<h3>$1</h3>').replace(h2Regex, '<h2>$1</h2>')
         .replace(h0Regex, '<h1 class="heading">$1</h1>').replace(h1Regex, '<h1>$1</h1>')
-        .replace(olistRegex, (v) => `<ol>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.slice(2, x.length)}</li><hr>`).join('').slice(0, -4)}</ol>`)
+        .replace(olistRegex, (v) => `<ol>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.replace(/^\d+/gim, '').slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ol>`)
         .replace(paraRegex, '<p>$1</p>')
         .replace(lineBreakRegex, '<br>')
         .replace(tagLineRegex, (v) => v.replace(tagRegex, ' <span class="chip inverted-color display-inline-block">$&</span> ')+'<br>')

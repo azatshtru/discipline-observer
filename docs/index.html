@@ -50,6 +50,7 @@
             <p>Buy Flowers</p>
         </div>
     </div>
+    <br>
     <h2>Tables</h2>
     <p>A line starting and ending with a pipe (|) is rendered as a row of some strictly tabular data. Each element of the table-row is separated by a pipe, and several table-rows can be chained together to create a table.</p>
     <p><span style="padding-bottom:0.14em" class="bordered-bg-white padin-half-em nobreakspan">|A. Turing|1912|London|</span> is rendered as:</p>
@@ -95,5 +96,41 @@
         </tr>
     </table>
     </div>
+    <br>
+    <h2>Unordered Lists</h2>
+    <p>Any line starting with a hyphen (-) is rendered as a member of an unordered list.</p>
+    <div style="padding:0.5em;width:fit-content;" class="bordered-bg-white padin-half-em">
+        - apples<br>
+        - oranges<br>
+        - tomatoes<br>
+        - bananas
+    </div>
+    <p>The above markdown text is rendered as:</p>
+    <div class="dashed-border pad-1em">
+        <ul>
+            <li>apples</li><hr>
+            <li>oranges</li><hr>
+            <li>tomatoes</li><hr>
+            <li>bananas</li>
+        </ul>
+    </div>
+    <h2>Ordered Lists</h2>
+    <p>Any line starting with a number followed by a period (1.) is rendered as a member of an ordered list.</p>
+    <div style="padding:0.5em;width:fit-content;" class="bordered-bg-white padin-half-em">
+        1. apples<br>
+        2. googles<br>
+        3. facebooks<br>
+        4. microsofts
+    </div>
+    <p>The above markdown text is rendered as:</p>
+    <div class="dashed-border pad-1em">
+        <ol>
+            <li>apples</li><hr>
+            <li>googles</li><hr>
+            <li>facebooks</li><hr>
+            <li>microsofts</li>
+        </ol>
+    </div>
+    <p style="font-size: small;"><i>Note that the value of numbers are insignificant in the source text, any number followed by a period will still give the same numeric output in the rendered ordered list.</i></p>
 </body>
 </html>
