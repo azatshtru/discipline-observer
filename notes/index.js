@@ -18,11 +18,13 @@ const h1Regex = /^#(.*$)/gim;
 const h2Regex = /^##(.*$)/gim;
 const h3Regex = /^###(.*$)/gim;
 const paraRegex = /(^[\p{L}\p{N}\w\d].*)/gimu;
-const lineBreakRegex = /^\n$/gim;
+const lineBreakRegex = /^\s*?\n(?=\s)/gim;
 const tagLineRegex = /^@(.*$)/gim;
 const tagRegex = /@.*?(?=@|$)/gim;
 const checkboxRegex = /^(\s*\-?\s*\[)(\s?|x)\](.*$)/gim;
 const tableRegex = /^\|(.*\n\|)*.*/gim;
+const ulistRegex = /^\-(.*\n(^[^\S\n\r]*\n)?\-)*.*/gim;
+const olistRegex = /^\d(\.|\))(.*\n(^[^\S\n\r]*\n)?\d(\.|\)))*.*/gim;
 
 const getTitle = (x) => {
     if (x.trim() == '') { return 'untitled' }
@@ -34,11 +36,13 @@ function parseMarkdown(markdownText){
     const htmlText = markdownText
         .replace(h3Regex, '<h3>$1</h3>').replace(h2Regex, '<h2>$1</h2>')
         .replace(h0Regex, '<h1 class="heading">$1</h1>').replace(h1Regex, '<h1>$1</h1>')
+        .replace(olistRegex, (v) => `<ol>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.slice(2, x.length)}</li><hr>`).join('').slice(0, -4)}</ol>`)
         .replace(paraRegex, '<p>$1</p>')
         .replace(lineBreakRegex, '<br>')
         .replace(tagLineRegex, (v) => v.replace(tagRegex, ' <span class="chip inverted-color display-inline-block">$&</span> ')+'<br>')
         .replace(checkboxRegex, (v, p1, p2, p3) => `<div class="horizontal-flex cross-centered nowrap"><button class="checkbox-outline" data-check="${p2=='x'?'x':'o'}"><span class="material-symbols-outlined">check</span></button><p>${p3}</p></div>`)
         .replace(tableRegex, (v) => `<table>${v.split('\n').map(row => `<tr>${row.slice(1, row.length-(row[row.length-1]=='|')).split('|').map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</table>`)
+        .replace(ulistRegex, (v) => `<ul>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ul>`)
             
     return htmlText.trim();
 }
