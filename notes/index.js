@@ -25,6 +25,9 @@ const checkboxRegex = /^(\s*\-?\s*\[)(\s?|x)\](.*$)/gim;
 const tableRegex = /^\|(.*\n\|)*.*/gim;
 const ulistRegex = /^\-(.*\n(^[^\S\n\r]*\n)?\-)*.*/gim;
 const olistRegex = /^\d+(\.|\))(.*\n(^[^\S\n\r]*\n)?\d+(\.|\)))*.*/gim;
+const inlineLatexRegex = /\$(.*?)\$/gim;
+const displayLatexRegex = /^\$\$(.*)\$\$$/gim;
+const specialCharacterRegex = /[\$\&\[\]\%\^\*\(\)\#\\\/]/gim;
 
 const getTitle = (x) => {
     if (x.trim() == '') { return 'untitled' }
@@ -39,10 +42,12 @@ function parseMarkdown(markdownText){
         .replace(olistRegex, (v) => `<ol>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.replace(/^\d+/gim, '').slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ol>`)
         .replace(paraRegex, '<p>$1</p>')
         .replace(lineBreakRegex, '<br>')
-        .replace(tagLineRegex, (v) => v.replace(tagRegex, ' <span class="chip inverted-color display-inline-block">$&</span> ')+'<br>')
+        .replace(tagLineRegex, (v) => v.replace(tagRegex, v1 => ` <span class="chip inverted-color display-inline-block">${v1.replace(inlineLatexRegex, '').replace(specialCharacterRegex, '')}</span> `)+'<br>')
         .replace(checkboxRegex, (v, p1, p2, p3) => `<div class="horizontal-flex cross-centered nowrap"><button class="checkbox-outline" data-check="${p2=='x'?'x':'o'}"><span class="material-symbols-outlined">check</span></button><p>${p3}</p></div>`)
         .replace(tableRegex, (v) => `<table>${v.split('\n').map(row => `<tr>${row.slice(1, row.length-(row[row.length-1]=='|')).split('|').map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</table>`)
         .replace(ulistRegex, (v) => `<ul>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ul>`)
+        .replace(displayLatexRegex, '<div class="display-equation">$1</div>')
+        .replace(inlineLatexRegex, '<span class="inline-equation">$1</span>')
             
     return htmlText.trim();
 }
@@ -109,7 +114,7 @@ const state = {
         notesDataObjectModel.notes[this.currentActiveNoteIndex].content = str;
         notesDataObjectModel.notes[this.currentActiveNoteIndex].tags = [];
         const localTaglist = [...new Set(str.match(tagLineRegex)?.map(x => x.split('@'))
-            .flat().map(x => x.trim()).filter(x => x != ""))];
+            .flat().map(x => x.replace(inlineLatexRegex, '').replace(specialCharacterRegex, '').trim()).filter(x => x != ""))];
         localTaglist?.map(x => x.trim()).forEach(x => {
             notesDataObjectModel.notes[this.currentActiveNoteIndex].tags.push(x);
             if(x in notesDataObjectModel.tags){ notesDataObjectModel.tags[x].push(this.currentActiveNoteIndex) }
@@ -293,6 +298,9 @@ function openNote(s){
         markdownRenderBox.parentElement.style.display = 'initial';
         markdownRenderBox.innerHTML = parseMarkdown(notesDataObjectModel.notes[s.currentActiveNoteIndex].content);
         markdownRenderBox.appendChild(footer());
+
+        markdownRenderBox.querySelectorAll('.display-equation').forEach(x => katex.render(String.raw`${x.textContent}`, x, { throwOnError: false, displayMode: true, }));
+        markdownRenderBox.querySelectorAll('.inline-equation').forEach(x => katex.render(String.raw`${x.textContent}`, x, { throwOnError: false, displayMode: false, }));
     } else { markdownRenderBox.parentElement.style.display = 'none'; }
 }
 state.subscribe(openNote);

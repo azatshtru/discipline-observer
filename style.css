@@ -95,6 +95,14 @@ hr {
     width: calc(max(100%, 140px));
 }
 
+.display-equation * {
+    all: unset;
+}
+
+.inline-equation * {
+    all: unset;
+}
+
 .heading {
     font-size: 3.1em;
 }
