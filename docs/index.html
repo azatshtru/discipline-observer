@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload="renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+          ], 
+          ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code', 'option', 'span'],});"></script>
     <title>ryth docs</title>
 </head>
 <body class="margin-inline-doc padding-footer">
@@ -132,5 +143,35 @@
         </ol>
     </div>
     <p style="font-size: small;"><i>Note that the value of numbers are insignificant in the source text, any number followed by a period will still give the same numeric output in the rendered ordered list.</i></p>
+    <div class="horizontal-flex cross-centered">
+        <span class="material-symbols-outlined heading opacity-low font-wt500">functions</span>
+        <h1>LaTeX</h1>
+    </div>
+    <p>ryth uses LaTeX to render beautiful mathematical expressions. LaTeX is a typesetting system that is used in production of scientific documents.</p>
+    <h3>Inline LaTeX</h3>
+    <p>Inline LaTeX is written between a pair of single dollar signs (<span>$</span>).</p>
+    <p>For example,</p>
+    <div style="padding:0.5em;width:fit-content;" class="bordered-bg-white padin-half-em">
+        Let mean be <span>$\mu$</span> and variance be <span>$\sigma^2$</span>
+    </div>
+    <p>is rendered as:</p>
+    <div class="dashed-border pad-1em inline-equation">
+        Let mean be $\mu$ and variance be $\sigma^2$
+    </div>
+    <h3>Display LaTeX</h3>
+    <p>Full-width display LaTeX is written between a pair of double dollar signs (<span>$$</span>).</p>
+    <p>For example, a linear equation of one variable would be written as <span class="bordered-bg-white padin-half-em nobreakspan">$$y=ax+b$$</span> and rendered as:</p>
+    <div class="dashed-border pad-1em display-equation">
+    $$y=ax+b$$
+    </div>
+    <br>
+    <p>The Gamma function would be written as </p> 
+    <div style="padding:0.5em;width:fit-content;" class="bordered-bg-white padin-half-em">
+        <span>$$ \Gamma(z) = \int_0^\infty x^{z-1}e^{-x}dx $$</span>
+    </div>
+    <p>and rendered as:</p>
+    <div class="dashed-border pad-1em display-equation">
+    $$ \Gamma(z) = \int_0^\infty x^{z-1}e^{-x}dx $$
+    </div>
 </body>
 </html>

@@ -95,6 +95,36 @@ hr {
     width: calc(max(100%, 140px));
 }
 
+s {
+    text-decoration-thickness: 0.1em;
+}
+
+mark {
+    background-color: lavender;
+    padding-inline: 4px;
+}
+
+hr.stylized {
+    border: none;
+    border-top: 1px solid grey;
+    color: #bbb;
+    overflow: visible;
+    text-align: center;
+    font-size: small;
+    height: 5px;
+
+    width: 54%;
+    margin-top: 0.35in;
+    margin-bottom: 0.2in;
+} 
+hr.stylized::after {
+    background: #fff;
+    content: attr(rulemark);
+    padding: 0 0px;
+    position: relative;
+    top: -13px;
+}
+
 .display-equation * {
     all: unset;
 }

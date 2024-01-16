@@ -27,6 +27,16 @@ const ulistRegex = /^\-(.*\n(^[^\S\n\r]*\n)?\-)*.*/gim;
 const olistRegex = /^\d+(\.|\))(.*\n(^[^\S\n\r]*\n)?\d+(\.|\)))*.*/gim;
 const inlineLatexRegex = /\$(.*?)\$/gim;
 const displayLatexRegex = /^\$\$(.*)\$\$$/gim;
+const horizontalRuleRegex = /(^\-|^\_)\1{2,}/gim;
+
+const boldEmphasisRegex = /(\*{1,2})(.*?)\1/gim;
+const italicEmphasisRegex = /\_(.*?)\_/gim;
+const underlineEmphasisRegex = /\_\_(.*?)\_\_/gim;
+const strikethroughEmphasisRegex = /\~(.*?)\~/gim;
+const highlightEmphasisRegex = /(\={1,2})(.*?)\1/gim;
+const hyperlinkRegex = /\[(.*?)\]\((.*?)\)/gim;
+
+const emphasisSusceptibleTagsRegex = /\<(p|h1|h2|h3|li)\>(.*?)\<\/\1\>/gim;
 const specialCharacterRegex = /[\$\&\[\]\%\^\*\(\)\#\\\/]/gim;
 
 const getTitle = (x) => {
@@ -35,10 +45,23 @@ const getTitle = (x) => {
     return x.match(/[\p{L}\p{N}\w\d].*/gimu)[0];
 }
 
+function renderEmphasis(semiText) {
+    const htmlText = semiText
+        .replace(underlineEmphasisRegex, '<u>$1</u>')
+        .replace(boldEmphasisRegex, '<b>$2</b>')
+        .replace(italicEmphasisRegex, '<i>$1</i>')
+        .replace(strikethroughEmphasisRegex, '<s>$1</s>')
+        .replace(highlightEmphasisRegex, '<mark>$2</mark>')
+        .replace(hyperlinkRegex, (v, p1, p2) => `<a href="${p2.trim()}">${p1}</a>`)
+    
+    return htmlText.trim();
+}
+
 function parseMarkdown(markdownText){
     const htmlText = markdownText
         .replace(h3Regex, '<h3>$1</h3>').replace(h2Regex, '<h2>$1</h2>')
         .replace(h0Regex, '<h1 class="heading">$1</h1>').replace(h1Regex, '<h1>$1</h1>')
+        .replace(horizontalRuleRegex, '<hr class="stylized" rulemark="">')
         .replace(olistRegex, (v) => `<ol>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.replace(/^\d+/gim, '').slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ol>`)
         .replace(paraRegex, '<p>$1</p>')
         .replace(lineBreakRegex, '<br>')
@@ -46,6 +69,7 @@ function parseMarkdown(markdownText){
         .replace(checkboxRegex, (v, p1, p2, p3) => `<div class="horizontal-flex cross-centered nowrap"><button class="checkbox-outline" data-check="${p2=='x'?'x':'o'}"><span class="material-symbols-outlined">check</span></button><p>${p3}</p></div>`)
         .replace(tableRegex, (v) => `<table>${v.split('\n').map(row => `<tr>${row.slice(1, row.length-(row[row.length-1]=='|')).split('|').map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</table>`)
         .replace(ulistRegex, (v) => `<ul>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ul>`)
+        .replace(emphasisSusceptibleTagsRegex, (v, p1, p2) => `<${p1}><span>${renderEmphasis(p2)}</span></${p1}>`)
         .replace(displayLatexRegex, '<div class="display-equation">$1</div>')
         .replace(inlineLatexRegex, '<span class="inline-equation">$1</span>')
             
@@ -297,10 +321,12 @@ function openNote(s){
     if(s.noteViewMode == 'view'){
         markdownRenderBox.parentElement.style.display = 'initial';
         markdownRenderBox.innerHTML = parseMarkdown(notesDataObjectModel.notes[s.currentActiveNoteIndex].content);
-        markdownRenderBox.appendChild(footer());
 
         markdownRenderBox.querySelectorAll('.display-equation').forEach(x => katex.render(String.raw`${x.textContent}`, x, { throwOnError: false, displayMode: true, }));
         markdownRenderBox.querySelectorAll('.inline-equation').forEach(x => katex.render(String.raw`${x.textContent}`, x, { throwOnError: false, displayMode: false, }));
+
+        markdownRenderBox.appendChild(footer());
+
     } else { markdownRenderBox.parentElement.style.display = 'none'; }
 }
 state.subscribe(openNote);
