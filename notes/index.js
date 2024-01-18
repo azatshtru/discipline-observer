@@ -17,7 +17,7 @@ const h0Regex = /^#!(.*$)/gim;
 const h1Regex = /^#(.*$)/gim;
 const h2Regex = /^##(.*$)/gim;
 const h3Regex = /^###(.*$)/gim;
-const paraRegex = /(^[\p{L}\p{N}\w\d].*)/gimu;
+const paraRegex = /(^[\p{L}\p{N}\w\d=_~*\[].*)/gimu;
 const lineBreakRegex = /^\s*?\n(?=\s)/gim;
 const tagLineRegex = /^@(.*$)/gim;
 const tagRegex = /@.*?(?=@|$)/gim;
@@ -63,10 +63,10 @@ function parseMarkdown(markdownText){
         .replace(h0Regex, '<h1 class="heading">$1</h1>').replace(h1Regex, '<h1>$1</h1>')
         .replace(horizontalRuleRegex, '<hr class="stylized" rulemark="">')
         .replace(olistRegex, (v) => `<ol>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.replace(/^\d+/gim, '').slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ol>`)
+        .replace(checkboxRegex, (v, p1, p2, p3) => `<div class="horizontal-flex cross-centered nowrap"><button class="checkbox-outline" data-check="${p2=='x'?'x':'o'}"><span class="material-symbols-outlined">check</span></button><p>${p3}</p></div>`)
         .replace(paraRegex, '<p>$1</p>')
         .replace(lineBreakRegex, '<br>')
         .replace(tagLineRegex, (v) => v.replace(tagRegex, v1 => ` <span class="chip inverted-color display-inline-block">${v1.replace(inlineLatexRegex, '').replace(specialCharacterRegex, '')}</span> `)+'<br>')
-        .replace(checkboxRegex, (v, p1, p2, p3) => `<div class="horizontal-flex cross-centered nowrap"><button class="checkbox-outline" data-check="${p2=='x'?'x':'o'}"><span class="material-symbols-outlined">check</span></button><p>${p3}</p></div>`)
         .replace(tableRegex, (v) => `<table>${v.split('\n').map(row => `<tr>${row.slice(1, row.length-(row[row.length-1]=='|')).split('|').map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</table>`)
         .replace(ulistRegex, (v) => `<ul>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ul>`)
         .replace(emphasisSusceptibleTagsRegex, (v, p1, p2) => `<${p1}><span>${renderEmphasis(p2)}</span></${p1}>`)

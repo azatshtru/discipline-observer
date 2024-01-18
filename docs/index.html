@@ -143,6 +143,39 @@
         </ol>
     </div>
     <p style="font-size: small;"><i>Note that the value of numbers are insignificant in the source text, any number followed by a period will still give the same numeric output in the rendered ordered list.</i></p>
+    <h2>Emphasis</h2>
+    <ul>
+        <li>To represent <b>bold phrases</b>, enclose them between a pair of stars (*).</li><hr>
+        <li>To represent <i>italics</i>, enclose stuff between a pair of underscores (_).</li><hr>
+        <li>To <u>underline something</u>, enclose it between a pair of double underscores (__).</li><hr>
+        <li>To <s>strike-through stuff</s>, put tilde (~) around it.</li><hr>
+        <li>To <mark>highlight</mark> something, use a pair of equals (=) around it.</li>
+    </ul>
+    <br>
+    <div style="padding:0.5em;width:fit-content;" class="bordered-bg-white padin-half-em">
+        A *monad* is _just_ a __monoid__ in the =category= of __endofunctors__, _what's the problem?_
+    </div>
+    <p>is rendered as:</p>
+    <div class="dashed-border pad-1em">
+        A <b>monad</b> is <i>just</i> a <u>monoid</u> in the <mark>category</mark> of <u>endofunctors</u>, <i>what's the problem?</i>
+    </div>
+    <br>
+    <h3 class="underline">a very <i>bold italian</i> plumber</h3>
+    <p>You can combine emphasis together! For example, <span class="bordered-bg-white padin-half-em nobreakspan">_What's 2+2?_ _=*A BILLION!*=_</span> is rendered as:</p>
+    <div class="dashed-border pad-1em">
+        <i>What's 2+2? </i><mark><i><b>A BILLION!</b></i></mark>
+    </div>
+    <p>Try other combinations yourself!</p>
+    <br>
+    <h2>Hyperlinks</h2>
+    <p>Hyperlinks can be added by enclosing the link-text between brackets, immediately followed by the URL in parentheses ([link-text](URL)).</p>
+    <p><span class="bordered-bg-white padin-half-em nobreakspan">[The Universe](https://en.wikipedia.org/wiki/Universe)</span> is rendered as:</p>
+    <div class="dashed-border pad-1em">
+        <a href="https://en.wikipedia.org/wiki/Universe">The Universe</a>
+    </div>
+    <p style="font-size: small;"><i>Note that the hyperlink URL must contain (http://) or (https://). For example, (https://google.com) will work, but simply (google.com) won't.</i></p>
+    <br><br>
+
     <div class="horizontal-flex cross-centered">
         <span class="material-symbols-outlined heading opacity-low font-wt500">functions</span>
         <h1>LaTeX</h1>
