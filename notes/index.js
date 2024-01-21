@@ -25,10 +25,10 @@ const checkboxRegex = /^(\s*\-?\s*\[)(\s?|x)\](.*$)/gim;
 const tableRegex = /^\|(.*\n\|)*.*/gim;
 const ulistRegex = /^\-(.*\n(^[^\S\n\r]*\n)?\-)*.*/gim;
 const olistRegex = /^\d+(\.|\))(.*\n(^[^\S\n\r]*\n)?\d+(\.|\)))*.*/gim;
-const inlineLatexRegex = /\$(.*?)\$/gim;
 const displayLatexRegex = /^\$\$(.*)\$\$$/gim;
 const horizontalRuleRegex = /(^\-|^\_)\1{2,}/gim;
 
+const inlineLatexRegex = /\$(.*?)\$/gim;
 const boldEmphasisRegex = /(\*{1,2})(.*?)\1/gim;
 const italicEmphasisRegex = /\_(.*?)\_/gim;
 const underlineEmphasisRegex = /\_\_(.*?)\_\_/gim;
@@ -36,7 +36,7 @@ const strikethroughEmphasisRegex = /\~(.*?)\~/gim;
 const highlightEmphasisRegex = /(\={1,2})(.*?)\1/gim;
 const hyperlinkRegex = /\[(.*?)\]\((.*?)\)/gim;
 
-const emphasisSusceptibleTagsRegex = /\<(p|h1|h2|h3|li)\>(.*?)\<\/\1\>/gim;
+const emphasisSusceptibleTagsRegex = /\<(p|h1|h2|h3|li|td)\>(.*?)\<\/\1\>/gim;
 const specialCharacterRegex = /[\$\&\[\]\%\^\*\(\)\#\\\/]/gim;
 
 const getTitle = (x) => {
@@ -46,14 +46,20 @@ const getTitle = (x) => {
 }
 
 function renderEmphasis(semiText) {
+
+    const latices = [...semiText.matchAll(inlineLatexRegex), ...semiText.matchAll(/%%%/gim)].sort((a, b) => a.index - b.index)
+
     const htmlText = semiText
+        .replace(inlineLatexRegex, '%%%')
         .replace(underlineEmphasisRegex, '<u>$1</u>')
         .replace(boldEmphasisRegex, '<b>$2</b>')
         .replace(italicEmphasisRegex, '<i>$1</i>')
         .replace(strikethroughEmphasisRegex, '<s>$1</s>')
         .replace(highlightEmphasisRegex, '<mark>$2</mark>')
         .replace(hyperlinkRegex, (v, p1, p2) => `<a href="${p2.trim()}">${p1}</a>`)
-    
+        .split('%%%').map((x, i) => x.concat(latices[i]?latices[i][0]:'')).join('')
+        .replace(inlineLatexRegex, '<span class="inline-equation">$1</span>')
+
     return htmlText.trim();
 }
 
@@ -71,7 +77,6 @@ function parseMarkdown(markdownText){
         .replace(ulistRegex, (v) => `<ul>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ul>`)
         .replace(emphasisSusceptibleTagsRegex, (v, p1, p2) => `<${p1}><span>${renderEmphasis(p2)}</span></${p1}>`)
         .replace(displayLatexRegex, '<div class="display-equation">$1</div>')
-        .replace(inlineLatexRegex, '<span class="inline-equation">$1</span>')
             
     return htmlText.trim();
 }
