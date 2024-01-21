@@ -167,13 +167,25 @@
     </div>
     <p>Try other combinations yourself!</p>
     <br>
+    <h2>Rules</h2>
+    <p>Rules can be used to separate the contents of your notes into sections. A rule can be created by using three consecutive underscores on a new-line (___).</p>
+    <p><span class="bordered-bg-white padin-half-em nobreakspan">___</span> is rendered as:</p>
+    <div class="dashed-border pad-1em">
+        <hr class="stylized">
+    </div>
+    <br>
     <h2>Hyperlinks</h2>
     <p>Hyperlinks can be added by enclosing the link-text between brackets, immediately followed by the URL in parentheses ([link-text](URL)).</p>
-    <p><span class="bordered-bg-white padin-half-em nobreakspan">[The Universe](https://en.wikipedia.org/wiki/Universe)</span> is rendered as:</p>
+    <p>For example,</p>
+    <div style="padding:0.5em;width:fit-content; word-break: break-all;" class="bordered-bg-white padin-half-em">
+        [The Universe](https://en.wikipedia.org/wiki/Universe)
+    </div>
+    <p>will be rendered as:</p>
     <div class="dashed-border pad-1em">
-        <a href="https://en.wikipedia.org/wiki/Universe">The Universe</a>
+        <a href="https://en.wikipedia.org/wiki/Universe" target="_blank">The Universe</a>
     </div>
     <p style="font-size: small;"><i>Note that the hyperlink URL must contain (http://) or (https://). For example, (https://google.com) will work, but simply (google.com) won't.</i></p>
+
     <br><br>
 
     <div class="horizontal-flex cross-centered">
@@ -193,7 +205,7 @@
     </div>
     <h3>Display LaTeX</h3>
     <p>Full-width display LaTeX is written between a pair of double dollar signs (<span>$$</span>).</p>
-    <p>For example, a linear equation of one variable would be written as <span class="bordered-bg-white padin-half-em nobreakspan">$$y=ax+b$$</span> and rendered as:</p>
+    <p>For example, an equation a line would be written as <span class="bordered-bg-white padin-half-em nobreakspan">$$y=ax+b$$</span> and rendered as:</p>
     <div class="dashed-border pad-1em display-equation">
     $$y=ax+b$$
     </div>

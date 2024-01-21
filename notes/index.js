@@ -56,7 +56,7 @@ function renderEmphasis(semiText) {
         .replace(italicEmphasisRegex, '<i>$1</i>')
         .replace(strikethroughEmphasisRegex, '<s>$1</s>')
         .replace(highlightEmphasisRegex, '<mark>$2</mark>')
-        .replace(hyperlinkRegex, (v, p1, p2) => `<a href="${p2.trim()}">${p1}</a>`)
+        .replace(hyperlinkRegex, (v, p1, p2) => `<a href="${p2.trim()}" target="_blank">${p1}</a>`)
         .split('%%%').map((x, i) => x.concat(latices[i]?latices[i][0]:'')).join('')
         .replace(inlineLatexRegex, '<span class="inline-equation">$1</span>')
 

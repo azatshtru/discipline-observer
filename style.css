@@ -106,16 +106,16 @@ mark {
 
 hr.stylized {
     border: none;
-    border-top: 1px solid grey;
+    border-top: 3px solid gainsboro;
     color: #bbb;
     overflow: visible;
     text-align: center;
     font-size: small;
     height: 5px;
 
-    width: 54%;
+    width: 100%;
     margin-top: 0.35in;
-    margin-bottom: 0.2in;
+    margin-bottom: 0.28in;
 } 
 hr.stylized::after {
     background: #fff;
