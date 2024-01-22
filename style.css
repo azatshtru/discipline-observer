@@ -143,8 +143,7 @@ hr.stylized::after {
 }
 
 .heading {
-    font-size: calc(clamp(2.2em, 11vw, 3.1em));
-    width: 100%;
+    font-size: 3.1em;
 }
 
 .title {

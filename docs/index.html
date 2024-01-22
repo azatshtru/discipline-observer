@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
@@ -218,5 +218,163 @@
     <div class="dashed-border pad-1em display-equation">
     $$ \Gamma(z) = \int_0^\infty x^{z-1}e^{-x}dx $$
     </div>
+    <p>The following few sections describe how to write some common mathematical expressions using LaTeX. Keep in mind that all of these are written between a pair of single or double dollar signs.</p>
+    <h2>Symbols</h2>
+    <p>Simple symbols like "x", "y", "<", "42" are rendered as is: </p>
+    <div class="dashed-border pad-1em display-equation">
+        $x, y, <, 42$
+    </div>
+    <p>To write special mathematical or scientific symbols, use a backslash followed by the symbol's name. For example, <span class="bordered-bg-white padin-half-em nobreakspan">$\lambda$</span> is rendered as $\lambda$.</p>
+    <p>Below is a table of some common symbols.</p>
+    <div class="display-equation">
+    <table>
+        <tr>
+            <td><b>class</b></td>
+            <td><b>expression</b></td>
+            <td><b>rendered LaTeX</b></td>
+        </tr>
+        <tr>
+            <td>greek symbols</td>
+            <td><span>\alpha, \theta, \pi, \omega, \Delta</span></td>
+            <td>$\alpha, \theta, \pi, \omega, \Delta$</td>
+        </tr>
+        <tr>
+            <td>formal logics</td>
+            <td><span>\cup, \cap, \to, \forall, \sim, \in</span></td>
+            <td>$\cup, \cap, \to, \forall, \sim, \in$</td>
+        </tr>
+        <tr>
+            <td>comparison</td>
+            <td><span>\leq, \geq, \approx</span></td>
+            <td>$\leq, \geq, \approx$</td>
+        </tr>
+        <tr>
+            <td>number sets</td>
+            <td><span>\mathbb{N}, \mathbb{Z}</span></td>
+            <td>$\mathbb{N}, \mathbb{Z}$</td>
+        </tr>
+        <tr>
+            <td>simple functional analysis</td>
+            <td><span>\partial, \prime</span></td>
+            <td>$\partial, \prime$</td>
+        </tr>
+        <tr>
+            <td>infinity</td>
+            <td><span>\infty</span></td>
+            <td>$\infty$</td>
+        </tr>
+    </table>
+    </div>
+    <p style="font-size: small;"><i>This list of symbols is far from complete, LaTeX has a more complete and comprehensive set of symbols. As always, LaTeX notation for a specific symbol can be found through some diligent googling. A more complete list of LaTeX symbols can be found <a target="_blank" href="https://oeis.org/wiki/List_of_LaTeX_mathematical_symbols#Set_and.2For_logic_notation">here</a>.</i></p>
+    <h2>Superscripts and Subscripts</h2>
+    <div class="display-equation">
+    <p>Superscripts are commonly used to denote exponents, Anything can be followed by a caret (^) to denote a superscript.  an underscore (_) to denote a subscript. <span class="bordered-bg-white padin-half-em nobreakspan">$x^n$</span> is rendered as $x^n$.</p>
+    <p>Note that if the superscript has more than one term or digit, said superscript needs to be enclosed in braces.<span class="bordered-bg-white padin-half-em nobreakspan">$e^{1-\lambda}$</span> is rendered as $e^{1-\lambda}$.</p>
+    <p>Subscripts are mostly used to denote indices in a series among other things, Anything followed by an underscore (_) is rendered as a subscript.<span class="bordered-bg-white padin-half-em nobreakspan">$F_X$</span> is rendered as $F_X$.</p>
+    <p>If the subscript has more than one term or digit, it needs to be enclosed in braces.<span class="bordered-bg-white padin-half-em nobreakspan">$a_{i+n}$</span> is rendered as $a_{i+n}$.</p>
+    </div>
+    <h2>Fractions and Roots</h2>
+    <div class="display-equation">
+    <p>If a fraction is written as a/b, it is rendered as $a/b$. To write a fraction in a sort of vertical manner, use the frac function. Write \frac followed by numerator and denominator respectively, each enclosed in braces.</p>
+    <p><span class="bordered-bg-white padin-half-em nobreakspan">$\frac{a}{b}$</span> is rendered as: $$\frac{a}{b}$$.</p>
+    <p>To display the nth-root, use the \sqrt[n] function. Follow it immediately an expression inside a pair of braces to enclose it inside the root.</p>
+    <p><span class="bordered-bg-white padin-half-em nobreakspan">$\sqrt[3]{x+143}$</span> is rendered as: $\sqrt[3]{x+143}$.</p>
+    <p>The [n] can be omitted to display a square root.</p>
+    <p><span class="bordered-bg-white padin-half-em nobreakspan">$i=\sqrt{-1}$</span> is rendered as: $i=\sqrt{-1}$.</p>
+    </div>
+    <h2>Permutations and Combinations</h2>
+    <p>Permuatations and combinations can be rendered by using subscripts and superscripts in astute ways.</p>
+    <div class="display-equation">
+        <p>Permutations of n objects with r repetitions can be written as <span class="bordered-bg-white padin-half-em nobreakspan">^{n}P_{r}</span> and rendered as $^{n}P_{r}$.</p>
+        <p style="line-height: 1.7em;">The number of ways to choose k objects from a set of n objects can be represented as a combination <span class="bordered-bg-white padin-half-em nobreakspan">^{n}C_{k}</span> rendered as $^{n}C_{k}$, or in the corresponding combinatorics notation  <span class="bordered-bg-white padin-half-em nobreakspan">{n \choose k}</span> which is rendered as: $${n \choose k}$$</p>
+    </div>
+    <br>
+    <h2>Series sums, Series products and Integrals</h2>
+    <p>Series sums, products and Analytical integrals can be represented using the \sum, \prod and \int functions respectively followed by a subscript and superscript to denote start and end points, and an expression which they enclose.</p>
+    <div class="display-equation">
+    <table>
+        <tr>
+            <td>series sum</td>
+            <td><span>\sum_{i=0}^{N} (x_i^2)</span></td>
+            <td>$$\sum_{i=0}^{N} (x_i^2)$$</td>
+        </tr>
+        <tr>
+            <td>series product</td>
+            <td><span>\prod_{n=1}^{\infty} f_n(x)</span></td>
+            <td>$$\prod_{n=1}^{\infty} f_n(x)$$</td>
+        </tr>
+        <tr>
+            <td>integral</td>
+            <td><span>\int_{a}^{b} f(x)dx</span></td>
+            <td>$$\int_{a}^{b} f(x)dx$$</td>
+        </tr>
+    </table>
+    <p>To use a different flavor of the integral, replace \int with the flavor's specific function.</p>
+    <p style="line-height: 1.7em;">For example, the closed path integral can be represented as <span class="bordered-bg-white padin-half-em nobreakspan">\oint</span> which is rendered as $\oint$. In similar manner, the closed surface and double integrals can be represented as <span class="bordered-bg-white padin-half-em nobreakspan">\oiint</span> and <span class="bordered-bg-white padin-half-em nobreakspan">\iint</span> respectively, rendered as $\oiint$ and $\iint$.</p>
+    </div>
+    <h2>Underbrace and Overbrace</h2>
+    <div class="display-equation">
+        <p>To assess the value of some part of the expression, underbraces can be used. Underbraces are applied by writing \underbrace followed by enclosing the expression that needs to be assessed in braces, further followed by a subscript that shows the assessment.</p>
+        <p><span class="bordered-bg-white padin-half-em nobreakspan">\underbrace{1+2+...+n}_{n(n+1)}</span> is rendered as $\underbrace{1+2+...+n}_{n(n+1)/2}$.</p>
+        <p>Overbraces are relatively the same, use \overbrace, followed by the expression to be assessed, followed by a superscript showing the assessment.</p>
+        <p><span class="bordered-bg-white padin-half-em nobreakspan">\overbrace{1+2+...+n}^{n(n+1)}</span> is rendered as $\overbrace{1+2+...+n}^{n(n+1)/2}$.</p>
+    </div>
+    <h2>Matrices and Determinants</h2>
+    <p>Before understanding how to construct matrices and determinats, it worthwhile to understand arrays.</p>
+    <h3>arrays and their combinations</h3>
+    <p>An array is written by separating it's members with ampersands (&). Example, <span class="bordered-bg-white padin-half-em nobreakspan">-1 & 17 & 10.2</span> is an array with 3 elements: [-1, 17 and 10.2]</p>
+    <p>Arrays can be combined with other arrays via using double backslashes (\\). </p>
+    <div style="padding:0.5em;width:fit-content;" class="bordered-bg-white padin-half-em">a & b & c \\ {x+1} & {y+2} & {z+3}</div>
+    <p> The above is a combination of two arrays with elements [a, b, c] in the first array and [x+1, y+2, z+3] in the second array.</p>
+    <h3>From arrays to matrices</h3>
+    <p>On their own, combination of arrays aren't that useful. But when used with \begin function, they can easily represent a matrix.</p>
+    <p style="line-height: 1.7em;">Enclose combinations of arrays between <span class="bordered-bg-white padin-half-em nobreakspan">\begin{bmatrix}</span> and <span class="bordered-bg-white padin-half-em nobreakspan">\end{bmatrix}</span> to create a square matrix.</p>
+    <div style="padding:0.5em;width:fit-content;" class="bordered-bg-white padin-half-em">\begin{bmatrix} a & b & c \\ {x+1} & {y+2} & {z+3} \\ -1 & 17 & 10.2 \end{bmatrix}</div>
+    <p>The above LaTeX is rendered as:</p>
+    <div class="dashed-border pad-1em display-equation">
+        $$\begin{bmatrix} a & b & c \\ {x+1} & {y+2} & {z+3} \\ -1 & 17 & 10.2 \end{bmatrix}$$
+    </div>
+    <p>The \begin function's {bmatrix} parameter can be swapped with {vmatrix} to represent a determinant.</p>
+    <div style="padding:0.5em;width:fit-content;" class="bordered-bg-white padin-half-em">\begin{vmatrix} a & b & c \\ {x+1} & {y+2} & {z+3} \\ -1 & 17 & 10.2 \end{vmatrix}</div>
+    <p>The above LaTeX is rendered as:</p>
+    <div class="dashed-border pad-1em display-equation">
+        $$\begin{vmatrix} a & b & c \\ {x+1} & {y+2} & {z+3} \\ -1 & 17 & 10.2 \end{vmatrix}$$
+    </div>
+    <br>
+    Other types of matrices (double verical, parenthesized) can be easily constructed by swapping \begin function's {bmatrix} parameter.
+    <br><br>
+    <div class="display-equation">
+    <table>
+        <tr>
+            <td>type of matrix</td>
+            <td><span>parameter</span></td>
+            <td>rendered LaTeX</td>
+        </tr>
+        <tr>
+            <td>braced</td>
+            <td><span>{Bmatrix}</span></td>
+            <td>$$\begin{Bmatrix} a & b & c \\ {x+1} & {y+2} & {z+3} \\ -1 & 17 & 10.2 \end{Bmatrix}$$</td>
+        </tr>
+        <tr>
+            <td>parenthesized</td>
+            <td><span>{pmatrix}</span></td>
+            <td>$$\begin{pmatrix} a & b & c \\ {x+1} & {y+2} & {z+3} \\ -1 & 17 & 10.2 \end{pmatrix}$$</td>
+        </tr>
+        <tr>
+            <td>double vertical</td>
+            <td><span>{Vmatrix}</span></td>
+            <td>$$\begin{Vmatrix} a & b & c \\ {x+1} & {y+2} & {z+3} \\ -1 & 17 & 10.2 \end{Vmatrix}$$</td>
+        </tr>
+    </table>
+    </div>
+    <br>
+    <h2>Piecewise functions</h2>
+    <p>As discussed in the section on Matrices, combination of arrays along with \begin function's {cases} parameter can be used to represent piecewise functions.</p>
+    <div style="padding:0.5em;width:fit-content;" class="bordered-bg-white padin-half-em">\begin{cases} x^2-1, & x \lt -1 \\ x+1, & -1 \leq x \lt 2 \\ 0, & x \geq 2 \end{cases}</div>
+    <p>The above LaTeX is rendered as:</p>
+    <div class="dashed-border pad-1em display-equation">
+        $$\begin{cases} x^2-1, & x \lt -1 \\ x+1, & -1 \leq x \lt 2 \\ 0, & x \geq 2 \end{cases}$$
+    </div>
+    <br>
 </body>
 </html>
