@@ -74,7 +74,7 @@ function parseMarkdown(markdownText){
         .replace(paraRegex, '<p>$1</p>')
         .replace(lineBreakRegex, '<br>')
         .replace(tagLineRegex, (v) => v.replace(tagRegex, v1 => ` <span class="chip inverted-color display-inline-block">${v1.replace(inlineLatexRegex, '').replace(specialCharacterRegex, '')}</span> `)+'<br>')
-        .replace(tableRegex, (v) => `<table>${v.split('\n').map(row => `<tr>${row.slice(1, row.length-(row[row.length-1]=='|')).split('|').map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</table>`)
+        .replace(tableRegex, (v) => `<div style="overflow:scroll"><table>${v.split('\n').map(row => `<tr>${row.slice(1, row.length-(row[row.length-1]=='|')).split('|').map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</table></div>`)
         .replace(ulistRegex, (v) => `<ul>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ul>`)
         .replace(emphasisSusceptibleTagsRegex, (v, p1, p2) => `<${p1}><span>${renderEmphasis(p2)}</span></${p1}>`)
             
@@ -327,8 +327,10 @@ function openNote(s){
         markdownRenderBox.parentElement.style.display = 'initial';
         markdownRenderBox.innerHTML = parseMarkdown(notesDataObjectModel.notes[s.currentActiveNoteIndex].content);
 
-        markdownRenderBox.querySelectorAll('.display-equation').forEach(x => katex.render(String.raw`${x.textContent}`, x, { throwOnError: false, displayMode: true, }));
-        markdownRenderBox.querySelectorAll('.inline-equation').forEach(x => katex.render(String.raw`${x.textContent}`, x, { throwOnError: false, displayMode: false, }));
+        setTimeout(() => {
+            markdownRenderBox.querySelectorAll('.display-equation').forEach(x => katex.render(String.raw`${x.textContent}`, x, { throwOnError: false, displayMode: true, }));
+            markdownRenderBox.querySelectorAll('.inline-equation').forEach(x => katex.render(String.raw`${x.textContent}`, x, { throwOnError: false, displayMode: false, }));
+        }, 500)
 
         markdownRenderBox.appendChild(footer());
 

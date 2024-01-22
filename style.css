@@ -133,8 +133,18 @@ hr.stylized::after {
     font-family: unset;
 }
 
+.katex > .katex-html {
+    white-space: normal;
+}
+
+.katex .base {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
 .heading {
-    font-size: 3.1em;
+    font-size: calc(clamp(2.2em, 11vw, 3.1em));
+    width: 100%;
 }
 
 .title {
