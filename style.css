@@ -126,11 +126,11 @@ hr.stylized::after {
 }
 
 .display-equation * {
-    all: unset;
+    font-family: unset;
 }
 
 .inline-equation * {
-    all: unset;
+    font-family: unset;
 }
 
 .heading {

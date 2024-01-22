@@ -17,7 +17,7 @@ const h0Regex = /^#!(.*$)/gim;
 const h1Regex = /^#(.*$)/gim;
 const h2Regex = /^##(.*$)/gim;
 const h3Regex = /^###(.*$)/gim;
-const paraRegex = /(^[\p{L}\p{N}\w\d=_~*\[].*)/gimu;
+const paraRegex = /(^[\p{L}\p{N}\w\d=_~*\[\$].*)/gimu;
 const lineBreakRegex = /^\s*?\n(?=\s)/gim;
 const tagLineRegex = /^@(.*$)/gim;
 const tagRegex = /@.*?(?=@|$)/gim;
@@ -25,7 +25,7 @@ const checkboxRegex = /^(\s*\-?\s*\[)(\s?|x)\](.*$)/gim;
 const tableRegex = /^\|(.*\n\|)*.*/gim;
 const ulistRegex = /^\-(.*\n(^[^\S\n\r]*\n)?\-)*.*/gim;
 const olistRegex = /^\d+(\.|\))(.*\n(^[^\S\n\r]*\n)?\d+(\.|\)))*.*/gim;
-const displayLatexRegex = /^\$\$(.*)\$\$$/gim;
+const displayLatexRegex = /^\$\$\n?(.*)\n?\$\$$/gim;
 const horizontalRuleRegex = /(^\-|^\_)\1{2,}/gim;
 
 const inlineLatexRegex = /\$(.*?)\$/gim;
@@ -33,7 +33,7 @@ const boldEmphasisRegex = /(\*{1,2})(.*?)\1/gim;
 const italicEmphasisRegex = /\_(.*?)\_/gim;
 const underlineEmphasisRegex = /\_\_(.*?)\_\_/gim;
 const strikethroughEmphasisRegex = /\~(.*?)\~/gim;
-const highlightEmphasisRegex = /(\={1,2})(.*?)\1/gim;
+const highlightEmphasisRegex = /\=\=(.*?)\=\=/gim;
 const hyperlinkRegex = /\[(.*?)\]\((.*?)\)/gim;
 
 const emphasisSusceptibleTagsRegex = /\<(p|h1|h2|h3|li|td)\>(.*?)\<\/\1\>/gim;
@@ -55,16 +55,17 @@ function renderEmphasis(semiText) {
         .replace(boldEmphasisRegex, '<b>$2</b>')
         .replace(italicEmphasisRegex, '<i>$1</i>')
         .replace(strikethroughEmphasisRegex, '<s>$1</s>')
-        .replace(highlightEmphasisRegex, '<mark>$2</mark>')
+        .replace(highlightEmphasisRegex, '<mark>$1</mark>')
         .replace(hyperlinkRegex, (v, p1, p2) => `<a href="${p2.trim()}" target="_blank">${p1}</a>`)
         .split('%%%').map((x, i) => x.concat(latices[i]?latices[i][0]:'')).join('')
-        .replace(inlineLatexRegex, '<span class="inline-equation">$1</span>')
+        .replace(inlineLatexRegex, (v, p1) => `<span class="inline-equation">${p1.replaceAll('<', '\\lt ').replaceAll('>', '\\gt ')}</span>`)
 
     return htmlText.trim();
 }
 
 function parseMarkdown(markdownText){
     const htmlText = markdownText
+        .replace(displayLatexRegex, (v, p1) => `<div class="display-equation">${p1.replaceAll('<', '\\lt ').replaceAll('>', '\\gt ')}</div>`)
         .replace(h3Regex, '<h3>$1</h3>').replace(h2Regex, '<h2>$1</h2>')
         .replace(h0Regex, '<h1 class="heading">$1</h1>').replace(h1Regex, '<h1>$1</h1>')
         .replace(horizontalRuleRegex, '<hr class="stylized" rulemark="">')
@@ -76,7 +77,6 @@ function parseMarkdown(markdownText){
         .replace(tableRegex, (v) => `<table>${v.split('\n').map(row => `<tr>${row.slice(1, row.length-(row[row.length-1]=='|')).split('|').map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</table>`)
         .replace(ulistRegex, (v) => `<ul>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ul>`)
         .replace(emphasisSusceptibleTagsRegex, (v, p1, p2) => `<${p1}><span>${renderEmphasis(p2)}</span></${p1}>`)
-        .replace(displayLatexRegex, '<div class="display-equation">$1</div>')
             
     return htmlText.trim();
 }
