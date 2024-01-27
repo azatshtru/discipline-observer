@@ -185,8 +185,62 @@
         <a href="https://en.wikipedia.org/wiki/Universe" target="_blank">The Universe</a>
     </div>
     <p style="font-size: small;"><i>Note that the hyperlink URL must contain (http://) or (https://). For example, (https://google.com) will work, but simply (google.com) won't.</i></p>
+    <br>
+    <h2>Blockquotes</h2>
+    <p>Anything followed by a closing angular bracket (>) in the beginning of a line is rendered as a blockquote.</p>
+    <p>Blockquotes can contain anything except tags; i.e. paragraphs, headings, tables, checkboxes, lists, LaTeX, even other blockquotes themselves.</p>
+    <div style="padding:0.5em;width:fit-content; word-break: keep-all;" class="bordered-bg-white padin-half-em">
+        <p style="margin: 8px;">>##And on the pedestal, these words appear:</p>
+        <p style="margin: 8px;">>>My name is Ozymandias, King of Kings;</p>
+        <p style="margin: 8px;">>>Look on my Works, ye Mighty, and despair!</p>
+        <p style="margin: 8px;">>Nothing beside remains. Round the decay</p>
+        <p style="margin: 8px;">>Of that colossal Wreck, boundless and bare</p>
+        <p style="margin: 8px;">>The lone and level sands stretch far away.”</p>
+    </div>
+    <p>will be rendered as:</p>
+    <div class="dashed-border pad-1em">
+        <blockquote>
+        <h2>And on the pedestal, these words appear:</h2>
+        <blockquote>
+            <p>My name is Ozymandias, King of Kings;</p>
+            <p>Look on my Works, ye Mighty, and despair!</p>
+        </blockquote>
+        <p>Nothing beside remains. Round the decay</p>
+        <p>Of that colossal Wreck, boundless and bare</p>
+        <p>The lone and level sands stretch far away.”</p>
+        </blockquote>
+    </div>
+    <br>
+    <h2>Code blocks and inline code highlights</h2>
+    <p>To render any part of text as code, enclose it between a pair of backticks (`)</p>
+    <p>For example,</p>
+    <p><span class="bordered-bg-white padin-half-em nobreakspan">int x = 42;</span> will be rendered as:</p>
+    <div class="dashed-border pad-1em">
+        <code class="inline-code-block">int x = 42;</code>
+    </div>
+    <br>
+    <h3 class="underline"><i>public void main string whats?</i></h3>
+    <p>If your code is bigger, put it between a pair of triple backticks (```) to create a code-block.</p>
+    <div style="padding:0.5em;width:fit-content; word-break: keep-all;" class="bordered-bg-white padin-half-em">
+        <p style="margin: 2px;">#include &lt;stdio.h&gt;</p>
+        <p style="margin: 2px;"></p>
+        <p style="margin: 2px;">int main() {</p>
+        <p style="margin: 2px;">&emsp;&emsp;&emsp;&emsp;printf("Hello, world!");</p>
+        <p style="margin: 2px;">&emsp;&emsp;&emsp;&emsp;return 0;</p>
+        <p style="margin: 2px;">}</p>
+    </div>
+    <p>will be rendered as:</p>
+    <div class="dashed-border pad-1em">
+        <pre><code>#include &lt;stdio.h&gt;
 
-    <br><br>
+int main() {
+    printf("Hello, world!");
+    return 0;
+}</code></pre>
+    </div>
+
+    <br>
+    <hr class="stylized">
 
     <div class="horizontal-flex cross-centered">
         <span class="material-symbols-outlined heading opacity-low font-wt500">functions</span>

@@ -17,7 +17,7 @@ const h0Regex = /^#!(.*$)/gim;
 const h1Regex = /^#(.*$)/gim;
 const h2Regex = /^##(.*$)/gim;
 const h3Regex = /^###(.*$)/gim;
-const paraRegex = /(^[\p{L}\p{N}\w\d=_~*\[\$].*)/gimu;
+const paraRegex = /(^[\p{L}\p{N}\w\d=_~*`\[\$].*)/gimu;
 const lineBreakRegex = /^\s*?\n(?=\s)/gim;
 const tagLineRegex = /^@(.*$)/gim;
 const tagRegex = /@.*?(?=@|$)/gim;
@@ -27,7 +27,7 @@ const ulistRegex = /^\-(.*\n(^[^\S\n\r]*\n)?\-)*.*/gim;
 const olistRegex = /^\d+(\.|\))(.*\n(^[^\S\n\r]*\n)?\d+(\.|\)))*.*/gim;
 const displayLatexRegex = /^\$\$\n?(.*)\n?\$\$$/gim;
 const horizontalRuleRegex = /(^\-|^\_)\1{2,}/gim;
-const codeBlockRegex = /^```((.*\n)*?)```/gim;
+const codeBlockRegex = /^```((.*\n?)*?)```/gim;
 const blockquoteRegex = /^(>.*)(\n>.*)*/gim;
 
 const inlineLatexRegex = /\$(.*?)\$/gim;
@@ -54,7 +54,7 @@ function renderEmphasis(semiText) {
 
     const htmlText = semiText
         .replace(inlineLatexRegex, '%%%')
-        .replace(inlineCodeRegex, (v, p1) => `<code class="inline-code-block">${p1.replaceAll('<', '\&lt').replaceAll('>', '\&gt').trim().split('\n').map(x => `<span>${x}</span>`).join('\n')}</code>`)
+        .replace(inlineCodeRegex, (v, p1) => `<code class="inline-code-block">${p1.replaceAll('<', '\&lt;').replaceAll('>', '\&gt;').trim().split('\n').map(x => `<span>${x}</span>`).join('\n')}</code>`)
         .replace(underlineEmphasisRegex, '<u>$1</u>')
         .replace(boldEmphasisRegex, '<b>$2</b>')
         .replace(italicEmphasisRegex, '<i>$1</i>')
@@ -69,8 +69,8 @@ function renderEmphasis(semiText) {
 
 function parseMarkdown(markdownText){
     const htmlText = markdownText
-        .replace(blockquoteRegex, (v) => `<blockquote>${parseMarkdown(v.trim().split('\n').map(x => x = x.slice(1, x.length)).join('\n'))}</blockquote>`)
-        .replace(codeBlockRegex, (v, p1) => `<pre><code>${p1.replaceAll('<', '\&lt').replaceAll('>', '\&gt').trim().split('\n').map(x => `<span>${x}</span>`).join('\n')}</code></pre>`)
+        .replace(blockquoteRegex, (v) => `<blockquote>${parseMarkdown(v.trim().split('\n').map(x => x = x.slice(1, x.length)).join('\n').replace(tagLineRegex, '&nbsp;$&'))}</blockquote>`)
+        .replace(codeBlockRegex, (v, p1) => `<pre><code>${p1.replaceAll('<', '\&lt;').replaceAll('>', '\&gt;').trim().split('\n').map(x => `<span>${x}</span>`).join('\n')}</code></pre>`)
         .replace(displayLatexRegex, (v, p1) => `<div class="display-equation">${p1.replaceAll('<', '\\lt ').replaceAll('>', '\\gt ')}</div>`)
         .replace(h3Regex, '<h3>$1</h3>').replace(h2Regex, '<h2>$1</h2>')
         .replace(h0Regex, '<h1 style="font-size: calc(clamp(2.2em, 11vw, 3.1em))">$1</h1>').replace(h1Regex, '<h1>$1</h1>')
