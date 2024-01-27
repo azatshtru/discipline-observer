@@ -27,6 +27,8 @@ const ulistRegex = /^\-(.*\n(^[^\S\n\r]*\n)?\-)*.*/gim;
 const olistRegex = /^\d+(\.|\))(.*\n(^[^\S\n\r]*\n)?\d+(\.|\)))*.*/gim;
 const displayLatexRegex = /^\$\$\n?(.*)\n?\$\$$/gim;
 const horizontalRuleRegex = /(^\-|^\_)\1{2,}/gim;
+const codeBlockRegex = /^```((.*\n)*?)```/gim;
+const blockquoteRegex = /^(>.*)(\n>.*)*/gim;
 
 const inlineLatexRegex = /\$(.*?)\$/gim;
 const boldEmphasisRegex = /(\*{1,2})(.*?)\1/gim;
@@ -34,6 +36,7 @@ const italicEmphasisRegex = /\_(.*?)\_/gim;
 const underlineEmphasisRegex = /\_\_(.*?)\_\_/gim;
 const strikethroughEmphasisRegex = /\~(.*?)\~/gim;
 const highlightEmphasisRegex = /\=\=(.*?)\=\=/gim;
+const inlineCodeRegex = /`(.*?)`/gim;
 const hyperlinkRegex = /\[(.*?)\]\((.*?)\)/gim;
 
 const emphasisSusceptibleTagsRegex = /\<(p|h1|h2|h3|li|td)\>(.*?)\<\/\1\>/gim;
@@ -51,6 +54,7 @@ function renderEmphasis(semiText) {
 
     const htmlText = semiText
         .replace(inlineLatexRegex, '%%%')
+        .replace(inlineCodeRegex, (v, p1) => `<code class="inline-code-block">${p1.replaceAll('<', '\&lt').replaceAll('>', '\&gt').trim().split('\n').map(x => `<span>${x}</span>`).join('\n')}</code>`)
         .replace(underlineEmphasisRegex, '<u>$1</u>')
         .replace(boldEmphasisRegex, '<b>$2</b>')
         .replace(italicEmphasisRegex, '<i>$1</i>')
@@ -65,6 +69,8 @@ function renderEmphasis(semiText) {
 
 function parseMarkdown(markdownText){
     const htmlText = markdownText
+        .replace(blockquoteRegex, (v) => `<blockquote>${parseMarkdown(v.trim().split('\n').map(x => x = x.slice(1, x.length)).join('\n'))}</blockquote>`)
+        .replace(codeBlockRegex, (v, p1) => `<pre><code>${p1.replaceAll('<', '\&lt').replaceAll('>', '\&gt').trim().split('\n').map(x => `<span>${x}</span>`).join('\n')}</code></pre>`)
         .replace(displayLatexRegex, (v, p1) => `<div class="display-equation">${p1.replaceAll('<', '\\lt ').replaceAll('>', '\\gt ')}</div>`)
         .replace(h3Regex, '<h3>$1</h3>').replace(h2Regex, '<h2>$1</h2>')
         .replace(h0Regex, '<h1 style="font-size: calc(clamp(2.2em, 11vw, 3.1em))">$1</h1>').replace(h1Regex, '<h1>$1</h1>')
@@ -356,7 +362,7 @@ function updateCheckboxes(s) {
         x.dataset.checkindex = i.toString();
         x.onclick = () => {
             let content = notesDataObjectModel.notes[s.currentActiveNoteIndex].content;
-            const checkboxes = content.matchAll(checkboxRegex);
+            const checkboxes = content.matchAll(/^(\>*\s*\-?\s*\[)(\s?|x)\](.*$)/gim);
             for(let i = 0; i<x.dataset.checkindex; i++) {checkboxes.next()}
             const checkbox = checkboxes.next().value;
             const i = checkbox.index + checkbox[0].search(/\[/);
@@ -367,6 +373,18 @@ function updateCheckboxes(s) {
     })
 }
 state.subscribe(updateCheckboxes);
+
+
+markdownTextarea.onkeydown = (e) => {
+    if(e.key == 'Tab') {
+        e.preventDefault();
+        const start = markdownTextarea.selectionStart;
+        const end = markdownTextarea.selectionEnd;
+
+        markdownTextarea.value = markdownTextarea.value.substring(0, start) + '\t' + markdownTextarea.value.substring(end);
+        markdownTextarea.selectionStart = markdownTextarea.selectionEnd = start + 1;
+    }
+}
 
 markdownSubmitButton.addEventListener('click', () => {
     state.updateNotes(markdownTextarea.value);
