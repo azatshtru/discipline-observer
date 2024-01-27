@@ -17,7 +17,7 @@ const h0Regex = /^#!(.*$)/gim;
 const h1Regex = /^#(.*$)/gim;
 const h2Regex = /^##(.*$)/gim;
 const h3Regex = /^###(.*$)/gim;
-const paraRegex = /(^[\p{L}\p{N}\w\d=_~*`\[\$].*)/gimu;
+const paraRegex = /(^[\p{L}\p{N}\w\d=_~*`:\[\$].*)/gimu;
 const lineBreakRegex = /^\s*?\n(?=\s)/gim;
 const tagLineRegex = /^@(.*$)/gim;
 const tagRegex = /@.*?(?=@|$)/gim;
@@ -36,6 +36,7 @@ const italicEmphasisRegex = /\_(.*?)\_/gim;
 const underlineEmphasisRegex = /\_\_(.*?)\_\_/gim;
 const strikethroughEmphasisRegex = /\~(.*?)\~/gim;
 const highlightEmphasisRegex = /\=\=(.*?)\=\=/gim;
+const googleMaterialIconEmbedRegex = /::(.*?)::/gim;
 const inlineCodeRegex = /`(.*?)`/gim;
 const hyperlinkRegex = /\[(.*?)\]\((.*?)\)/gim;
 
@@ -60,6 +61,7 @@ function renderEmphasis(semiText) {
         .replace(italicEmphasisRegex, '<i>$1</i>')
         .replace(strikethroughEmphasisRegex, '<s>$1</s>')
         .replace(highlightEmphasisRegex, '<mark>$1</mark>')
+        .replace(googleMaterialIconEmbedRegex, '<span style="margin: 0; padding: 0; font-size: 165%; font-weight: inherit; vertical-align: text-bottom; line-height: 0.94em" class="material-symbols-outlined">$1</span>')
         .replace(hyperlinkRegex, (v, p1, p2) => `<a href="${p2.trim()}" target="_blank">${p1}</a>`)
         .split('%%%').map((x, i) => x.concat(latices[i]?latices[i][0]:'')).join('')
         .replace(inlineLatexRegex, (v, p1) => `<span class="inline-equation">${p1.replaceAll('<', '\\lt ').replaceAll('>', '\\gt ')}</span>`)
