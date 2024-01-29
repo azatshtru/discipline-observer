@@ -27,7 +27,7 @@ const ulistRegex = /^\-(.*\n(^[^\S\n\r]*\n)?\-)*.*/gim;
 const olistRegex = /^\d+(\.|\))(.*\n(^[^\S\n\r]*\n)?\d+(\.|\)))*.*/gim;
 const displayLatexRegex = /^\$\$\n?(.*)\n?\$\$$/gim;
 const horizontalRuleRegex = /(^\-|^\_)\1{2,}/gim;
-const codeBlockRegex = /^```((.*\n?)*?)```/gim;
+const codeBlockRegex = /^```(.*?)(\n?.*?)*?```/gim;
 const blockquoteRegex = /^(>.*)(\n>.*)*/gim;
 
 const inlineLatexRegex = /\$(.*?)\$/gim;
