@@ -27,7 +27,7 @@ const ulistRegex = /^\-(.*\n(^[^\S\n\r]*\n)?\-)*.*/gim;
 const olistRegex = /^\d+(\.|\))(.*\n(^[^\S\n\r]*\n)?\d+(\.|\)))*.*/gim;
 const displayLatexRegex = /^\$\$\n?(.*)\n?\$\$$/gim;
 const horizontalRuleRegex = /(^\-|^\_)\1{2,}/gim;
-const codeBlockRegex = /^```(.*?)(\n?.*?)*?```/gim;
+const codeBlockRegex = /^```(.*\n)*?(.*?)```$/gim;
 const blockquoteRegex = /^(>.*)(\n>.*)*/gim;
 
 const inlineLatexRegex = /\$(.*?)\$/gim;
@@ -55,7 +55,7 @@ function renderEmphasis(semiText) {
 
     const htmlText = semiText
         .replace(inlineLatexRegex, '%%%')
-        .replace(inlineCodeRegex, (v, p1) => `<code class="inline-code-block">${p1.replaceAll('<', '\&lt;').replaceAll('>', '\&gt;').trim().split('\n').map(x => `<span>${x}</span>`).join('\n')}</code>`)
+        .replace(inlineCodeRegex, (v, p1) => `<code class="inline-code-block"><span>${p1.replaceAll('<', '\&lt;').replaceAll('>', '\&gt;').trim()}</span></code>`)
         .replace(underlineEmphasisRegex, '<u>$1</u>')
         .replace(boldEmphasisRegex, '<b>$2</b>')
         .replace(italicEmphasisRegex, '<i>$1</i>')
