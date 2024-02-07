@@ -60,6 +60,9 @@ body {
     max-width: 600px;
 
     font-size: medium;
+
+    color: black;
+    background-color: white;
 }
 
 .container form > input[type="submit"] {
@@ -120,6 +123,9 @@ body {
     font-size: 1.5em;
     text-align: center;
     width: 100%;
+
+    color: black;
+    background-color: white;
 
     transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }

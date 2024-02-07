@@ -17,11 +17,11 @@ const h0Regex = /^#!(.*$)/gim;
 const h1Regex = /^#(.*$)/gim;
 const h2Regex = /^##(.*$)/gim;
 const h3Regex = /^###(.*$)/gim;
-const paraRegex = /(^[\p{L}\p{N}\w\d=_~*`:\[\$].*)/gimu;
+const paraRegex = /(^[ \t]*[\p{L}\p{N}\w\d=_~*`:\[\$].*)/gimu;
 const lineBreakRegex = /^\s*?\n(?=\s)/gim;
 const tagLineRegex = /^@(.*$)/gim;
 const tagRegex = /@.*?(?=@|$)/gim;
-const checkboxRegex = /^(\s*\-?\s*\[)(\s?|x)\](.*$)/gim;
+const checkboxRegex = /^( *\-? *\[)( ?|x)\](.*$)/gim;
 const tableRegex = /^\|(.*\n\|)*.*/gim;
 const ulistRegex = /^\-(.*\n(^[^\S\n\r]*\n)?\-)*.*/gim;
 const olistRegex = /^\d+(\.|\))(.*\n(^[^\S\n\r]*\n)?\d+(\.|\)))*.*/gim;
@@ -82,7 +82,7 @@ function parseMarkdown(markdownText){
         .replace(paraRegex, '<p>$1</p>')
         .replace(lineBreakRegex, '<br>')
         .replace(tagLineRegex, (v) => v.replace(tagRegex, v1 => ` <span class="chip inverted-color display-inline-block">${v1.replace(inlineLatexRegex, '').replace(specialCharacterRegex, '')}</span> `)+'<br>')
-        .replace(tableRegex, (v) => `<div style="overflow:scroll"><table>${v.split('\n').map(row => `<tr>${row.slice(1, row.length-(row[row.length-1]=='|')).split('|').map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</table></div>`)
+        .replace(tableRegex, (v) => `<div style="overflow:visible"><table>${v.split('\n').map(row => `<tr>${row.slice(1, row.length-(row[row.length-1]=='|')).split('|').map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</table></div>`)
         .replace(ulistRegex, (v) => `<ul>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ul>`)
         .replace(emphasisSusceptibleTagsRegex, (v, p1, p2) => `<${p1}><span>${renderEmphasis(p2)}</span></${p1}>`)
             
@@ -297,7 +297,7 @@ function noteButton(content, index, callback){
 
 function footer(){
     const footer = document.createElement('div');
-    footer.style.height = '1in';
+    footer.style.height = '1.6in';
     return footer;
 }
 

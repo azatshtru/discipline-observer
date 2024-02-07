@@ -185,7 +185,7 @@ hr.stylized {
     border: none;
     border-top: 3px solid gainsboro;
     color: #bbb;
-    overflow: visible;
+    overflow: hidden;
     text-align: center;
     font-size: small;
     height: 5px;
@@ -517,6 +517,10 @@ a.icon-button {
 
 .padding-footer {
     padding-bottom: 1in;
+}
+
+.padding-footerx2 {
+    padding-bottom: 1.7in;
 }
 
 .padding-top-2em {
