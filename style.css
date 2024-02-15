@@ -80,7 +80,7 @@ ol > li {
 }
   
 ol > li:before {
-    content: counter(item);
+    content: attr(value);
     border: 1px solid black;
     box-shadow: 1px 2px black;
     font-size: 0.95em;

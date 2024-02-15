@@ -40,7 +40,7 @@ const googleMaterialIconEmbedRegex = /::(.*?)::/gim;
 const inlineCodeRegex = /`(.*?)`/gim;
 const hyperlinkRegex = /\[(.*?)\]\((.*?)\)/gim;
 
-const emphasisSusceptibleTagsRegex = /\<(p|h1|h2|h3|li|td)\>(.*?)\<\/\1\>/gim;
+const emphasisSusceptibleTagsRegex = /\<(p|h1|h2|h3|li|td)(.*?)\>(.*?)\<\/\1\>/gim;
 const specialCharacterRegex = /[\$\&\[\]\%\^\*\(\)\#\\\/]/gim;
 
 const getTitle = (x) => {
@@ -77,14 +77,14 @@ function parseMarkdown(markdownText){
         .replace(h3Regex, '<h3>$1</h3>').replace(h2Regex, '<h2>$1</h2>')
         .replace(h0Regex, '<h1 style="font-size: calc(clamp(2.2em, 11vw, 3.1em))">$1</h1>').replace(h1Regex, '<h1>$1</h1>')
         .replace(horizontalRuleRegex, '<hr class="stylized" rulemark="">')
-        .replace(olistRegex, (v) => `<ol>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.replace(/^\d+/gim, '').slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ol>`)
+        .replace(olistRegex, (v) => `<ol>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li value="${x.match(/^\d+/gim)[0]}">${x.replace(/^\d+/gim, '').slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ol>`)
         .replace(checkboxRegex, (v, p1, p2, p3) => `<div class="horizontal-flex cross-centered nowrap"><button class="checkbox-outline" data-check="${p2=='x'?'x':'o'}"><span class="material-symbols-outlined">check</span></button><p>${p3}</p></div>`)
         .replace(paraRegex, '<p>$1</p>')
         .replace(lineBreakRegex, '<br>')
         .replace(tagLineRegex, (v) => v.replace(tagRegex, v1 => ` <span class="chip inverted-color display-inline-block">${v1.replace(inlineLatexRegex, '').replace(specialCharacterRegex, '')}</span> `)+'<br>')
         .replace(tableRegex, (v) => `<div style="overflow:visible"><table>${v.split('\n').map(row => `<tr>${row.slice(1, row.length-(row[row.length-1]=='|')).split('|').map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</table></div>`)
         .replace(ulistRegex, (v) => `<ul>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ul>`)
-        .replace(emphasisSusceptibleTagsRegex, (v, p1, p2) => `<${p1}><span>${renderEmphasis(p2)}</span></${p1}>`)
+        .replace(emphasisSusceptibleTagsRegex, (v, p1, p2, p3) => `<${p1} ${p2}><span>${renderEmphasis(p3)}</span></${p1}>`)
             
     return htmlText.trim();
 }
