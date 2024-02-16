@@ -29,6 +29,7 @@ const displayLatexRegex = /^\$\$\n?(.*)\n?\$\$$/gim;
 const horizontalRuleRegex = /(^\-|^\_)\1{2,}/gim;
 const codeBlockRegex = /^```(.*\n)*?(.*?)```$/gim;
 const blockquoteRegex = /^(>.*)(\n>.*)*/gim;
+const progressBarRegex = /^( *\-? *\[)((\d+)\/(\d+))\](.*$)/gim;
 
 const inlineLatexRegex = /\$(.*?)\$/gim;
 const boldEmphasisRegex = /(\*{1,2})(.*?)\1/gim;
@@ -79,6 +80,7 @@ function parseMarkdown(markdownText){
         .replace(horizontalRuleRegex, '<hr class="stylized" rulemark="">')
         .replace(olistRegex, (v) => `<ol>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li value="${x.match(/^\d+/gim)[0]}">${x.replace(/^\d+/gim, '').slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ol>`)
         .replace(checkboxRegex, (v, p1, p2, p3) => `<div class="horizontal-flex cross-centered nowrap"><button class="checkbox-outline" data-check="${p2=='x'?'x':'o'}"><span class="material-symbols-outlined">check</span></button><p>${p3}</p></div>`)
+        .replace(progressBarRegex, (v, p1, p2, p3, p4, p5) => `<div class="progress-container"><span><span>${p3}</span><span>${p4}</span></span><div class="progress-t"><span>${p5}</span><div class="progress-bar"><div style="--perc:${100*p3/p4}%"></div></div></div><button data-value="${p3}" data-max="${p4}"><span class="material-symbols-outlined">flag</span></button></div>`)
         .replace(paraRegex, '<p>$1</p>')
         .replace(lineBreakRegex, '<br>')
         .replace(tagLineRegex, (v) => v.replace(tagRegex, v1 => ` <span class="chip inverted-color display-inline-block">${v1.replace(inlineLatexRegex, '').replace(specialCharacterRegex, '')}</span> `)+'<br>')
@@ -336,9 +338,9 @@ function openNote(s){
         markdownRenderBox.innerHTML = parseMarkdown(notesDataObjectModel.notes[s.currentActiveNoteIndex].content);
 
         setTimeout(() => {
-            markdownRenderBox.querySelectorAll('.display-equation').forEach((x, i) => setTimeout(() => katex.render(String.raw`${x.textContent}`, x, { throwOnError: false, displayMode: true, strict: (errorCode) => errorCode=="newLineInDisplayMode"?'ignore':'warn', }), i*50));
-            markdownRenderBox.querySelectorAll('.inline-equation').forEach((x, i) => katex.render(String.raw`${x.textContent}`, x, { throwOnError: false, displayMode: false, newLineInDisplayMode: true, }, i*50));
-        }, 500)
+            markdownRenderBox.querySelectorAll('.display-equation').forEach((x, i) => setTimeout(() => katex.render(String.raw`${x.textContent}`, x, { throwOnError: false, displayMode: true, strict: (errorCode) => errorCode=="newLineInDisplayMode"?'ignore':'warn', }), i));
+            markdownRenderBox.querySelectorAll('.inline-equation').forEach((x, i) => katex.render(String.raw`${x.textContent}`, x, { throwOnError: false, displayMode: false, newLineInDisplayMode: true, }, i));
+        }, 0)
 
         markdownRenderBox.appendChild(footer());
 
@@ -376,6 +378,23 @@ function updateCheckboxes(s) {
 }
 state.subscribe(updateCheckboxes);
 
+function updateProgress (s) {
+    document.querySelectorAll('.progress-container > button').forEach((x, i) => {
+        x.dataset.progressIndex = i.toString();
+        x.onclick = () => {
+            let content = notesDataObjectModel.notes[s.currentActiveNoteIndex].content;
+            const progresses = content.matchAll(/^(\>*\s*\-?\s*\[)(\d+\/\d+)\](.*$)/gim);
+            for(let i = 0; i<x.dataset.progressIndex; i++) {progresses.next()}
+            const progress = progresses.next().value;
+            const i = progress.index + progress[0].search(/\[/);
+            const j = progress.index + progress[0].search(/\]/);
+            const v = Math.min(parseInt(x.dataset.value) + 1, x.dataset.max);
+            content = content.slice(0, i+1).concat(v).concat(`\/${x.dataset.max}`).concat(content.slice(j, content.length));
+            state.updateNotes(content);
+        }
+    })
+}
+state.subscribe(updateProgress);
 
 markdownTextarea.onkeydown = (e) => {
     if(e.key == 'Tab') {

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@100;200;300;500;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@100;200;300;400;500;600;700;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
@@ -130,6 +130,7 @@ pre {
     border: 1px solid whitesmoke;
     position: relative;
     overflow: hidden;
+    tab-size: 2;
 
     transition: background-color 0.1s ease-in;
 }
@@ -200,6 +201,113 @@ hr.stylized::after {
     padding: 0 0px;
     position: relative;
     top: -13px;
+}
+  
+.progress-container {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    
+    border-block: 2px dashed gainsboro;
+    border-radius: 4px;
+    padding-block: 0.85em;
+    padding-right: 1.4em;
+    
+    margin-block: 5px;
+    min-width: min-content;
+    width: 92%;
+}
+  
+.progress-container > span {
+    font-size: 1.7em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-right: 2px solid black;
+    padding-left: 0.3em;
+    padding-right: 0.4em;
+    margin-right: 0.2em;
+    gap: 0;
+}
+  
+.progress-container > span > span {
+    font-weight: 500;
+}
+  
+.progress-container > span > span + span {
+    font-size: small;
+    color: gray;
+}
+  
+.progress-t {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+}
+  
+.progress-t > span {
+    font-size: medium;
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    width: 100%;
+}
+  
+.progress-bar {
+    position: relative;
+    height: 12px;
+    background: whitesmoke;
+    min-width: 100px;
+    width: 100%;
+    border: 2px solid black;
+    box-shadow: 0px 1px black, 0px 2px 7px 0px gainsboro;
+    border-radius: 13px;
+
+    overflow: hidden;
+}
+  
+@keyframes scroll-progress {
+    0% {
+        background-position: 0px 0px;
+    }
+    100% {
+        background-position: 200px -1px;
+    }
+}
+  
+.progress-bar > div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    
+    width: var(--perc);
+    background: radial-gradient(gray 42%, gainsboro 50%);
+    background-size: 5px 5px;
+    border-right: 2px solid black;
+    
+    animation: scroll-progress 32s linear infinite;
+}
+  
+.progress-container > button {
+    border: 2px solid gainsboro;
+    background: white;
+    transform: rotate(-4deg);
+    border-radius: 5px;
+    width: fit-content;
+    height: fit-content;
+    padding: 0.6em;
+    line-height: 0;
+    box-shadow: 0px 2px gray, 0px 1px 5px gainsboro;
+    margin-left: 0.23em;
+    
+    transition: transform 0.1s ease-out, border 0.16s ease-out;
+}
+  
+.progress-container > button:active {
+    transform: rotate(-8deg) translateY(2px);
+    box-shadow: 0px 2px whitesmoke, 0px 1px 3px gainsboro;
+    border: 2px solid white;
 }
 
 .display-equation * {
