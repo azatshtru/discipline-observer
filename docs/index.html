@@ -248,7 +248,22 @@ int main() {
             <span style="font-size: 2em;" class="material-symbols-outlined">strategy</span> &ensp;and&ensp;
             <span style="font-size: 2em;" class="material-symbols-outlined">playing_cards</span>
     </div>
-
+    <br>
+    <h2>Progress bars</h2>
+    <p>Progress bars can be used to track incremental progress for projects or habits.</p>
+    <p>Two numbers separated by a slash between a pair of square-brackets in the start of a line can be used to create a progress bar.</p>
+    <p><span class="bordered-bg-white padin-half-em nobreakspan">[42/100] Sets of pull-ups</span> is rendered as:</p><br>
+    <div class="progress-container">
+        <span><span>42</span><span>100</span></span>
+        <div class="progress-t">
+        <span>Sets of pull-ups</span>
+        <div class="progress-bar">
+        <div style="--perc:42%"></div>
+        </div>
+        </div>
+        <button><span class="material-symbols-outlined">flag</span></button>
+    </div>
+    <p>In your notes, you can press the flag to increase progress by one.</p>
     <br>
     <hr class="stylized">
 
