@@ -96,6 +96,7 @@ const state = {
     tagSearchText: "",
     currentActiveNoteIndex: 0,
     noteViewMode: 'none',
+    renderOnPublish: true,
 
     subscribers: [],
 
@@ -109,6 +110,10 @@ const state = {
     },
 
     publish(){
+        if(!this.renderOnPublish) { 
+            this.renderOnPublish = true;
+            return; 
+        }
         this.hydrateActiveTags();
         this.subscribers.forEach(fn => fn(this));
     },
@@ -378,11 +383,12 @@ function updateCheckboxes(s) {
 }
 state.subscribe(updateCheckboxes);
 
+let progressBuffer = '';
 function updateProgress (s) {
     document.querySelectorAll('.progress-container > button').forEach((x, i) => {
         x.dataset.progressIndex = i.toString();
         x.onclick = () => {
-            let content = notesDataObjectModel.notes[s.currentActiveNoteIndex].content;
+            let content = progressBuffer=='' ? notesDataObjectModel.notes[s.currentActiveNoteIndex].content : progressBuffer;
             const progresses = content.matchAll(/^(\>*\s*\-?\s*\[)(\d+\/\d+)\](.*$)/gim);
             for(let i = 0; i<x.dataset.progressIndex; i++) {progresses.next()}
             const progress = progresses.next().value;
@@ -390,6 +396,15 @@ function updateProgress (s) {
             const j = progress.index + progress[0].search(/\]/);
             const v = Math.min(parseInt(x.dataset.value) + 1, x.dataset.max);
             content = content.slice(0, i+1).concat(v).concat(`\/${x.dataset.max}`).concat(content.slice(j, content.length));
+            progressBuffer = content;
+            x.dataset.value = parseInt(x.dataset.value) + 1;
+
+            const progressValue = x.parentElement.firstChild.firstChild;
+            progressValue.textContent = x.dataset.value;
+            const progressBar = x.parentElement.querySelector('.progress-bar > div');
+            progressBar.style.setProperty('--perc', `${x.dataset.value*100/x.dataset.max}%`);
+
+            state.renderOnPublish = false;
             state.updateNotes(content);
         }
     })
