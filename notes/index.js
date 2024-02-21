@@ -393,7 +393,7 @@ function updateProgress (s) {
             const progress = progresses.next().value;
             const i = progress.index + progress[0].search(/\[/);
             const j = progress.index + progress[0].search(/\]/);
-            const v = Math.min(parseInt(x.dataset.value) + 1, x.dataset.max);
+            const v = parseInt(x.dataset.value) + 1;
             content = content.slice(0, i+1).concat(v).concat(`\/${x.dataset.max}`).concat(content.slice(j, content.length));
             x.dataset.value = parseInt(x.dataset.value) + 1;
 
