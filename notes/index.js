@@ -1,4 +1,5 @@
 import { downloadWhere, upload, downloadDocument, deleteDocument, downloadFirst, paginatedDownload, setAuthInit, getAuthUser } from "../firebase.js"
+import { validateDate, weekday, monthName } from "../utils.js";
 
 const firebaseDelegates = [];
 
@@ -11,6 +12,7 @@ async function callFirebase(f){
 const notesDataObjectModel = {
     notes: {},
     tags: {},
+    commands: {},
 }
 
 const h0Regex = /^#!(.*$)/gim;
@@ -30,6 +32,7 @@ const horizontalRuleRegex = /(^\-|^\_)\1{2,}/gim;
 const codeBlockRegex = /^```(.*\n)*?(.*?)```$/gim;
 const blockquoteRegex = /^(>.*)(\n>.*)*/gim;
 const progressBarRegex = /^( *\-? *\[)((\d+)\/(\d+))\](.*$)/gim;
+const commandTagRegex = /^(\@\[.*?\]).*?$/gim;
 
 const inlineLatexRegex = /\$(.*?)\$/gim;
 const boldEmphasisRegex = /(\*{1,2})(.*?)\1/gim;
@@ -83,6 +86,7 @@ function parseMarkdown(markdownText){
         .replace(progressBarRegex, (v, p1, p2, p3, p4, p5) => `<div class="progress-container"><span><span>${p3}</span><span>${p4}</span></span><div class="progress-t"><span>${p5}</span><div class="progress-bar"><div style="--perc:${100*p3/p4}%"></div></div></div><button data-value="${p3}" data-max="${p4}"><span class="material-symbols-outlined">flag</span></button></div>`)
         .replace(paraRegex, '<p>$1</p>')
         .replace(lineBreakRegex, '<br>')
+        .replace(commandTagRegex, v => `<div class="commandbox">${v.match(/\@\[.+?\]/gim).map(x => `<span data-command="${x.trim().slice(2, -1)}">${x.trim().slice(2, -1)}</span>`).join('')}</div>`)
         .replace(tagLineRegex, (v) => v.replace(tagRegex, v1 => ` <span class="chip inverted-color display-inline-block">${v1.replace(inlineLatexRegex, '').replace(specialCharacterRegex, '')}</span> `)+'<br>')
         .replace(tableRegex, (v) => `<div style="overflow:visible"><table>${v.split('\n').map(row => `<tr>${row.slice(1, row.length-(row[row.length-1]=='|')).split('|').map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</table></div>`)
         .replace(ulistRegex, (v) => `<ul>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ul>`)
@@ -157,7 +161,7 @@ const state = {
         });
         notesDataObjectModel.notes[this.currentActiveNoteIndex].content = str;
         notesDataObjectModel.notes[this.currentActiveNoteIndex].tags = [];
-        const localTaglist = [...new Set(str.match(tagLineRegex)?.map(x => x.split('@'))
+        const localTaglist = [...new Set(str.replace(commandTagRegex, '')?.match(tagLineRegex)?.map(x => x.split('@'))
             .flat().map(x => x.replace(inlineLatexRegex, '').replace(specialCharacterRegex, '').trim()).filter(x => x != ""))];
         localTaglist?.map(x => x.trim()).forEach(x => {
             notesDataObjectModel.notes[this.currentActiveNoteIndex].tags.push(x);
@@ -408,6 +412,30 @@ function updateProgress (s) {
     })
 }
 state.subscribe(updateProgress);
+
+function executeCommand(command) {
+    const datetime = validateDate(command.trim());
+    if(datetime) {
+        const commandbox = document.querySelector('span[data-command="'+command+'"]');
+        if(!commandbox) { return; }
+        commandbox.innerHTML = '<span class="material-symbols-outlined">event</span>'+commandbox.innerHTML;
+        commandbox.style.display = 'flex';
+        commandbox.style.alignItems = 'center';
+        commandbox.style.gap = '8px';
+    }
+}
+
+function updateCommands(s) {
+    notesDataObjectModel.commands[s.currentActiveNoteIndex] = [];
+    notesDataObjectModel.notes[s.currentActiveNoteIndex]?.content.match(commandTagRegex)?.forEach(x => {
+        x.match(/\@\[.+?\]/gim).map(c => c.trim().slice(2, -1).trim()).forEach(command => {
+            notesDataObjectModel.commands[s.currentActiveNoteIndex].push(command);
+            executeCommand(command);
+        });
+    });
+    callFirebase(async () => upload(['base', 'commands'], notesDataObjectModel.commands));
+}
+state.subscribe(updateCommands);
 
 markdownTextarea.onkeydown = (e) => {
     if(e.key == 'Tab') {
