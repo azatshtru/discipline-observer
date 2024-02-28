@@ -1,0 +1,357 @@
+body {
+    height: 100vh;
+    width: 90vw;
+    padding: 0;
+    overflow: hidden;
+    margin: 0;
+}
+
+.calendar {
+    height: 100%;
+    margin-inline: 20px;
+    --calwidth: 350px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.calendar-heading {
+    display: flex;
+    align-items: center;
+
+    padding-left: 20px;
+    position: fixed;
+    background: white;
+    width: 100%;
+    height: min-content;
+    z-index: 1000;
+
+    padding-left: 20px;
+    padding-top: 14px;
+    padding-bottom: 12px;
+    border-bottom: 4px solid black;
+}
+
+.calendar-heading > a {
+    border: none;
+    font-weight: 400;
+    background: transparent;
+    font-size: 2.3em;
+    line-height: 0em;
+
+    text-decoration: none;
+    color: initial;
+}
+
+.calendar-heading > div + div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.calendar-heading > div + div > button {
+    border-radius: 85px;
+    width: 25px;
+    height: 25px;
+    background: white;
+    border: none;
+    font-size: 2em;
+    line-height: 0;
+    line-height: 0;
+}
+
+.calendar-heading > div > h3 {
+    font-family: 'Inter', monospace;
+    color: black;
+    margin: 0;
+    font-weight: 500;
+}
+
+.calendar-heading > div > h1 {
+    font-family: 'Inter', monospace;
+    margin: 0;
+    line-height: 0.8em;
+    font-size: 2.3em;
+    font-weight: 800;
+}
+
+.calendar-month {
+    padding-top: 0.2em;
+    padding-left: 0.3em;
+    width: max(100%, 300px);
+    margin-bottom: 1em;
+}
+
+.calendar-month > h1 {
+    font-family: 'Orelega One', serif;
+    font-weight: 800;
+    font-size: 2.7em;
+    margin: 0;
+}
+
+.calendar-month > div {
+    width: 100%;
+    display: flex;
+    gap: 5px;
+}
+
+.calendar-month-week {
+    width: 1em;
+    height: var(--calwidth);
+    background: black;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding-inline: 2px;
+}
+
+.calendar-month-week > div {
+    color: white;
+    transform: rotate(-90deg) translate(-40%);
+    line-height: 0;
+    font-weight: 600;
+    font-family: 'Red Hat Mono', monospace;
+}
+
+.calendar-month-days {
+    height: var(--calwidth);
+    width: calc(var(--calwidth)*(6/7));
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    gap: 6px;
+    position: relative;
+}
+
+.calendar-day {
+    background: transparent;
+    box-sizing: border-box;
+    padding: 4px;
+    padding-top: 12px;
+    position: relative;
+}
+
+.calendar-day > span {
+    position: absolute;
+    top: 0px;
+    left: 1px;
+    font-size: x-small;
+    color: #aaa;
+}
+
+.calendar-day > p {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    height: 100%;
+    width: 100%;
+    font-size: 0.53em;
+    font-weight: 800;
+    color: black;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+
+    position: relative;
+}
+
+.calendar-day > p > span {
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+.calendar-day > p > div {
+    font-size: large;
+    font-weight: 800;
+    position: absolute;
+    color: black;
+    text-shadow: 1px 1px black, -1px -1px black, 1px -1px black, -1px 1px black;
+    text-shadow: 2px 2px 5px gainsboro;
+    inset: 0;
+    transform: rotate(-4deg);
+}
+
+.calendar-day > p > .material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 1,
+  'wght' 900,
+  'GRAD' 200,
+  'opsz' 24
+}
+
+.timeline {
+    position: fixed;
+    height: 100%;
+    min-width: 300px;
+    width: calc(100% - 400px);
+    right: 0;
+    top: 0;
+    box-sizing: border-box;
+
+    border-left: 2px solid black;
+    z-index: 2000;
+    background: white;
+
+    padding-inline: min(2vw, 20px);
+}
+
+.day-container {
+    width: 100%;
+    height: 100%;
+}
+  
+.calendar-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    border: 2px solid black;
+    border-radius: 2px;
+
+    box-shadow: 1px 1px gray, 2px 2px black, 5px 5px gainsboro;
+    transform: rotateY(18deg) rotateX(-18deg);
+}
+
+.calendar-icon > span {
+    background: gray;
+    color: white;
+    font-size: small;
+    padding-inline: 5px;
+    padding-block: 2px;
+    border-bottom: 1px solid gainsboro;
+    font-family: 'Fjalla One', sans-serif;
+}
+
+.calendar-icon > span + span {
+    background: white;
+    color: black;
+    font-size: large;
+    font-family: 'Fjalla One', sans-serif;
+}
+
+.dayname {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 15px;
+    padding-inline: min(12px, 2vw);
+}
+
+.dayname > span {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    letter-spacing: 6px;
+}
+
+.timeline > .day-container > div > .daybox > hr {
+    border: 1px solid black;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+
+.notebox {
+    border: 2px solid #aaa;
+    border-radius: 5px;
+    box-shadow: 1px 3px lavender, inset 0px -3px gainsboro, 1px 1px 5px gainsboro;
+    padding: 16px; 
+    padding-inline: 16px;
+    padding-top: 12px;
+    width: fit-content;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.notebox > span:nth-child(1) {
+    background: transparent;
+    color: black;
+    font-family: "Inter", monospace;
+    font-weight: 500;
+    padding-right: 0.4em;
+    margin-right: 0.7em;
+    font-size: 1em;
+
+    background: white;
+    color: black;
+}
+
+.notebox > span:nth-child(2) {
+    font-size: .71em;
+    font-family: "Hepta Slab", serif;
+    font-weight: 500;
+    width: fit-content;
+    background: transparent;
+    color: gray;
+}
+
+.timeline-open {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    line-height: 0;
+    border-radius: 25px;
+    width: 45px;
+    height: 45px;
+    background: white;
+    border: 2px solid black;
+    box-shadow: inset 0px -3px gainsboro, 1px 1px 5px whitesmoke;
+    display: none;
+
+    z-index: 3000;
+}
+
+.timeline-close {
+    position: absolute;
+    bottom: 42px;
+    inset-inline: 0;
+    margin-inline: auto;
+    line-height: 0;
+    border-radius: 25px;
+    width: 45px;
+    height: 45px;
+    background: white;
+    border: 2px solid black;
+    box-shadow: inset 0px -3px gainsboro, 1px 1px 5px whitesmoke;
+    display: none;
+    z-index: 3000;
+}
+
+@media (max-width: 651px){
+    .timeline {
+        display: none;
+    }
+
+    .timeline-close {
+        display: inline;
+    }
+
+    .calendar {
+        overflow: visible;
+    }
+
+    body {
+        overflow: scroll;
+    }
+}
+
+@media (max-width: 376px){
+    .calendar {
+        margin-inline: 4px;
+        width: 110vw;
+    }
+}
+
+@media (max-aspect-ratio: 9/8){
+    .notebox {
+        width: 100%;
+    }
+}

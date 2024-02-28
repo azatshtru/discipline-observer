@@ -2,25 +2,60 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>feature in progress</title>
+    <title>Calendar</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="../style.css" />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <span class="material-symbols-outlined large-symbol">handyman</span>
-    <br><br><br>
-    <h1 class="title">
-        Feature currently in progress
-    </h1>
-    <p>The feature you requested is being worked upon right now. It will be available soon enough (hopefully).</p>
-    <a href="/" class="icon-button">
-        <span class="material-symbols-outlined">home</span>
-        Home
-    </a>
-    <style>
-        .large-symbol {
-            transform: translate(150%, 150%) scale(300%);
-        }
-    </style>
+    <div class="calendar-heading">
+      <a href="/"><span class="material-symbols-outlined" style="font-size: inherit; font-weight: inherit; line-height: inherit;">close</span></a>
+      <div>
+        <h3>Calendar</h3>
+        <h1>2024</h1>
+      </div>
+      <div>
+        <button><span class="material-symbols-outlined" style="font-size: inherit; font-weight: inherit; line-height: inherit;">arrow_circle_up</span></button>
+        <button><span class="material-symbols-outlined" style="font-size: inherit; font-weight: inherit; line-height: inherit;">arrow_circle_down</span></button>
+      </div>
+    </div>
+    <div class="calendar">
+    </div>
+
+    <button class="timeline-open"><span class="material-symbols-outlined">browse_gallery</span></button>
+
+    <div class="timeline">
+      <button class="timeline-close"><span class="material-symbols-outlined">close</span></button>
+      <div class="day-container">
+        <div style="margin-top: 30px">
+        <div class="daybox">
+        <div class="dayname">
+        <div class="calendar-icon">
+        <span>MAY</span>
+        <span>28</span>
+        </div>
+        <span>WEDNESDAY</span>
+        </div>
+        <hr>
+        </div>
+        <div class="horizontal-flex">
+        <div class="notebox">
+          <span>Gym with the boys</span>
+          <span>8:20 to 10:30</span>
+        </div>
+        <div class="notebox">
+          <span>Amy's birthday</span>
+          <span>12:00 to 13:00</span>
+        </div>
+        <div class="notebox">
+          <span>Meeting with the board members</span>
+          <span>15:00</span>
+        </div>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="index.js"></script>
   </body>
 </html>

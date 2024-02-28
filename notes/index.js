@@ -75,7 +75,6 @@ function renderEmphasis(semiText) {
 
 function parseMarkdown(markdownText){
     const htmlText = markdownText
-        .replace(blockquoteRegex, (v) => `<blockquote>${parseMarkdown(v.trim().split('\n').map(x => x = x.slice(1, x.length)).join('\n').replace(tagLineRegex, '&nbsp;$&'))}</blockquote>`)
         .replace(codeBlockRegex, (v) => `<pre><code>${v.slice(3, -3).replaceAll('<', '\&lt;').replaceAll('>', '\&gt;').trim().split('\n').map(x => `<span>${x}</span>`).join('\n')}</code></pre>`)
         .replace(displayLatexRegex, (v, p1) => `<div class="display-equation">${p1.replaceAll('<', '\\lt ').replaceAll('>', '\\gt ')}</div>`)
         .replace(h3Regex, '<h3>$1</h3>').replace(h2Regex, '<h2>$1</h2>')
@@ -86,11 +85,12 @@ function parseMarkdown(markdownText){
         .replace(progressBarRegex, (v, p1, p2, p3, p4, p5) => `<div class="progress-container"><span><span>${p3}</span><span>${p4}</span></span><div class="progress-t"><span>${p5}</span><div class="progress-bar"><div style="--perc:${100*p3/p4}%"></div></div></div><button data-value="${p3}" data-max="${p4}"><span class="material-symbols-outlined">flag</span></button></div>`)
         .replace(paraRegex, '<p>$1</p>')
         .replace(lineBreakRegex, '<br>')
-        .replace(commandTagRegex, v => `<div class="commandbox">${v.match(/\@\[.+?\]/gim).map(x => `<span data-command="${x.trim().slice(2, -1)}">${x.trim().slice(2, -1)}</span>`).join('')}</div>`)
+        .replace(commandTagRegex, v => `<div class="commandbox">${v.match(/\@\[.+?\]/gim).map(x => `<span data-command="${x.trim().slice(2, -1)}"><span class="material-symbols-outlined"></span>${x.trim().slice(2, -1)}</span>`).join('')}</div>`)
         .replace(tagLineRegex, (v) => v.replace(tagRegex, v1 => ` <span class="chip inverted-color display-inline-block">${v1.replace(inlineLatexRegex, '').replace(specialCharacterRegex, '')}</span> `)+'<br>')
         .replace(tableRegex, (v) => `<div style="overflow:visible"><table>${v.split('\n').map(row => `<tr>${row.slice(1, row.length-(row[row.length-1]=='|')).split('|').map(x => `<td>${x}</td>`).join('')}</tr>`).join('')}</table></div>`)
         .replace(ulistRegex, (v) => `<ul>${v.replace(/^\s*\n/gm, '').split('\n').map(x => `<li>${x.slice(1, x.length)}</li><hr>`).join('').slice(0, -4)}</ul>`)
         .replace(emphasisSusceptibleTagsRegex, (v, p1, p2, p3) => `<${p1} ${p2}><span>${renderEmphasis(p3)}</span></${p1}>`)
+        .replace(blockquoteRegex, (v) => `<blockquote>${parseMarkdown(v.trim().split('\n').map(x => x = x.slice(1, x.length)).join('\n').replace(tagLineRegex, '&nbsp;$&'))}</blockquote>`)
             
     return htmlText.trim();
 }
@@ -414,25 +414,22 @@ function updateProgress (s) {
 state.subscribe(updateProgress);
 
 function executeCommand(command) {
-    const datetime = validateDate(command.trim());
+    if(!command) { return; }
+    const c = command.dataset.command;
+    const datetime = validateDate(c.trim());
     if(datetime) {
-        const commandbox = document.querySelector('span[data-command="'+command+'"]');
-        if(!commandbox) { return; }
-        commandbox.innerHTML = '<span class="material-symbols-outlined">event</span>'+commandbox.innerHTML;
-        commandbox.style.display = 'flex';
-        commandbox.style.alignItems = 'center';
-        commandbox.style.gap = '8px';
+        command.firstChild.textContent = 'event';
+    } else {
+        command.firstChild.textContent = 'error';
     }
 }
 
 function updateCommands(s) {
     notesDataObjectModel.commands[s.currentActiveNoteIndex] = [];
     notesDataObjectModel.notes[s.currentActiveNoteIndex]?.content.match(commandTagRegex)?.forEach(x => {
-        x.match(/\@\[.+?\]/gim).map(c => c.trim().slice(2, -1).trim()).forEach(command => {
-            notesDataObjectModel.commands[s.currentActiveNoteIndex].push(command);
-            executeCommand(command);
-        });
+        x.match(/\@\[.+?\]/gim).map(c => c.trim().slice(2, -1).trim()).forEach(command => notesDataObjectModel.commands[s.currentActiveNoteIndex].push(command));
     });
+    if(s.noteViewMode == 'view'){ document.querySelectorAll('span[data-command]').forEach(executeCommand); }
     callFirebase(async () => upload(['base', 'commands'], notesDataObjectModel.commands));
 }
 state.subscribe(updateCommands);

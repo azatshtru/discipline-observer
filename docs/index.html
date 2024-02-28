@@ -214,7 +214,7 @@
     <h2>Code blocks and inline code highlights</h2>
     <p>To render any part of text as code, enclose it between a pair of backticks (`)</p>
     <p>For example,</p>
-    <p><span class="bordered-bg-white padin-half-em nobreakspan">int x = 42;</span> will be rendered as:</p>
+    <p><span class="bordered-bg-white padin-half-em nobreakspan">`int x = 42;`</span> will be rendered as:</p>
     <div class="dashed-border pad-1em">
         <code class="inline-code-block">int x = 42;</code>
     </div>
@@ -222,12 +222,14 @@
     <h3 class="underline"><i>public void main string whats?</i></h3>
     <p>If your code is bigger, put it between a pair of triple backticks (```) to create a code-block.</p>
     <div style="padding:0.5em;width:fit-content; word-break: keep-all;" class="bordered-bg-white padin-half-em">
+        <p style="margin: 2px;">```</p>
         <p style="margin: 2px;">#include &lt;stdio.h&gt;</p>
         <p style="margin: 2px;"></p>
         <p style="margin: 2px;">int main() {</p>
         <p style="margin: 2px;">&emsp;&emsp;&emsp;&emsp;printf("Hello, world!");</p>
         <p style="margin: 2px;">&emsp;&emsp;&emsp;&emsp;return 0;</p>
         <p style="margin: 2px;">}</p>
+        <p style="margin: 2px;">```</p>
     </div>
     <p>will be rendered as:</p>
     <div class="dashed-border pad-1em">

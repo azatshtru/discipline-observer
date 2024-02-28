@@ -1,7 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@100;200;300;400;500;600;700;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Fjalla+One&family=Hepta+Slab:wght@1..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fjalla+One&family=Hepta+Slab:wght@1..900&family=Inter:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Orelega+One&family=Red+Hat+Mono:ital,wght@0,300..700;1,300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&display=swap');
 
 * {
     font-family: 'Red Hat Mono', monospace;
@@ -311,21 +309,39 @@ hr.stylized::after {
     border: 2px solid white;
 }
 
+.commandbox {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.commandbox + .commandbox {
+    margin-top: 6px;
+}
+
 .commandbox > span {
     background: linear-gradient(black, #333);
     border-radius: 4px;
-    color: white;
+    color: black;
+    background: white;
     width: fit-content;
-    padding-inline: 6px;
+    padding-left: 6px;
     padding-block: 2px;
-    font-weight: 500;
+    padding-right: 8px;
+    font-weight: 600;
     font-size: small;
+    font-family: 'JetBrains Mono', monospace;
 
-    display: inline-block;
     margin-block: 3px;
     margin-right: 5px;
-    border: 1px solid gainsboro;
-    box-shadow: 1px 1px gray;
+    outline: 2px solid black;
+    border-bottom: 2px solid black;
+
+    display: flex;
+    gap: 4px;
+    align-items: center;
 }
 
 .display-equation * {
@@ -702,7 +718,7 @@ a.icon-button {
 }
 
 .font-display {
-    font-family: 'DM Serif Display', serif;
+    font-family: 'DM Serif Text', serif;
 }
 
 .font-serif {
