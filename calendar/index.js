@@ -60,6 +60,6 @@ function calendarMonth (datestr, eventList={}) {
 
 const renderCalendarMonths = () => {
     calendar.innerHTML = '<div style="height: 7em;"></div>';
-    for (let i = 0; i < 12; i++) {calendar.appendChild(calendarMonth(`${state.currentYear.get_value(renderCalendarMonths)}/${i+1}/1`));}
+    for (let i = 0; i < 12; i++) {calendar.appendChild(calendarMonth(`2024/${i+1}/1`));}
 }
 renderCalendarMonths();
