@@ -17,8 +17,9 @@ body {
 .calendar-heading {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
 
-    padding-left: 20px;
     position: fixed;
     background: white;
     width: 100%;
@@ -26,8 +27,7 @@ body {
     z-index: 1000;
 
     padding-left: 20px;
-    padding-top: 14px;
-    padding-bottom: 12px;
+    padding-block: 18px;
     border-bottom: 4px solid black;
 }
 
@@ -42,22 +42,8 @@ body {
     color: initial;
 }
 
-.calendar-heading > div + div {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 6px;
-}
-
-.calendar-heading > div + div > button {
-    border-radius: 85px;
-    width: 25px;
-    height: 25px;
-    background: white;
-    border: none;
-    font-size: 2em;
-    line-height: 0;
-    line-height: 0;
+.calendar-heading > a + div {
+    margin-right: 8px;
 }
 
 .calendar-heading > div > h3 {
@@ -78,13 +64,13 @@ body {
 .calendar-month {
     padding-top: 0.2em;
     padding-left: 0.3em;
-    width: max(100%, 300px);
+    width: var(--calwidth);
     margin-bottom: 1em;
 }
 
 .calendar-month > h1 {
     font-family: 'Orelega One', serif;
-    font-weight: 800;
+    font-weight: 400;
     font-size: 2.7em;
     margin: 0;
 }
@@ -196,6 +182,9 @@ body {
     background: white;
 
     padding-inline: min(2vw, 20px);
+
+    overflow-y: scroll;
+    overscroll-behavior: contain;
 }
 
 .day-container {
@@ -235,6 +224,7 @@ body {
 
 .dayname {
     display: flex;
+    flex-wrap: wrap;
     justify-content: left;
     align-items: center;
     gap: 15px;
@@ -248,9 +238,10 @@ body {
 }
 
 .timeline > .day-container > div > .daybox > hr {
-    border: 1px solid black;
+    border: 1px solid whitesmoke;
     box-sizing: border-box;
     width: 100%;
+    box-shadow: 1px 1px 6px whitesmoke;
 }
 
 
@@ -293,41 +284,108 @@ body {
     color: gray;
 }
 
-.timeline-open {
-    position: absolute;
-    top: 12px;
-    right: 12px;
+.timeline-close {
+    position: fixed;
+    bottom: 42px;
+    right: min(10vw, 45px);
     line-height: 0;
-    border-radius: 25px;
-    width: 45px;
-    height: 45px;
+    font-size: 2em;
+    border-radius: 100px;
+    width: 60px;
+    height: 60px;
     background: white;
     border: 2px solid black;
-    box-shadow: inset 0px -3px gainsboro, 1px 1px 5px whitesmoke;
-    display: none;
-
+    box-shadow: inset -3px -3px gainsboro, 1px 1px 8px #bbb;
     z-index: 3000;
+
+    display: none;
 }
 
-.timeline-close {
+@keyframes stampspin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.stamp-button {
+    --stampsize: 80px;
+    border: 3px solid black;
+    border-radius: 100px;
+    height: var(--stampsize);
+    width: var(--stampsize);
+
+    position: relative;
+    box-shadow: 1px 3px black, inset -2px -6px gainsboro, inset 2px 3px lavender;
+
+    flex: 0 0 var(--stampsize);
+}
+
+.stamp-button:active {
+    transform: translate(1px, 3px);
+    box-shadow: inset -2px -6px gainsboro, inset 2px 3px lavender;
+}
+
+.stamp-span {
     position: absolute;
-    bottom: 42px;
-    inset-inline: 0;
-    margin-inline: auto;
-    line-height: 0;
-    border-radius: 25px;
-    width: 45px;
-    height: 45px;
-    background: white;
-    border: 2px solid black;
-    box-shadow: inset 0px -3px gainsboro, 1px 1px 5px whitesmoke;
+    box-sizing: border-box;
+    width: var(--stampsize);
+    height: var(--stampsize);
+    inset: 0px;
+    text-align: center;
+    padding-top: 2px;
+
+    transform: rotate(var(--charangle));
+
+    color: gray;
+    font-weight: 600;
+    font-family: 'Red Hat Mono', monospace;
+    font-size: small;
+
+    user-select: none;
+}
+
+.stampchar-container {
+    width: var(--stampsize);
+    height: var(--stampsize);
+    position: absolute;
+    animation: stampspin 24s linear infinite;
+}
+
+.stamp-icon {
+    position: absolute;
+    height: var(--stampsize);
+    width: var(--stampsize);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.9em;
+    font-weight: 500;
+    color: black;
+    box-sizing: border-box;
+
+    transform: scale(120%) rotate(5deg) translate(-1px, -1px);
+    user-select: none;
+}
+
+.stamp-spacer {
+    padding-inline: 45px;
+}
+
+#timeline-open {
     display: none;
-    z-index: 3000;
 }
 
 @media (max-width: 651px){
     .timeline {
-        display: none;
+        min-width: auto;
+        width: 93%;
+    }
+
+    #timeline-open {
+        display: initial;
     }
 
     .timeline-close {
@@ -335,11 +393,18 @@ body {
     }
 
     .calendar {
-        overflow: visible;
+        overflow: scroll;
+        box-sizing: border-box;
+        width: 95vw;
+        overflow-x: hidden;
     }
 
     body {
-        overflow: scroll;
+        overflow: visible;
+    }
+
+    .stamp-spacer {
+        display: none;
     }
 }
 
@@ -348,6 +413,36 @@ body {
         margin-inline: 4px;
         width: 110vw;
     }
+
+    .timeline {
+        min-width: auto;
+        width: 98%;
+    }
+
+    .stamp-button {
+        transform: scale(90%);
+    }
+
+    .stamp-button + .stamp-button {
+        transform: translate(-10px) scale(90%);
+    }
+
+    .calendar-heading {
+        gap: 7px;
+        padding-block: 2px;
+    }
+}
+
+@media (max-width: 200px) {
+    .stamp-button + .stamp-button {
+        transform: translate(0px) scale(90%);
+    }
+
+    .calendar-heading {
+        gap: 7px;
+        padding-block: 18px 10px;
+    }
+
 }
 
 @media (max-aspect-ratio: 9/8){

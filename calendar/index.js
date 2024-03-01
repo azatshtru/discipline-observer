@@ -2,11 +2,15 @@ import { validateDate, monthName } from '../utils.js';
 import { createSignal, createComputed, createEffect } from '../blush.js';
 
 const calendar = document.querySelector('.calendar');
-calendar.scrollIntoView(false);
-const timelineButton = document.querySelector('.timeline-open')
-const timelineCloseButton = document.querySelector('.timeline-close')
+const timeline = document.querySelector('.timeline')
+const timelineOpenButton = document.querySelector('#timeline-open');
+const timelineCloseButton = document.querySelector('.timeline-close');
+const calendarHeading = document.querySelector('.calendar-heading');
 
-function calendarMonth (datestr, eventList={}) {
+const currentYear = createSignal(new Date().getFullYear());
+const timelineOpened = createSignal(true);
+
+function CalendarMonth (datestr, eventList={}) {
     const datetime = validateDate(datestr);
     const firstDay = new Date(datetime.getFullYear(), datetime.getMonth(), 1);
     const lastDay = new Date(datetime.getFullYear(), datetime.getMonth()+1, 0);
@@ -58,8 +62,27 @@ function calendarMonth (datestr, eventList={}) {
     return calendarMonthContainer;
 }
 
-const renderCalendarMonths = () => {
-    calendar.innerHTML = '<div style="height: 7em;"></div>';
-    for (let i = 0; i < 12; i++) {calendar.appendChild(calendarMonth(`2024/${i+1}/1`));}
+function renderCalendar() {
+    calendar.innerHTML = `<div style="height: ${document.querySelector('.calendar-heading').getBoundingClientRect().height + 12}px;"></div>`;
+    for (let i = 0; i < 12; i++) {calendar.appendChild(CalendarMonth(`${currentYear.value}/${i+1}/1`));}
 }
-renderCalendarMonths();
+createEffect(renderCalendar);
+
+createEffect(() => calendarHeading.querySelector('h1').textContent = currentYear.value);
+
+createEffect(() => timeline.style.display = timelineOpened.value?'initial':'none');
+
+new ResizeObserver(() => {
+    renderCalendar();
+    timelineOpened.value = true;
+}).observe(calendarHeading);
+calendar.scrollIntoView(false);
+document.querySelectorAll('.stamp-button').forEach(stampButton => stampButton.innerHTML = `<span class="material-symbols-outlined stamp-icon">${stampButton.dataset.icon}</span><span class="stampchar-container">${[...stampButton.textContent].map((c, i) => `<span style="--charangle:${i*20}deg" class="stamp-span">${c}</span>`).join('')}</span>`);
+
+timelineOpenButton.onclick = () => {
+    timelineOpened.value = true;
+}
+
+timelineCloseButton.onclick = () => {
+    timelineOpened.value = false;
+}
