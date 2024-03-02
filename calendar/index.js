@@ -72,13 +72,6 @@ createEffect(() => calendarHeading.querySelector('h1').textContent = currentYear
 
 createEffect(() => timeline.style.display = timelineOpened.value?'initial':'none');
 
-new ResizeObserver(() => {
-    renderCalendar();
-    timelineOpened.value = true;
-}).observe(calendarHeading);
-calendar.scrollIntoView(false);
-document.querySelectorAll('.stamp-button').forEach(stampButton => stampButton.innerHTML = `<span class="material-symbols-outlined stamp-icon">${stampButton.dataset.icon}</span><span class="stampchar-container">${[...stampButton.textContent].map((c, i) => `<span style="--charangle:${i*20}deg" class="stamp-span">${c}</span>`).join('')}</span>`);
-
 timelineOpenButton.onclick = () => {
     timelineOpened.value = true;
 }
@@ -86,3 +79,9 @@ timelineOpenButton.onclick = () => {
 timelineCloseButton.onclick = () => {
     timelineOpened.value = false;
 }
+
+new ResizeObserver(() => {
+    renderCalendar();
+    timelineOpened.value = window.innerWidth > 650 ? true : timelineOpened.value;
+}).observe(calendarHeading);
+document.querySelectorAll('.stamp-button').forEach(stampButton => stampButton.innerHTML = `<span class="material-symbols-outlined stamp-icon">${stampButton.dataset.icon}</span><span class="stampchar-container">${[...stampButton.textContent].map((c, i) => `<span style="--charangle:${i*20}deg" class="stamp-span">${c}</span>`).join('')}</span>`);
