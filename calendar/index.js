@@ -4,7 +4,7 @@ import { createSignal, createComputed, createEffect } from '../blush.js';
 const calendar = document.querySelector('.calendar');
 const timeline = document.querySelector('.timeline')
 const timelineOpenButton = document.querySelector('#timeline-open');
-const timelineCloseButton = document.querySelector('.timeline-close');
+const timelineCloseButton = document.querySelector('#timeline-closed');
 const calendarHeading = document.querySelector('.calendar-heading');
 
 const currentYear = createSignal(new Date().getFullYear());

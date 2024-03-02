@@ -1,6 +1,6 @@
 body {
     height: 100%;
-    width: max-content;
+    width: fit-content;
     padding: 0;
     overflow: visible;
     margin: 0;
@@ -10,7 +10,7 @@ body {
     width: 100%;
     height: 100%;
     margin-inline: 20px;
-    --calwidth: 350px;
+    --calwidth: 312px;
     overflow-y: scroll;
     overflow-x: hidden;
 }
@@ -245,7 +245,6 @@ body {
     box-shadow: 1px 1px 6px whitesmoke;
 }
 
-
 .notebox {
     border: 2px solid #aaa;
     border-radius: 5px;
@@ -283,23 +282,6 @@ body {
     width: fit-content;
     background: transparent;
     color: gray;
-}
-
-.timeline-close {
-    position: fixed;
-    bottom: 42px;
-    right: min(10vw, 45px);
-    line-height: 0;
-    font-size: 2em;
-    border-radius: 100px;
-    width: 60px;
-    height: 60px;
-    background: white;
-    border: 2px solid black;
-    box-shadow: inset -3px -3px gainsboro, 1px 1px 8px #bbb;
-    z-index: 3000;
-
-    display: none;
 }
 
 @keyframes stampspin {
@@ -379,6 +361,24 @@ body {
     display: none;
 }
 
+#timeline-closed {
+    position: fixed;
+    bottom: 0;
+    bottom: 42px;
+    right: min(10vw, 45px);
+    font-size: 1.2em;
+    background: white;
+
+    transform: scale(83%);
+    z-index: 3000;
+
+    display: none;
+}
+
+#timeline-closed * {
+    z-index: 3000;
+}
+
 @media (max-width: 651px){
     .timeline {
         min-width: auto;
@@ -389,8 +389,8 @@ body {
         display: initial;
     }
 
-    .timeline-close {
-        display: inline;
+    #timeline-closed {
+        display: initial;
     }
 
     .calendar {
