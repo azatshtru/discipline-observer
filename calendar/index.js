@@ -1,5 +1,14 @@
-import { validateDate, monthName } from '../utils.js';
-import { createSignal, createComputed, createEffect } from '../blush.js';
+import { parseDate, monthName, weekday } from '../utils.js';
+import { createSignal, createEffect } from '../blush.js';
+import { setAuthInit, getAuthUser, downloadDocument } from '../firebase.js';
+
+const firebaseDelegates = [];
+
+const unsubscribeAuthState = setAuthInit((user) => { firebaseDelegates.forEach(async (f) => await f()); }, () => window.location.replace('/login'));
+
+async function callFirebase(f){
+    getAuthUser() ? await f() : firebaseDelegates.push(f);
+}
 
 const calendar = document.querySelector('.calendar');
 const timeline = document.querySelector('.timeline')
@@ -9,9 +18,29 @@ const calendarHeading = document.querySelector('.calendar-heading');
 
 const currentYear = createSignal(new Date().getFullYear());
 const timelineOpened = createSignal(true);
+const timelineDateset = createSignal(new Array(Math.floor((new Date(currentYear.value+1, 0, 0) - new Date(currentYear.value, 0, 0))/(1000*60*60*24))));
+
+createEffect(() => callFirebase(async () => downloadDocument(['base', 'commands']).then(x => {
+    if(x.exists()) { 
+        const eventlist = {}
+        Object.entries(x.data()).forEach(entry => {
+            if(entry[1].length < 1) { return; }
+            entry[1].forEach(e => {
+                const datetime = parseDate(e);
+                if(!datetime) { return }
+                if(datetime.date.getFullYear() != currentYear.value) { return }
+                const dateindex = Math.floor((datetime.date - new Date(currentYear.value, 0, 0))/(1000*60*60*24));
+                const dateEvents = Object.assign(datetime, {eventNote: entry[0]});
+                eventlist[dateindex] ? eventlist[dateindex].push(dateEvents) : eventlist[dateindex] = [dateEvents];
+            })
+        })
+        timelineDateset.value = [...timelineDateset.value].map((x, i) => eventlist[i]?eventlist[i]:[{date:new Date(parseInt(currentYear.value), 0, i+1)}])
+    }
+})));
+
 
 function CalendarMonth (datestr, eventList={}) {
-    const datetime = validateDate(datestr);
+    const datetime = parseDate(datestr)['date'];
     const firstDay = new Date(datetime.getFullYear(), datetime.getMonth(), 1);
     const lastDay = new Date(datetime.getFullYear(), datetime.getMonth()+1, 0);
     
@@ -62,9 +91,53 @@ function CalendarMonth (datestr, eventList={}) {
     return calendarMonthContainer;
 }
 
+function TimelineDaybox (day) {
+    const daybox = document.createElement('div');
+    daybox.className = 'daybox';
+    const dayname = `<div class="dayname"><div class="calendar-icon"><span>${monthName(day.date).slice(0, 3)}</span><span>${day.date.getDate()}</span></div><span>${weekday(day.date)}</span></div><hr>`
+    daybox.innerHTML = dayname;
+    return daybox;
+}
+
+function constructTimeline() {
+    timeline.lastElementChild.innerHTML = '';
+    timelineDateset.value.forEach(x => {
+        if(x[0].eventName){
+            const daynameMargin = document.createElement('div');
+            daynameMargin.style.marginTop = '30px';
+            timeline.lastElementChild.appendChild(daynameMargin);
+            timeline.lastElementChild.appendChild(TimelineDaybox(x[0]))
+            const noteboxContainer = document.createElement('div');
+            noteboxContainer.className = 'horizontal-flex';
+            x.forEach(ex => {
+                const notebox = document.createElement('div');
+                notebox.className = 'notebox'
+                notebox.innerHTML = `<span>${ex.eventName}</span><span>${ex.timestring}</span>`;
+                noteboxContainer.appendChild(notebox);
+            })
+            timeline.lastElementChild.appendChild(noteboxContainer);
+        } else {
+            //const simpleDateText = document.createElement('p');
+            //simpleDateText.textContent = `${monthName(x[0].date).slice(0,3)} ${x[0].date.getDate()}, ${weekday(x[0].date).slice(0, 3)}`
+            //simpleDateText.style.fontFamily = "'Montserrat', monospace";
+            //simpleDateText.style.fontSize = 'small';
+            //simpleDateText.style.fontWeight = '600';
+            //timeline.lastElementChild.appendChild(simpleDateText);
+        }
+    })
+}
+createEffect(constructTimeline);
+
 function renderCalendar() {
     calendar.innerHTML = `<div style="height: ${document.querySelector('.calendar-heading').getBoundingClientRect().height + 12}px;"></div>`;
-    for (let i = 0; i < 12; i++) {calendar.appendChild(CalendarMonth(`${currentYear.value}/${i+1}/1`));}
+    let k = 0;
+    for (let i = 0; i < 12; i++) {
+        const monthEvents = {}
+        const lastDay = new Date(currentYear.value, i+1, 0).getDate();
+        timelineDateset.value.slice(k, k+lastDay).forEach((x, i) => x[0].eventName?monthEvents[i]=x.length:'');
+        k += lastDay;
+        calendar.appendChild(CalendarMonth(`${currentYear.value}/${i+1}/1 hello`, monthEvents));
+    }
 }
 createEffect(renderCalendar);
 

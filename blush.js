@@ -1,12 +1,15 @@
 let RUNNING = undefined;
 export const signal = {
   get value() {
-    if(RUNNING){ this.dependencies.add(RUNNING) };
+    if (RUNNING) { this.dependencies.add(RUNNING) };
     return this._value;
   },
   set value(v) {
-    if(v===this._value) { return; }
+    if (v === this._value) { return; }
     this._value = v;
+    this.notifyDependents();
+  },
+  notifyDependents() {
     this.dependencies.forEach(x => x.update());
   }
 }
@@ -30,8 +33,4 @@ export function createEffect(fn) {
   RUNNING = e;
   e.fn();
   RUNNING = undefined;
-}
-
-export function createComputed() {
-
 }

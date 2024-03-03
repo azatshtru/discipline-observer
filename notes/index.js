@@ -1,5 +1,5 @@
 import { downloadWhere, upload, downloadDocument, deleteDocument, downloadFirst, paginatedDownload, setAuthInit, getAuthUser } from "../firebase.js"
-import { validateDate, weekday, monthName } from "../utils.js";
+import { parseDate, weekday, monthName } from "../utils.js";
 
 const firebaseDelegates = [];
 
@@ -416,7 +416,7 @@ state.subscribe(updateProgress);
 function executeCommand(command) {
     if(!command) { return; }
     const c = command.dataset.command;
-    const datetime = validateDate(c.trim());
+    const datetime = parseDate(c.trim());
     if(datetime) {
         command.firstChild.textContent = 'event';
     } else {
