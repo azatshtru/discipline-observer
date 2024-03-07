@@ -1,4 +1,4 @@
-import { parseDate, monthName, weekday } from '../utils.js';
+import { parseMarkdown, parseDate, monthName, weekday } from '../utils.js';
 import { createSignal, createEffect } from '../blush.js';
 import { setAuthInit, getAuthUser, downloadDocument } from '../firebase.js';
 
@@ -15,10 +15,12 @@ const timeline = document.querySelector('.timeline')
 const timelineOpenButton = document.querySelector('#timeline-open');
 const timelineCloseButton = document.querySelector('#timeline-closed');
 const calendarHeading = document.querySelector('.calendar-heading');
+const eventNoteContainer = document.querySelector('#event-note-container');
 
 const currentYear = createSignal(new Date().getFullYear());
 const timelineOpened = createSignal(false);
 const timelineDateset = createSignal(new Array(Math.floor((new Date(currentYear.value+1, 0, 0) - new Date(currentYear.value, 0, 0))/(1000*60*60*24))));
+const currentSelectedEventNote = createSignal('');
 
 let eventCount = 0;
 
@@ -119,18 +121,17 @@ function constructTimeline() {
                 const notebox = document.createElement('div');
                 notebox.className = 'notebox'
                 notebox.innerHTML = `<span>${ex.eventName}</span><span>${ex.timestring}</span>`;
+                notebox.onclick = () => {
+                    currentSelectedEventNote.value = ex.eventNote;
+                }
                 noteboxContainer.appendChild(notebox);
             })
             timeline.lastElementChild.appendChild(noteboxContainer);
-        } else {
-            //const simpleDateText = document.createElement('p');
-            //simpleDateText.textContent = `${monthName(x[0].date).slice(0,3)} ${x[0].date.getDate()}, ${weekday(x[0].date).slice(0, 3)}`
-            //simpleDateText.style.fontFamily = "'Montserrat', monospace";
-            //simpleDateText.style.fontSize = 'small';
-            //simpleDateText.style.fontWeight = '600';
-            //timeline.lastElementChild.appendChild(simpleDateText);
         }
     })
+    const daynameMargin = document.createElement('div');
+    daynameMargin.style.marginTop = '30px';
+    timeline.lastElementChild.appendChild(daynameMargin);
 }
 createEffect(constructTimeline);
 
@@ -151,6 +152,18 @@ createEffect(() => calendarHeading.querySelector('h1').textContent = currentYear
 
 createEffect(() => timeline.style.display = timelineOpened.value?'initial':'none');
 
+createEffect(() => {
+    if(currentSelectedEventNote.value.length === 0) {
+        eventNoteContainer.style.display = 'none';
+    } else {
+        eventNoteContainer.querySelector('#event-note').innerHTML = '';
+        eventNoteContainer.style.display = 'initial';
+        callFirebase(() => downloadDocument(['notes', currentSelectedEventNote.value]).then(x => {
+            if(x.exists()) { eventNoteContainer.querySelector('#event-note').innerHTML = parseMarkdown(x.data().content); }
+        }));
+    }
+});
+
 timelineOpenButton.onclick = () => {
     timelineOpened.value = true;
 }
@@ -158,6 +171,10 @@ timelineOpenButton.onclick = () => {
 timelineCloseButton.onclick = () => {
     timelineOpened.value = false;
 }
+
+eventNoteContainer.firstElementChild.onclick = () => {
+    currentSelectedEventNote.value = ''
+};
 
 new ResizeObserver(() => {
     renderCalendar();

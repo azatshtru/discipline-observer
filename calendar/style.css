@@ -1,3 +1,7 @@
+* {
+    z-index: 0;
+}
+
 body {
     height: 100%;
     width: fit-content;
@@ -25,7 +29,7 @@ body {
     background: white;
     width: 100%;
     height: min-content;
-    z-index: 1000;
+    z-index: 4;
 
     padding-left: 20px;
     padding-block: 18px;
@@ -173,16 +177,16 @@ body {
     position: fixed;
     height: 100%;
     min-width: 300px;
-    width: calc(100% - 400px);
+    width: calc(100% - 370px);
     right: 0;
     top: 0;
     box-sizing: border-box;
 
     border-left: 2px solid black;
-    z-index: 2000;
+    z-index: 6;
     background: white;
 
-    padding-inline: min(2vw, 20px);
+    padding-inline: max(2vw, 10px);
 
     overflow-y: scroll;
     overscroll-behavior: contain;
@@ -322,6 +326,7 @@ body {
 
     transform: rotate(var(--charangle));
 
+    background: transparent;
     color: gray;
     font-weight: 600;
     font-family: 'Red Hat Mono', monospace;
@@ -331,6 +336,7 @@ body {
 }
 
 .stampchar-container {
+    background: transparent;
     width: var(--stampsize);
     height: var(--stampsize);
     position: absolute;
@@ -346,6 +352,7 @@ body {
     align-items: center;
     font-size: 1.9em;
     font-weight: 500;
+    background: transparent;
     color: black;
     box-sizing: border-box;
 
@@ -370,13 +377,28 @@ body {
     background: white;
 
     transform: scale(83%);
-    z-index: 3000;
+    z-index: 8;
 
     display: none;
 }
 
 #timeline-closed * {
-    z-index: 3000;
+    z-index: 8;
+}
+
+#event-note-container {
+    border-left: 2px solid black;
+    box-shadow: -4px 0px 48px gray;
+    background: white;
+    padding-block: 25px;
+    padding-left: 25px;
+
+    overflow: scroll;
+    overscroll-behavior: contain;
+}
+
+#event-note {
+    margin-top: 20px;
 }
 
 @media (max-width: 651px){
@@ -437,5 +459,10 @@ body {
     .calendar-heading {
         gap: 7px;
         padding-block: 18px 10px;
+        padding-left: 5px;
     }
+}
+
+.stamp-button[data-icon="cards"] {
+    display: none;
 }
