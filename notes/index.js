@@ -101,6 +101,7 @@ const state = {
     currentActiveNoteIndex: 0,
     noteViewMode: 'none',
     renderOnPublish: true,
+    commandsLoaded: false,
 
     subscribers: [],
 
@@ -205,6 +206,12 @@ const state = {
         deleteDocument(['notes', i]);
         delete notesDataObjectModel.notes[i];
         this.publish();
+    },
+
+    setCommandsLoaded() {
+        this.commandsLoaded = true;
+        console.log('loaded');
+        this.publish();
     }
 }
 
@@ -212,6 +219,11 @@ callFirebase(async () => downloadDocument(['base', 'tags']).then(x => {
     if(x.exists()) { notesDataObjectModel.tags = x.data() }
     state.publish();
 }));
+callFirebase(async () => downloadDocument(['base', 'commands']).then(x => {
+    if(x.exists()) { notesDataObjectModel.commands = x.data() }
+    state.setCommandsLoaded();
+}));
+
 
 let lastDownloadedNote;
 let donePagination = false;
@@ -429,7 +441,9 @@ function updateCommands(s) {
     notesDataObjectModel.notes[s.currentActiveNoteIndex]?.content.match(commandTagRegex)?.forEach(x => {
         x.match(/\@\[.+?\]/gim).map(c => c.trim().slice(2, -1).trim()).forEach(command => notesDataObjectModel.commands[s.currentActiveNoteIndex].push(command));
     });
+    if(notesDataObjectModel.commands[s.currentActiveNoteIndex].length === 0) { delete notesDataObjectModel.commands[s.currentActiveNoteIndex]; }
     if(s.noteViewMode == 'view'){ document.querySelectorAll('span[data-command]').forEach(executeCommand); }
+    if(!s.commandsLoaded){ return; }
     callFirebase(async () => upload(['base', 'commands'], notesDataObjectModel.commands));
 }
 state.subscribe(updateCommands);

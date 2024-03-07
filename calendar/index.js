@@ -17,10 +17,13 @@ const timelineCloseButton = document.querySelector('#timeline-closed');
 const calendarHeading = document.querySelector('.calendar-heading');
 
 const currentYear = createSignal(new Date().getFullYear());
-const timelineOpened = createSignal(true);
+const timelineOpened = createSignal(false);
 const timelineDateset = createSignal(new Array(Math.floor((new Date(currentYear.value+1, 0, 0) - new Date(currentYear.value, 0, 0))/(1000*60*60*24))));
 
+let eventCount = 0;
+
 createEffect(() => callFirebase(async () => downloadDocument(['base', 'commands']).then(x => {
+    eventCount = 0;
     if(x.exists()) { 
         const eventlist = {}
         Object.entries(x.data()).forEach(entry => {
@@ -32,6 +35,7 @@ createEffect(() => callFirebase(async () => downloadDocument(['base', 'commands'
                 const dateindex = Math.floor((datetime.date - new Date(currentYear.value, 0, 0))/(1000*60*60*24));
                 const dateEvents = Object.assign(datetime, {eventNote: entry[0]});
                 eventlist[dateindex] ? eventlist[dateindex].push(dateEvents) : eventlist[dateindex] = [dateEvents];
+                eventCount += 1;
             })
         })
         timelineDateset.value = [...timelineDateset.value].map((x, i) => eventlist[i]?eventlist[i]:[{date:new Date(parseInt(currentYear.value), 0, i+1)}])
@@ -100,7 +104,9 @@ function TimelineDaybox (day) {
 }
 
 function constructTimeline() {
-    timeline.lastElementChild.innerHTML = '';
+    if(eventCount > 0){
+        timeline.lastElementChild.innerHTML = '';
+    }
     timelineDateset.value.forEach(x => {
         if(x[0].eventName){
             const daynameMargin = document.createElement('div');

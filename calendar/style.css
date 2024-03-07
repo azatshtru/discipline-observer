@@ -412,12 +412,6 @@ body {
 @media (max-width: 376px){
     .calendar {
         margin-inline: 4px;
-        width: 100%;
-    }
-
-    .timeline {
-        min-width: auto;
-        width: 100%;
     }
 
     .stamp-button {
@@ -431,6 +425,7 @@ body {
     .calendar-heading {
         gap: 7px;
         padding-block: 2px;
+        padding-top: 8px;
     }
 }
 
@@ -442,12 +437,5 @@ body {
     .calendar-heading {
         gap: 7px;
         padding-block: 18px 10px;
-    }
-
-}
-
-@media (max-aspect-ratio: 9/8){
-    .notebox {
-        width: 100%;
     }
 }
