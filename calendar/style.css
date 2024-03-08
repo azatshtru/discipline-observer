@@ -394,11 +394,12 @@ body {
     padding-left: 25px;
 
     overflow: scroll;
-    overscroll-behavior: contain;
+    height: 100%;
 }
 
 #event-note {
     margin-top: 20px;
+    height: max-content;
 }
 
 @media (max-width: 651px){

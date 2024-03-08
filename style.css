@@ -749,6 +749,10 @@ a.icon-button {
     .margin-inline-doc {
         margin-inline: 2em;
     }
+
+    .tablet-full-width {
+        width: 100vw;
+    }
 }
 
 @media (max-aspect-ratio: 9/8){

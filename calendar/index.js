@@ -1,6 +1,6 @@
 import { parseMarkdown, parseDate, monthName, weekday } from '../utils.js';
 import { createSignal, createEffect } from '../blush.js';
-import { setAuthInit, getAuthUser, downloadDocument } from '../firebase.js';
+import { setAuthInit, getAuthUser, downloadDocument, upload } from '../firebase.js';
 
 const firebaseDelegates = [];
 
@@ -129,9 +129,9 @@ function constructTimeline() {
             timeline.lastElementChild.appendChild(noteboxContainer);
         }
     })
-    const daynameMargin = document.createElement('div');
-    daynameMargin.style.marginTop = '30px';
-    timeline.lastElementChild.appendChild(daynameMargin);
+    const footerMargin = document.createElement('div');
+    footerMargin.style.height = '50px';
+    timeline.lastElementChild.appendChild(footerMargin);
 }
 createEffect(constructTimeline);
 
@@ -155,12 +155,54 @@ createEffect(() => timeline.style.display = timelineOpened.value?'initial':'none
 createEffect(() => {
     if(currentSelectedEventNote.value.length === 0) {
         eventNoteContainer.style.display = 'none';
+        document.body.style.overflow = 'scroll';
     } else {
         eventNoteContainer.querySelector('#event-note').innerHTML = '';
         eventNoteContainer.style.display = 'initial';
         callFirebase(() => downloadDocument(['notes', currentSelectedEventNote.value]).then(x => {
-            if(x.exists()) { eventNoteContainer.querySelector('#event-note').innerHTML = parseMarkdown(x.data().content); }
+            if(x.exists()) { 
+                const eventNoteData = x.data();
+                eventNoteContainer.querySelector('#event-note').innerHTML = parseMarkdown(eventNoteData.content);
+                eventNoteContainer.querySelector('#event-note').querySelectorAll('.checkbox-outline').forEach((box, i) => {
+                    box.dataset.checkindex = i.toString();
+                    box.onclick = () => {
+                        let content = eventNoteData.content;
+                        const checkboxes = content.matchAll(/^(\>*\s*\-?\s*\[)(\s?|x)\](.*$)/gim);
+                        for (let i = 0; i < box.dataset.checkindex; i++) { checkboxes.next() }
+                        const checkbox = checkboxes.next().value;
+                        const i = checkbox.index + checkbox[0].search(/\[/);
+                        const v = box.dataset.check == 'x' ? ' ' : 'x';
+                        content = content.slice(0, i + 1).concat(v).concat(content.slice(i + 1 + (content[i + 1] == ']' ? 0 : 1), content.length));
+                        eventNoteData.content = content;
+                        callFirebase(() => upload(['notes', eventNoteData.index], eventNoteData));
+                        box.dataset.check = v=='x'?'x':'o';
+                    }
+                })
+                eventNoteContainer.querySelector('#event-note').querySelectorAll('.progress-container > button').forEach((box, i) => {
+                    box.dataset.progressIndex = i.toString();
+                    box.onclick = () => {
+                        let content = eventNoteData.content;
+                        const progresses = content.matchAll(/^(\>*\s*\-?\s*\[)(\d+\/\d+)\](.*$)/gim);
+                        for (let i = 0; i < box.dataset.progressIndex; i++) { progresses.next() }
+                        const progress = progresses.next().value;
+                        const i = progress.index + progress[0].search(/\[/);
+                        const j = progress.index + progress[0].search(/\]/);
+                        const v = parseInt(box.dataset.value) + 1;
+                        content = content.slice(0, i + 1).concat(v).concat(`\/${box.dataset.max}`).concat(content.slice(j, content.length));
+                        box.dataset.value = parseInt(box.dataset.value) + 1;
+
+                        const progressValue = box.parentElement.firstChild.firstChild;
+                        progressValue.textContent = box.dataset.value;
+                        const progressBar = box.parentElement.querySelector('.progress-bar > div');
+                        progressBar.style.setProperty('--perc', `${box.dataset.value * 100 / box.dataset.max}%`);
+
+                        eventNoteData.content = content;
+                        callFirebase(() => upload(['notes', eventNoteData.index], eventNoteData));
+                    }
+                })
+            }
         }));
+        document.body.style.overflow = 'hidden';
     }
 });
 
@@ -172,8 +214,12 @@ timelineCloseButton.onclick = () => {
     timelineOpened.value = false;
 }
 
-eventNoteContainer.firstElementChild.onclick = () => {
+eventNoteContainer.firstElementChild.firstElementChild.onclick = () => {
     currentSelectedEventNote.value = ''
+};
+
+eventNoteContainer.firstElementChild.lastElementChild.onclick = () => {
+    console.log('opening note', currentSelectedEventNote.value)
 };
 
 new ResizeObserver(() => {
