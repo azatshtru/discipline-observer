@@ -305,12 +305,14 @@ function renderNotelist(s){
 }
 state.subscribe(renderNotelist);
 
+let latexRenderTimeout;
 function openNote(s){
     if(s.noteViewMode == 'view'){
         markdownRenderBox.parentElement.style.display = 'initial';
         markdownRenderBox.innerHTML = parseMarkdown(notesDataObjectModel.notes[s.currentActiveNoteIndex].content);
 
-        setTimeout(() => {
+        clearTimeout(latexRenderTimeout);
+        latexRenderTimeout = setTimeout(() => {
             markdownRenderBox.querySelectorAll('.display-equation').forEach((x, i) => setTimeout(() => katex.render(String.raw`${x.textContent}`, x, { throwOnError: false, displayMode: true, strict: (errorCode) => errorCode=="newLineInDisplayMode"?'ignore':'warn', }), i));
             markdownRenderBox.querySelectorAll('.inline-equation').forEach((x, i) => katex.render(String.raw`${x.textContent}`, x, { throwOnError: false, displayMode: false, newLineInDisplayMode: true, }, i));
         }, 0)

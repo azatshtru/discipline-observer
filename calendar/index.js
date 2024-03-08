@@ -152,6 +152,7 @@ createEffect(() => calendarHeading.querySelector('h1').textContent = currentYear
 
 createEffect(() => timeline.style.display = timelineOpened.value?'initial':'none');
 
+let latexRenderTimeout;
 createEffect(() => {
     if(currentSelectedEventNote.value.length === 0) {
         eventNoteContainer.style.display = 'none';
@@ -159,13 +160,14 @@ createEffect(() => {
         document.body.style.overflow = 'scroll';
     } else {
         eventNoteContainer.firstElementChild.lastElementChild.href = `/notes?prenote=${currentSelectedEventNote.value}`;
-        eventNoteContainer.querySelector('#event-note').innerHTML = '';
+        const eventNote = eventNoteContainer.querySelector('#event-note');
+        eventNote.innerHTML = '';
         eventNoteContainer.style.display = 'initial';
         callFirebase(() => downloadDocument(['notes', currentSelectedEventNote.value]).then(x => {
             if(x.exists()) { 
                 const eventNoteData = x.data();
-                eventNoteContainer.querySelector('#event-note').innerHTML = parseMarkdown(eventNoteData.content);
-                eventNoteContainer.querySelector('#event-note').querySelectorAll('.checkbox-outline').forEach((box, i) => {
+                eventNote.innerHTML = parseMarkdown(eventNoteData.content);
+                eventNote.querySelectorAll('.checkbox-outline').forEach((box, i) => {
                     box.dataset.checkindex = i.toString();
                     box.onclick = () => {
                         let content = eventNoteData.content;
@@ -180,7 +182,7 @@ createEffect(() => {
                         box.dataset.check = v=='x'?'x':'o';
                     }
                 })
-                eventNoteContainer.querySelector('#event-note').querySelectorAll('.progress-container > button').forEach((box, i) => {
+                eventNote.querySelectorAll('.progress-container > button').forEach((box, i) => {
                     box.dataset.progressIndex = i.toString();
                     box.onclick = () => {
                         let content = eventNoteData.content;
@@ -202,6 +204,11 @@ createEffect(() => {
                         callFirebase(() => upload(['notes', eventNoteData.index], eventNoteData));
                     }
                 })
+            clearTimeout(latexRenderTimeout);
+            latexRenderTimeout = setTimeout(() => {
+                eventNote.querySelectorAll('.display-equation').forEach((k, i) => setTimeout(() => katex.render(String.raw`${k.textContent}`, k, { throwOnError: false, displayMode: true, strict: (errorCode) => errorCode=="newLineInDisplayMode"?'ignore':'warn', }), i));
+                eventNote.querySelectorAll('.inline-equation').forEach((k, i) => katex.render(String.raw`${k.textContent}`, k, { throwOnError: false, displayMode: false, newLineInDisplayMode: true, }, i));
+            }, 0);
             }
         }));
         document.body.style.overflow = 'hidden';
