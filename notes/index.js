@@ -34,6 +34,7 @@ const state = {
     noteViewMode: 'none',
     renderOnPublish: true,
     commandsLoaded: false,
+    tagsLoaded: false,
 
     subscribers: [],
 
@@ -143,12 +144,17 @@ const state = {
     setCommandsLoaded() {
         this.commandsLoaded = true;
         this.publish();
+    },
+
+    setTagsLoaded() {
+        this.tagsLoaded = true;
+        this.publish();
     }
 }
 
 callFirebase(async () => downloadDocument(['base', 'tags']).then(x => {
     if(x.exists()) { notesDataObjectModel.tags = x.data() }
-    state.publish();
+    state.setTagsLoaded();
 }));
 callFirebase(async () => downloadDocument(['base', 'commands']).then(x => {
     if(x.exists()) { notesDataObjectModel.commands = x.data() }
@@ -171,16 +177,31 @@ async function fillNotesDOM() {
         await fillNotesDOM();
     }
 }
-window.addEventListener('scroll', () => {
-    if (window.scrollY / (document.body.offsetHeight - window.innerHeight) > 0.5) { fillNotesDOM() }
-});
-callFirebase(async () => downloadFirst(['notes']).then((x) => {
-    if(x.length > 0) {
-        x.forEach(doc => notesDataObjectModel.notes[doc.id] = doc.data())
-        lastDownloadedNote = x[x.length-1];
-        fillNotesDOM();
-    }
-}));
+function loadNotes(s) {
+    if(!(s.commandsLoaded && s.tagsLoaded)) { return }
+    window.addEventListener('scroll', () => {
+        if (window.scrollY / (document.body.offsetHeight - window.innerHeight) > 0.5) { fillNotesDOM() }
+    });
+    callFirebase(async () => downloadFirst(['notes']).then((x) => {
+        if(x.length > 0) {
+            x.forEach(doc => notesDataObjectModel.notes[doc.id] = doc.data())
+            lastDownloadedNote = x[x.length-1];
+            fillNotesDOM();
+        }
+    }));
+}
+state.subscribe(loadNotes);
+
+const prenote = new URLSearchParams(window.location.search).get('prenote');
+if(prenote && prenote.trim() != '') {
+    callFirebase(() => downloadDocument(['notes', prenote.trim()]).then(x => {
+        if(x.exists()){
+            notesDataObjectModel.notes[x.id] = x.data();
+            state.setCurrentActiveNoteIndex(x.id);
+            state.setViewMode('view');
+        }
+    }));
+}
 
 const markdownRenderBox = document.querySelector('#markdown-render-box');
 const markdownEditButton = document.querySelector('#markdown-edit-button');

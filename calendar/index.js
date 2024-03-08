@@ -155,8 +155,10 @@ createEffect(() => timeline.style.display = timelineOpened.value?'initial':'none
 createEffect(() => {
     if(currentSelectedEventNote.value.length === 0) {
         eventNoteContainer.style.display = 'none';
+        eventNoteContainer.firstElementChild.lastElementChild.href = '';
         document.body.style.overflow = 'scroll';
     } else {
+        eventNoteContainer.firstElementChild.lastElementChild.href = `/notes?prenote=${currentSelectedEventNote.value}`;
         eventNoteContainer.querySelector('#event-note').innerHTML = '';
         eventNoteContainer.style.display = 'initial';
         callFirebase(() => downloadDocument(['notes', currentSelectedEventNote.value]).then(x => {
@@ -216,10 +218,6 @@ timelineCloseButton.onclick = () => {
 
 eventNoteContainer.firstElementChild.firstElementChild.onclick = () => {
     currentSelectedEventNote.value = ''
-};
-
-eventNoteContainer.firstElementChild.lastElementChild.onclick = () => {
-    console.log('opening note', currentSelectedEventNote.value)
 };
 
 new ResizeObserver(() => {
