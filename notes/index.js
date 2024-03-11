@@ -460,6 +460,7 @@ function deparseNote(element) {
         }
         deparsed1.push(el);
     }
+    console.log(deparsed1)
     return deparsed1;
 }
 
@@ -496,6 +497,7 @@ markdownRenderBox.addEventListener('click', (e) => {
     for(const line of getLookoutNote(notesDataObjectModel.notes[state.currentActiveNoteIndex].content).split('\n')){
         position += line.length + 1;
         if(line.trim().length == 0) { continue; }
+        if(/^>+$/.test(line)) { continue; }
         if(line.match(tagLineRegex) && !line.match(commandTagRegex)) { continue; }
         lineNumber -= 1;
         if(lineNumber == 0) { break; }
