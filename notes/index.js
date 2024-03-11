@@ -19,6 +19,9 @@ const tagLineRegex = /^@(.*$)/gim;
 const commandTagRegex = /^(\@\[.*?\]).*?$/gim;
 const inlineLatexRegex = /\$(.*?)\$/gim;
 const specialCharacterRegex = /[\$\&\[\]\%\^\*\(\)\#\\\/]/gim;
+const displayLatexRegex = /^\$\$\n?(.*)\n?\$\$$/gim;
+const codeBlockRegex = /^```(.*\n)*?(.*?)```$/gim;
+const blockquoteRegex = /^(>.*)(\n>.*)*/gim;
 
 const getTitle = (x) => {
     if (x.trim() == '') { return 'untitled' }
@@ -35,6 +38,7 @@ const state = {
     renderOnPublish: true,
     commandsLoaded: false,
     tagsLoaded: false,
+    notesLoadedOnce: false,
 
     subscribers: [],
 
@@ -167,7 +171,10 @@ let donePagination = false;
 async function fillNotesDOM() {
     if (donePagination) { return }
     const docs = await paginatedDownload(lastDownloadedNote, 'index', 50, ['notes']);
-    if (docs.docs.length < 50) { donePagination = true }
+    if (docs.docs.length < 50) { 
+        state.notesLoadedOnce = true;
+        donePagination = true; 
+    }
 
     docs.forEach(x => notesDataObjectModel.notes[x.id] = x.data());
     lastDownloadedNote = docs.docs[docs.docs.length-1]; 
@@ -177,16 +184,21 @@ async function fillNotesDOM() {
         await fillNotesDOM();
     }
 }
+window.addEventListener('scroll', async () => {
+    if (window.scrollY / (document.body.offsetHeight - window.innerHeight) > 0.5) { 
+        if(lastDownloadedNote) {
+            await fillNotesDOM() 
+        }
+    }
+});
 function loadNotes(s) {
-    if(!(s.commandsLoaded && s.tagsLoaded)) { return }
-    window.addEventListener('scroll', () => {
-        if (window.scrollY / (document.body.offsetHeight - window.innerHeight) > 0.5) { fillNotesDOM() }
-    });
+    if(!(s.commandsLoaded && s.tagsLoaded) || s.notesLoadedOnce) { return }
     callFirebase(async () => downloadFirst(['notes']).then((x) => {
         if(x.length > 0) {
-            x.forEach(doc => notesDataObjectModel.notes[doc.id] = doc.data())
             lastDownloadedNote = x[x.length-1];
+            x.forEach(doc => notesDataObjectModel.notes[doc.id] = doc.data())
             fillNotesDOM();
+            state.publish();
         }
     }));
 }
@@ -323,10 +335,17 @@ function openNote(s){
 }
 state.subscribe(openNote);
 
+let lineFocusPosition = -1;
 function editNote(s){
     if(s.noteViewMode == 'edit'){
         markdownTextarea.value = notesDataObjectModel.notes[s.currentActiveNoteIndex].content;
         markdownTextarea.parentElement.style.display = 'initial';
+
+        if(lineFocusPosition >= 0) {
+            markdownTextarea.selectionStart = markdownTextarea.selectionEnd = lineFocusPosition;
+            markdownTextarea.focus();
+        }
+        
     } else { markdownTextarea.parentElement.style.display = 'none'; }
 }
 state.subscribe(editNote);
@@ -412,6 +431,78 @@ markdownTextarea.onkeydown = (e) => {
         markdownTextarea.selectionStart = markdownTextarea.selectionEnd = start + 1;
     }
 }
+
+function deparseNote(element) {
+    const deparsed0 = [...element.children];
+    let deparsed1 = [];
+    for(const el of deparsed0) {
+        if(['ul', 'ol'].includes(el.localName)) {
+            deparsed1.push(...[...el.children].filter(x => x.localName !== 'hr'));
+            continue;
+        }
+        if(el.firstElementChild?.localName=='table') {
+            deparsed1.push(...el.firstChild.firstElementChild.children);
+            continue;
+        }
+        if(el.firstElementChild?.className=='checkbox-outline') {
+            deparsed1.push(el.lastElementChild);
+            continue;
+        }
+        if(el.localName=='pre') {
+            deparsed1.push(...[...el.firstElementChild.children].filter(x => x.textContent.trim().length !== 0));
+            continue;
+        }
+        if(el.localName == 'span') { continue; }
+        if(el.localName == 'br') { continue; }
+        if(el.localName == 'blockquote') {
+            deparsed1.push(...deparseNote(el));
+            continue;
+        }
+        deparsed1.push(el);
+    }
+    return deparsed1;
+}
+
+function getLookoutElement(e) {
+    let lookoutElement = e.target;
+    if(lookoutElement==null) { return }
+    while(lookoutElement && !['h1', 'h2', 'h3', 'p', 'tr', 'li'].includes(lookoutElement.localName)){
+        if(lookoutElement.className=='display-equation') { break; }
+        if(lookoutElement.className=='progress-container') { break; }
+        if(lookoutElement.className=='commandbox') { break; }
+        if(lookoutElement.parentElement.parentElement.localName=='pre') { break; }
+        lookoutElement = lookoutElement.parentElement;
+    }
+    return lookoutElement;
+}
+
+function getLookoutNote(str, recursionLevel=1) {
+    let lookoutFormatted = str
+        .replace(codeBlockRegex, (v) => `\`\`\`${v.slice(3, -3).replace(/^\n+/, v => ' '.repeat(v.length*recursionLevel)).replace(/\n+$/, v => ' '.repeat(v.length*recursionLevel))}\`\`\``)
+        .replace(displayLatexRegex, (v) => `\$\$${v.slice(2, -2).replace(/^\n+/, v => ' '.repeat(v.length*recursionLevel)).replace(/\n+$/, v => ' '.repeat(v.length*recursionLevel))}\$\$`)
+        .replace(blockquoteRegex, (v) => getLookoutNote(v.split('\n').map(x => x = x.slice(1, x.length)).join('\n'), recursionLevel+1).split('\n').map(x => x = '>'.concat(x)).join('\n'))
+
+    return lookoutFormatted;
+}
+
+markdownRenderBox.addEventListener('click', (e) => {
+    lineFocusPosition = -1;
+    const lookoutElement = getLookoutElement(e);
+    if(lookoutElement==null) { return }
+    if(lookoutElement.className=='progress-container') { return; }
+    lineFocusPosition = 0;
+    let lineNumber = deparseNote(markdownRenderBox).indexOf(lookoutElement)+1;
+    let position = 0;
+    for(const line of getLookoutNote(notesDataObjectModel.notes[state.currentActiveNoteIndex].content).split('\n')){
+        position += line.length + 1;
+        if(line.trim().length == 0) { continue; }
+        if(line.match(tagLineRegex) && !line.match(commandTagRegex)) { continue; }
+        lineNumber -= 1;
+        if(lineNumber == 0) { break; }
+    }
+    lineFocusPosition = position-1;
+    state.setViewMode('edit')
+})
 
 markdownSubmitButton.addEventListener('click', () => {
     state.updateNotes(markdownTextarea.value);
