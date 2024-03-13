@@ -497,8 +497,7 @@ function getLookoutNote(str, recursionLevel=1) {
     return lookoutFormatted;
 }
 
-markdownRenderBox.addEventListener('click', (e) => {
-    if(e.detail < 3) { return; }
+markdownRenderBox.addEventListener('dblclick', (e) => {
     lineFocusPosition = -1;
     const lookoutElement = getLookoutElement(e);
     if(lookoutElement==null) { return }
