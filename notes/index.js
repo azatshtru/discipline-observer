@@ -336,14 +336,26 @@ function openNote(s){
 state.subscribe(openNote);
 
 let lineFocusPosition = -1;
+let markdownEditFocusTimeout;
 function editNote(s){
     if(s.noteViewMode == 'edit'){
         markdownTextarea.value = notesDataObjectModel.notes[s.currentActiveNoteIndex].content;
         markdownTextarea.parentElement.style.display = 'initial';
 
         if(lineFocusPosition >= 0) {
+            markdownTextarea.scrollTop = markdownTextarea.scrollHeight;
             markdownTextarea.selectionStart = markdownTextarea.selectionEnd = lineFocusPosition;
             markdownTextarea.focus();
+            if(markdownEditFocusTimeout) { clearTimeout(markdownEditFocusTimeout); }
+            markdownEditFocusTimeout = setTimeout(() => { 
+                if(markdownTextarea.scrollTop < markdownTextarea.scrollHeight - markdownTextarea.clientHeight) {
+                    markdownTextarea.scrollTop -= markdownTextarea.clientHeight/3;
+                    markdownTextarea.selectionStart = markdownTextarea.selectionEnd = lineFocusPosition;
+                    markdownTextarea.focus();
+                }
+                lineFocusPosition = -1;
+                clearTimeout(markdownEditFocusTimeout);
+            }, 0);
         }
         
     } else { markdownTextarea.parentElement.style.display = 'none'; }
@@ -460,7 +472,6 @@ function deparseNote(element) {
         }
         deparsed1.push(el);
     }
-    console.log(deparsed1)
     return deparsed1;
 }
 
@@ -471,7 +482,7 @@ function getLookoutElement(e) {
         if(lookoutElement.className=='display-equation') { break; }
         if(lookoutElement.className=='progress-container') { break; }
         if(lookoutElement.className=='commandbox') { break; }
-        if(lookoutElement.parentElement.parentElement.localName=='pre') { break; }
+        if(lookoutElement.parentElement && lookoutElement.parentElement.parentElement && lookoutElement.parentElement.parentElement.localName=='pre') { break; }
         lookoutElement = lookoutElement.parentElement;
     }
     return lookoutElement;
@@ -487,6 +498,7 @@ function getLookoutNote(str, recursionLevel=1) {
 }
 
 markdownRenderBox.addEventListener('click', (e) => {
+    if(e.detail < 3) { return; }
     lineFocusPosition = -1;
     const lookoutElement = getLookoutElement(e);
     if(lookoutElement==null) { return }
@@ -497,7 +509,7 @@ markdownRenderBox.addEventListener('click', (e) => {
     for(const line of getLookoutNote(notesDataObjectModel.notes[state.currentActiveNoteIndex].content).split('\n')){
         position += line.length + 1;
         if(line.trim().length == 0) { continue; }
-        if(/^>+$/.test(line)) { continue; }
+        if(/^>+$/.test(line.trim())) { continue; }
         if(line.match(tagLineRegex) && !line.match(commandTagRegex)) { continue; }
         lineNumber -= 1;
         if(lineNumber == 0) { break; }
