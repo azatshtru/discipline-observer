@@ -513,6 +513,8 @@ a.icon-button {
     font-weight: 900;
     margin-top: 0.2em;
     margin-bottom: 0.64em;
+    flex: 0 0 27px;
+    padding: 0;
 }
 
 .checkbox-outline + p {
@@ -520,12 +522,18 @@ a.icon-button {
     margin-top: 0.4em;
     margin-bottom: 1em;;
     margin-left: 0.3em;
+    padding: 0;
+    flex: 1 1 max-content;
 }
 
 .checkbox-outline > span {
-    transform:translate(-3px, -1px);
+    width: 27px;
+    height: 28px;
     font-size:1.2em;
     font-weight:900;
+    transform:translate(2px, 0px);
+    padding: 0;
+
 }
 
 .checkbox-outline[data-check="o"] {
@@ -535,8 +543,8 @@ a.icon-button {
   
 .checkbox-outline[data-check="x"] {
     color: white;
-    background: radial-gradient(grey 50%, gainsboro 60%);
-    background-size: 11% 11%;
+    background: radial-gradient(grey 40%, gainsboro 50%);
+    background-size: 3px 3px;
     box-shadow: -2px 2px black;
     transform: rotate(-6deg);
     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
