@@ -336,26 +336,24 @@ function openNote(s){
 state.subscribe(openNote);
 
 let lineFocusPosition = -1;
-let markdownEditFocusTimeout;
 function editNote(s){
     if(s.noteViewMode == 'edit'){
         markdownTextarea.value = notesDataObjectModel.notes[s.currentActiveNoteIndex].content;
         markdownTextarea.parentElement.style.display = 'initial';
 
         if(lineFocusPosition >= 0) {
-            markdownTextarea.scrollTop = markdownTextarea.scrollHeight;
+            const initialHeight = markdownTextarea.style.height;
+            const fullStr = markdownTextarea.value;
+            markdownTextarea.value = fullStr.slice(0, lineFocusPosition);
+            markdownTextarea.style.height = 'fit-content';
+            const jump = markdownTextarea.scrollHeight - parseFloat(getComputedStyle(markdownTextarea).getPropertyValue('padding-block-end')) - 50;
+            markdownTextarea.style.height = initialHeight;
+            markdownTextarea.value = fullStr;
+            console.log(jump)
+            markdownTextarea.scrollTop = jump;
             markdownTextarea.selectionStart = markdownTextarea.selectionEnd = lineFocusPosition;
             markdownTextarea.focus();
-            if(markdownEditFocusTimeout) { clearTimeout(markdownEditFocusTimeout); }
-            markdownEditFocusTimeout = setTimeout(() => { 
-                if(markdownTextarea.scrollTop < markdownTextarea.scrollHeight - markdownTextarea.clientHeight) {
-                    markdownTextarea.scrollTop -= markdownTextarea.clientHeight/3;
-                    markdownTextarea.selectionStart = markdownTextarea.selectionEnd = lineFocusPosition;
-                    markdownTextarea.focus();
-                }
-                lineFocusPosition = -1;
-                clearTimeout(markdownEditFocusTimeout);
-            }, 0);
+            lineFocusPosition = -1;
         }
         
     } else { markdownTextarea.parentElement.style.display = 'none'; }
