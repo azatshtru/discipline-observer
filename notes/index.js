@@ -336,24 +336,25 @@ function openNote(s){
 state.subscribe(openNote);
 
 let lineFocusPosition = -1;
+let doubleClickToEditEvent = undefined;
 function editNote(s){
     if(s.noteViewMode == 'edit'){
         markdownTextarea.value = notesDataObjectModel.notes[s.currentActiveNoteIndex].content;
         markdownTextarea.parentElement.style.display = 'initial';
 
-        if(lineFocusPosition >= 0) {
+        if(lineFocusPosition >= 0 && doubleClickToEditEvent) {
             const initialHeight = markdownTextarea.style.height;
             const fullStr = markdownTextarea.value;
             markdownTextarea.value = fullStr.slice(0, lineFocusPosition);
             markdownTextarea.style.height = 'fit-content';
-            const jump = markdownTextarea.scrollHeight - parseFloat(getComputedStyle(markdownTextarea).getPropertyValue('padding-block-end')) - 50;
+            const jump = markdownTextarea.scrollHeight - parseFloat(getComputedStyle(markdownTextarea).getPropertyValue('padding-block-end'));
             markdownTextarea.style.height = initialHeight;
             markdownTextarea.value = fullStr;
-            console.log(jump)
-            markdownTextarea.scrollTop = jump;
+            markdownTextarea.scrollTop = jump - doubleClickToEditEvent.clientY;
             markdownTextarea.selectionStart = markdownTextarea.selectionEnd = lineFocusPosition;
             markdownTextarea.focus();
             lineFocusPosition = -1;
+            doubleClickToEditEvent = undefined;
         }
         
     } else { markdownTextarea.parentElement.style.display = 'none'; }
@@ -511,6 +512,7 @@ markdownRenderBox.addEventListener('dblclick', (e) => {
         lineNumber -= 1;
         if(lineNumber == 0) { break; }
     }
+    doubleClickToEditEvent = e;
     lineFocusPosition = position-1;
     state.setViewMode('edit')
 })
