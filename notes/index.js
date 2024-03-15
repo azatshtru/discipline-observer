@@ -204,16 +204,18 @@ function loadNotes(s) {
 }
 state.subscribe(loadNotes);
 
-const prenote = new URLSearchParams(window.location.search).get('prenote');
-if(prenote && prenote.trim() != '') {
-    callFirebase(() => downloadDocument(['notes', prenote.trim()]).then(x => {
-        if(x.exists()){
-            notesDataObjectModel.notes[x.id] = x.data();
-            state.setCurrentActiveNoteIndex(x.id);
-            state.setViewMode('view');
-        }
-    }));
+let prenoteLoaded = false;
+function loadPrenote(s) {
+    if(prenoteLoaded) { return; }
+    const prenote = new URLSearchParams(window.location.search).get('prenote');
+    if(prenote && prenote.trim() != '') {
+        if(!notesDataObjectModel.notes[prenote]) { return; }
+        prenoteLoaded = true;
+        s.setCurrentActiveNoteIndex(prenote.trim());
+        s.setViewMode('view');
+    }
 }
+state.subscribe(loadPrenote);
 
 const markdownRenderBox = document.querySelector('#markdown-render-box');
 const markdownEditButton = document.querySelector('#markdown-edit-button');

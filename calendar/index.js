@@ -19,6 +19,7 @@ const eventNoteContainer = document.querySelector('#event-note-container');
 
 const currentYear = createSignal(new Date().getFullYear());
 const timelineOpened = createSignal(false);
+const timelineFocus = createSignal('today');
 const timelineDateset = createSignal(new Array(Math.floor((new Date(currentYear.value+1, 0, 0) - new Date(currentYear.value, 0, 0))/(1000*60*60*24))));
 const currentSelectedEventNote = createSignal('');
 
@@ -91,6 +92,10 @@ function CalendarMonth (datestr, eventList={}) {
         } else {
             calendarDay.style.outline = '1px dashed gray'
         }
+        calendarDay.onclick = () => {
+            timelineOpened.value = true;
+            timelineFocus.value = `${currentYear.value}/${datetime.getMonth()+1}/${i-firstDay.getDay()+1}`;
+        }
         calendarMonthDays.appendChild(calendarDay);
     }
     calendarMonthContainer.querySelector('div').appendChild(calendarMonthDays);
@@ -102,6 +107,7 @@ function TimelineDaybox (day, isToday) {
     daybox.className = 'daybox';
     const dayname = `<div class="dayname"><div class="calendar-icon"><span>${monthName(day.date).slice(0, 3)}</span><span>${day.date.getDate()}</span></div><span>${weekday(day.date)}</span></div><hr>`
     daybox.innerHTML = dayname;
+    daybox.dataset.datescroll = `${currentYear.value}/${day.date.getMonth()+1}/${day.date.getDate()}`;
     if(new Date(day.date.valueOf()).setHours(0, 0, 0, 0) == new Date().setHours(0, 0, 0, 0)) {
         daybox.firstElementChild.lastElementChild.style.font = '2em "Times New Roman", monospace'
         daybox.firstElementChild.lastElementChild.style.paddingLeft = '8px'
@@ -109,7 +115,6 @@ function TimelineDaybox (day, isToday) {
         daybox.firstElementChild.firstElementChild.style.transform = 'rotateY(18deg) rotateX(-18deg) scale(120%)'
         daybox.lastElementChild.style.paddingTop = '9px'
         daybox.style.paddingTop = '12px';
-        daybox.dataset.datescroll = 'today';
     }
     return daybox;
 }
@@ -126,7 +131,7 @@ function constructTimeline() {
             timeline.lastElementChild.appendChild(TimelineDaybox(x[0]))
             const noteboxContainer = document.createElement('div');
             noteboxContainer.className = 'horizontal-flex';
-            x.forEach(ex => {
+            x.toSorted((a, b) => a.timestring < b.timestring ? -1 : 1).forEach(ex => {
                 const notebox = document.createElement('div');
                 notebox.className = 'notebox'
                 notebox.innerHTML = `<span>${ex.eventName}</span><span>${ex.timestring}</span>`;
@@ -141,7 +146,8 @@ function constructTimeline() {
     const footerMargin = document.createElement('div');
     footerMargin.style.height = '50px';
     timeline.lastElementChild.appendChild(footerMargin);
-    timeline.querySelector('.daybox[data-datescroll="today"]')?.scrollIntoView(true);
+    timelineOpened.value = true;
+    timelineFocus.value = (new Date).toISOString().split('T')[0].split('-').map(x => parseInt(x)).join('/');
 }
 createEffect(constructTimeline);
 
@@ -157,6 +163,14 @@ function renderCalendar() {
     }
 }
 createEffect(renderCalendar);
+
+createEffect(() => {
+    if(timelineFocus.value == '') { return; }
+    if(timelineOpened.value == true) {
+        timeline.querySelector(`.daybox[data-datescroll="${timelineFocus.value}"]`)?.scrollIntoView(true);
+        timelineFocus.value = '';
+    }
+})
 
 createEffect(() => calendarHeading.querySelector('h1').textContent = currentYear.value);
 
