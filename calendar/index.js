@@ -97,11 +97,20 @@ function CalendarMonth (datestr, eventList={}) {
     return calendarMonthContainer;
 }
 
-function TimelineDaybox (day) {
+function TimelineDaybox (day, isToday) {
     const daybox = document.createElement('div');
     daybox.className = 'daybox';
     const dayname = `<div class="dayname"><div class="calendar-icon"><span>${monthName(day.date).slice(0, 3)}</span><span>${day.date.getDate()}</span></div><span>${weekday(day.date)}</span></div><hr>`
     daybox.innerHTML = dayname;
+    if(new Date(day.date.valueOf()).setHours(0, 0, 0, 0) == new Date().setHours(0, 0, 0, 0)) {
+        daybox.firstElementChild.lastElementChild.style.font = '2em "Times New Roman", monospace'
+        daybox.firstElementChild.lastElementChild.style.paddingLeft = '8px'
+        daybox.firstElementChild.lastElementChild.textContent = 'TODAY'
+        daybox.firstElementChild.firstElementChild.style.transform = 'rotateY(18deg) rotateX(-18deg) scale(120%)'
+        daybox.lastElementChild.style.paddingTop = '9px'
+        daybox.style.paddingTop = '12px';
+        daybox.dataset.datescroll = 'today';
+    }
     return daybox;
 }
 
@@ -132,6 +141,7 @@ function constructTimeline() {
     const footerMargin = document.createElement('div');
     footerMargin.style.height = '50px';
     timeline.lastElementChild.appendChild(footerMargin);
+    timeline.querySelector('.daybox[data-datescroll="today"]')?.scrollIntoView(true);
 }
 createEffect(constructTimeline);
 
