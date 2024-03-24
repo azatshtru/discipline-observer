@@ -72,6 +72,10 @@ export function parseMarkdown(markdownText){
     return htmlText.trim();
 }
 
+export function formatXX(str) {
+    return ('00'+str).slice(-2);
+}
+
 export function parseDate(command) {
     const dateRegex = /(\d{4})\/(\d\d?)\/(\d\d?)( ((\d\d?)\:(\d\d?))(\-(\d\d?)\:(\d\d?))?)? ([a-zA-Z\p{L}].*)/i;
     if(!dateRegex.test(command.trim())) { return false; }
@@ -90,17 +94,17 @@ export function parseDate(command) {
     if(datetime1.date > datetime.getDate() || datetime1.date < 1) { return false; }
     datetime.setDate(datetime1.date);
 
-    if(datetime1.hours) { 
-        if(datetime1.hours > 23 || datetime1.hours < 1) { return false; }
+    if(!isNaN(parseInt(datetime1.hours))) { 
+        if(datetime1.hours > 23 || datetime1.hours < 0) { return false; }
         if(datetime1.minutes > 59 || datetime1.minutes < 0) { return false; }
         datetime.setHours(datetime1.hours, datetime1.minutes)
     }
-    if(datetime1.fhours) {
+    if(!isNaN(parseInt(datetime1.fhours))) { 
         if(datetime1.fhours > 23 || datetime1.fhours < 1) { return false; }
         if(datetime1.fminutes > 59 || datetime1.fminutes < 0) { return false; }
     }
 
-    return { eventName: eventName, date: datetime, timestring: `${datetime.getHours()?datetime.getHours()+':'+datetime.getMinutes():'all day'}${datetime1.fhours ? ' - '+datetime1.fhours+':'+datetime1.fminutes:''}` };
+    return { eventName: eventName, date: datetime, timestring: `${!isNaN(datetime1.hours)?formatXX(datetime.getHours())+':'+formatXX(datetime.getMinutes()):'all day'}${!isNaN(datetime1.fhours) ? (' - '+formatXX(datetime1.fhours)+':'+formatXX(datetime1.fminutes)):''}` };
 }
 
 export function weekday(datetime) {
@@ -113,4 +117,84 @@ export function monthName(datetime) {
     const monthlist = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
     if(!datetime) { return monthlist }
     return monthlist[datetime.getMonth()];
+}
+
+export function ordinal(x) {
+    if (x == 0) { return 'the zeroeth'; }
+    if (x % 100 > 10 && x % 100 < 20) { return 'the ' + x + 'th' }
+    if (x % 10 > 3) { return 'the ' + x + 'th' }
+    return 'the ' + x + ({ 1: 'st', 2: 'nd', 3: 'rd' }[x % 10]);
+}
+
+export function getAllThursdays(monthIndex, day = 4) {
+    const d = new Date(2024, monthIndex - 1, 1);
+    const l = [];
+    while (d.getDay() != day) { d.setDate(d.getDate() + 1) }
+    while (d.getMonth() == monthIndex - 1) {
+        l.push(new Date(2024, 0, (new Date(2024, monthIndex - 1, d.getDate()) - new Date(2024, 0, 0)) / (1000 * 60 * 60 * 24)).getDate());
+        d.setDate(d.getDate() + 7);
+    }
+    return l;
+}
+
+export function cronDateList(cron) {
+    const monthList = cron.month == '*' ? [...Array(12).keys()].map(x => x + 1) : [cron.month];
+    let dateList = []
+    monthList.forEach(month => {
+        let tempDateList = [];
+        if (cron.dom != '*') { tempDateList.push(`2024/${month}/${cron.dom} `); }
+        if (cron.dow != '*') { getAllThursdays(month, cron.dow).forEach(x => tempDateList.push(`2024/${month}/${x} `)); }
+        if (tempDateList.length == 0) {
+            [...Array(new Date(2024, month, 0).getDate()).keys()].forEach(x => tempDateList.push(`2024/${month}/${x + 1} `));
+        }
+        dateList.push(...tempDateList);
+    });
+    if (cron.hour == '*' && cron.minute == '*') {
+        dateList = dateList.map(date => date.concat(''));
+        return dateList;
+    }
+    if (cron.hour != '*') { dateList = dateList.map(date => date.concat(cron.hour)) }
+    else { dateList = dateList.map(date => [...Array(24).keys()].map(x => date.concat(parseInt(x) % 24))).flat() }
+    if (cron.minute == '*') { dateList = dateList.map(date => date.concat(`:00-${(parseInt(date.at(-1)) + 1) % 24}:00`)); }
+    else { dateList = dateList.map(date => date.concat(`:${cron.minute}`)) }
+    return dateList;
+}
+
+export function cronString(cron) {
+    const monthString = cron.month == '*' ? 'every month' : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][cron.month - 1];
+    const domString = cron.dom == '*' ? '' : 'on ' + ordinal(cron.dom) + ' of ' + monthString;
+    const dowString = cron.dow == '*' ? '' : (cron.dom == '*' ? '' : 'and ') + 'every ' + ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][cron.dow] + ' of ' + monthString;
+    const dateString = (domString + dowString).length == 0 ? 'everyday of ' + monthString : domString + ' ' + dowString;
+    if (cron.hour == '*') { return `At ${cron.minute == '*' ? 'every' : ordinal(cron.minute)} minute of every hour ${dateString}` }
+    if (cron.minute == '*') { return `From ${cron.hour}:00 to ${parseInt(cron.hour) + 1}:00 ${dateString}` }
+    return `At ${cron.hour}:${('00' + cron.minute).slice(-2)} ${dateString}`;
+}
+
+export function parseCronExpression(expression) {
+    const cron = {
+        minute: '*',
+        hour: '*',
+        dom: '*',
+        month: '*',
+        dow: '*'
+    }
+    const cronSeq = expression.split(' ').filter(x=>x.length>0).filter(x => !isNaN(x) || x == '*');
+    if (cronSeq.length != 5) { return null; }
+    const cronIter = cronSeq[Symbol.iterator]();
+    cron.minute = Math.min(Math.max(parseInt(cronIter.next().value), 0), 59);
+    cron.hour = Math.min(Math.max(parseInt(cronIter.next().value), 0), 23);
+    cron.dom = Math.min(Math.max(parseInt(cronIter.next().value), 1), 31) || cron.dom;
+    cron.month = Math.min(Math.max(parseInt(cronIter.next().value), 1), 12) || cron.month;
+    cron.dow = Math.min(Math.max(parseInt(cronIter.next().value), 0), 6);
+    cron.minute = (cron.minute || cron.minute === 0) ? cron.minute : '*';
+    cron.hour = (cron.hour || cron.hour === 0) ? cron.hour : '*';
+    cron.dow = (cron.dow || cron.dow === 0) ? cron.dow : '*';
+
+    return cron;
+}
+
+export function cronUtilityCheck(expression) {
+    const cronRegex = /^(\d\d?|\*) (\d\d?|\*) (\d\d?|\*) (\d\d?|\*) (\d|\*) ([\w\p{L}].*)$/i;
+    if(!cronRegex.test(expression.trim())) { return false; }
+    return Object.assign(parseCronExpression(expression.match(cronRegex).slice(1, 6).join(' ')), { eventName: expression.match(cronRegex)[6] });
 }

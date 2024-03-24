@@ -1,4 +1,4 @@
-import { parseMarkdown, parseDate, monthName, weekday } from '../utils.js';
+import { parseMarkdown, parseDate, monthName, weekday, parseCronExpression, cronDateList, cronUtilityCheck } from '../utils.js';
 import { createSignal, createEffect } from '../blush.js';
 import { setAuthInit, getAuthUser, downloadDocument, upload } from '../firebase.js';
 
@@ -29,16 +29,22 @@ createEffect(() => callFirebase(async () => downloadDocument(['base', 'commands'
     eventCount = 0;
     if(x.exists()) { 
         const eventlist = {}
+        const populateEventList = (e, entry) => {
+            const datetime = parseDate(e);
+            if(!datetime) { return }
+            if(datetime.date.getFullYear() != currentYear.value) { return }
+            const dateindex = Math.floor((datetime.date - new Date(currentYear.value, 0, 0))/(1000*60*60*24));
+            const dateEvents = Object.assign(datetime, {eventNote: entry[0]});
+            eventlist[dateindex] ? eventlist[dateindex].push(dateEvents) : eventlist[dateindex] = [dateEvents];
+            eventCount += 1;
+        }
         Object.entries(x.data()).forEach(entry => {
             if(entry[1].length < 1) { return; }
+            entry[1].forEach(e => populateEventList(e, entry))
             entry[1].forEach(e => {
-                const datetime = parseDate(e);
-                if(!datetime) { return }
-                if(datetime.date.getFullYear() != currentYear.value) { return }
-                const dateindex = Math.floor((datetime.date - new Date(currentYear.value, 0, 0))/(1000*60*60*24));
-                const dateEvents = Object.assign(datetime, {eventNote: entry[0]});
-                eventlist[dateindex] ? eventlist[dateindex].push(dateEvents) : eventlist[dateindex] = [dateEvents];
-                eventCount += 1;
+                const cron = cronUtilityCheck(e);
+                if(!cron) { return }
+                cronDateList(cron).forEach(dx => populateEventList(dx.trim() + ' ' + cron.eventName, entry))
             })
         })
         timelineDateset.value = [...timelineDateset.value].map((x, i) => eventlist[i]?eventlist[i]:[{date:new Date(parseInt(currentYear.value), 0, i+1)}])
@@ -70,8 +76,8 @@ function CalendarMonth (datestr, eventList={}) {
             calendarDay.appendChild(calendarDaySpan);
             const calendarDayContent = document.createElement('p');
             if(eventList[calendarDaySpan.textContent]){
-                const glyphColor = parseInt(eventList[calendarDaySpan.textContent])>12 ? '#aaa' : 'black';
-                for (let j = 0; j < Math.min(parseInt(eventList[calendarDaySpan.textContent]), 12); j++) {
+                const glyphColor = parseInt(eventList[calendarDaySpan.textContent])>9 ? '#aaa' : 'black';
+                for (let j = 0; j < Math.min(parseInt(eventList[calendarDaySpan.textContent]), 9); j++) {
                     const calendarEventGlyph = document.createElement('span');
                     calendarEventGlyph.className = 'material-symbols-outlined';
                     calendarEventGlyph.textContent = 'close';
@@ -83,7 +89,7 @@ function CalendarMonth (datestr, eventList={}) {
                 calendarDay.style.transform = 'rotate(-0deg) scale(101%)';
                 calendarDaySpan.style.color = 'black';
             }
-            if(eventList[calendarDaySpan.textContent] - 12 > 0) {
+            if(eventList[calendarDaySpan.textContent] - 9 > 0) {
                 const totalNum = document.createElement('div');
                 totalNum.textContent = eventList[calendarDaySpan.textContent];
                 calendarDayContent.appendChild(totalNum);
