@@ -267,6 +267,130 @@ int main() {
     </div>
     <p>In your notes, you can press the flag to increase progress by one.</p>
     <br>
+    <h2>Commandboxes</h2>
+    <p>Commandboxes or "command-tags" help in injecting specific behavior into your notes. An '@' sign followed by a pair of square brackets that enclose your command is a commandbox.</p>
+    <p><span class="bordered-bg-white padin-half-em nobreakspan">@[pinned]</span> is rendered as:</p><br>
+    <div class="dashed-border pad-1em">
+    <div class="commandbox"><span data-command=""><span class="material-symbols-outlined" style="transform:rotate(32deg)">keep</span>pinned</span></div>
+    </div>
+    <p>The "pinned" command lets you pin your notes on your dashboard for quick access. ryth features many more commands, and lets you create your own.</p>
+
+    <hr class="stylized">
+
+    <div class="horizontal-flex cross-centered">
+        <span class="material-symbols-outlined heading opacity-low font-wt500" style="font-weight:800">schedule</span>
+        <h1>Dates and Crons</h1>
+    </div>
+    <p><span>Ryth handles time to the precision of the minute. Anything involving date and time is an <b>event</b>.</span></p>
+    <p><span>Ryth classifies events into two categories:</span></p>
+    <ol>
+        <li value="1"><span>Non-repeating events, which are referred as <u><i>Dates</i></u></span></li>
+        <hr>
+        <li value="2"><span>Repeating events, which are referred as <u><i>Crons</i></u></span></li>
+    </ol>
+    <p><span>Together, Dates and Crons can handle every kind of event. They can be set via command boxes.</span></p>
+    <br>
+    <h3>Setting Dated events</h3>
+    <p>A note containing a commandbox with a date in YYYY/MM/DD format followed by the event name sets a <i>Dated event</i> and associates the respective note with that event.</p>
+    <p><span class="bordered-bg-white padin-half-em nobreakspan">@[2024/11/23 Amy's Birthday]</span> is rendered as:</p><br>
+    <div class="dashed-border pad-1em">
+    <div class="commandbox"><span data-command=""><span class="material-symbols-outlined">event</span>2024/11/23 Amy's Birthday</div>
+    </div>
+    <p>This note shows up as an event in <u>ryth calendar</u> and is utilized to include particulars about the event.</p>
+    <p>Further, Dates can also include <b>time</b> in HH:MM format or a <b>time range</b> in HH:MM-HH:MM format.</p>
+    <p><span class="bordered-bg-white padin-half-em nobreakspan">@[2024/2/14 11:00 Gym with the boys]</span> sets up a timed event:</p> 
+    <div class="dashed-border pad-1em">
+    <div class="commandbox"><span data-command=""><span class="material-symbols-outlined">event</span>2024/2/14 11:00 Gym with the boys</div>
+    </div>
+    <p><span class="bordered-bg-white padin-half-em nobreakspan">@[2024/9/11 17:00-18:45 Board meeting]</span> sets up a ranged-time event:</p>
+    <div class="dashed-border pad-1em">
+    <div class="commandbox"><span data-command=""><span class="material-symbols-outlined">event</span>2024/9/11 17:00-18:45 Board meeting</div>
+    </div>
+    <p style="font-size: small;"><i>Note that the ryth uses military time to avoid ambiguity between AM and PM.</i></p>
+    <br>
+    <h3>Setting Cron events</h3>
+    <p>A cron expression consists of five space separated numbers followed by the event name. It is written in a command box.</p>
+    <p><span class="bordered-bg-white padin-half-em nobreakspan">@[00 17 2 * * Payday]</span> is rendered as:</p><br>
+    <div class="dashed-border pad-1em">
+    <div class="commandbox"><span data-command=""><span class="material-symbols-outlined">event</span>0 5 2 * * Payday</div>
+    </div>
+    <p>The above cron expression sets up a repeated event for 17:00 on the 2nd of every month.</p>
+    <p>Cron is a really powerful system that gives you granular control over repeated events with very little functional description. </p>
+    <br>
+    <h3>The cron guide</h3>
+    <p>The following section serves as a guide on writing and interpreting cron expressions. This uses an example on setting a "Chest day" for 5:00 on every Monday in the month of August, step-by-step.</p>
+    <p>The five numbers in a cron expression represent, in order:</p>
+    <ol>
+        <li value="1"><span>minute</li>
+        <hr>
+        <li value="2"><span>hour</li>
+        <hr>
+        <li value="3"><span>day of the month</li>
+        <hr>
+        <li value="4"><span>month</li>
+        <hr>
+        <li value="5"><span>day of the week</li>
+    </ol>
+    <p>Replacing all of the numbers with asterisks (*) expresses the idea of "everytime".</p>
+    <blockquote>
+    <p><b>Step 1:</b></p>
+    <p><span class="bordered-bg-white padin-half-em nobreakspan">@[* * * * * Chest day]</span> sets up an event for <u>every minute, every hour, every day, every month</u>. <br><br>Since you probably don't want to workout chest every minute, you can begin by replacing the asterisks with numbers to set specific times, as shown in the next step.</p> 
+    </blockquote>
+    <blockquote>
+    <p><b>Step 2:</b></p>
+    <p>The last position represents the day of the week, the numbers 0 to 6 represent Sunday to Saturday in order.<br><br> To set every Monday, replace the last asterisk with 1, i.e. <span class="bordered-bg-white padin-half-em nobreakspan">@[* * * * <b>1</b> Chest day]</span>.<br><br> This sets the event for <u>every minute, every hour, <b>every Monday</b> of every month</u>.</p>
+    </blockquote>
+    <blockquote>
+    <p><b>Step 3:</b></p>
+    <p>The second-to-last position represents the month.<br><br> To set August, which is the 10th month, replace the second-to-last asterisk with 10, i.e. <span class="bordered-bg-white padin-half-em nobreakspan">@[* * * <b>10 1</b> Chest day]</span>.<br><br> This sets the event for <u>every minute, every hour, <b>every Monday</b> of <b>August</b></u>.</p>
+    </blockquote>
+    <blockquote>
+    <p><b>Step 4:</b></p>
+    <p>The first and second position represents minute and hour respectively.<br><br>To represent 5:00, which is 00 in minute and 5 in hour, replace the first and second position with 0 and 5, i.e. <span class="bordered-bg-white padin-half-em nobreakspan">@[<b>0 5</b> * <b>10 1</b> Chest day]</span>.<br><br> This sets the event for <u><b>5:00</b> <b>every Monday</b> of <b>August</b></u>.</p>
+    <p>In ryth calendar, The event "Chest Day" will show up at 5:00 every Monday of August.</p>
+    </blockquote>
+    <style>
+        #cron-h1 {
+        font-family: "Inter", sans-serif;
+        font-weight: 400;
+        }
+
+        #cron-date-list {
+        font-family: "Inter", sans-serif;
+        letter-spacing: 1px;
+        font-weight: 300;
+        line-height: 1.2em;
+        }
+
+        #croninput {
+        font-size: 1.1em;
+        font-family: monospace;
+        border: 1px solid black;
+        border-radius: 2px;
+        padding: 4px;
+        box-shadow: 1px 1px black;
+        }
+    </style>
+    <p>With some practice, setting repeated events with cron becomes super-easy. The tool below can be used to interpret cron expressions in Common English and gives the list on which the event will repeat.</p>
+    <div class="dashed-border pad-1em" style="border: 4px solid gainsboro; border-radius:8px">
+    <input id="croninput" placeholder="* * * * *" />
+    <h1 id="cron-h1">Invalid expression</h1>
+    <div id="cron-date-list">[ ]</div>
+    </div>
+
+    <script defer type="module">
+        import { parseCronExpression, cronDateList, cronString, cronUtilityCheck } from "../utils.js"
+        const cronInput = document.querySelector('#croninput');
+        const cronInterpreterDisplay = document.querySelector('#cron-h1');
+        const cronListDisplay = document.querySelector('#cron-date-list');
+
+        cronInput.oninput = () => {
+            if(!/^(\d\d?|\*) (\d\d?|\*) (\d\d?|\*) (\d\d?|\*) (\d|\*)([\w\p{L}].*)?$/i.test(cronInput.value)) { return; }
+            cronListDisplay.innerHTML = cronDateList(parseCronExpression(cronInput.value)).join('<br>');
+            cronInterpreterDisplay.innerHTML = cronString(parseCronExpression(cronInput.value));
+        }
+    </script>
+    <br><br>
     <hr class="stylized">
 
     <div class="horizontal-flex cross-centered">
@@ -301,9 +425,9 @@ int main() {
     </div>
     <p>The following few sections describe how to write some common mathematical expressions using LaTeX. Keep in mind that all of these are written between a pair of single or double dollar signs.</p>
     <h2>Symbols</h2>
-    <p>Simple symbols like "x", "y", "<", "42" are rendered as is: </p>
+    <p>Simple symbols like "x", "y", "&lt;", "42" are rendered as is: </p>
     <div class="dashed-border pad-1em display-equation">
-        $x, y, <, 42$
+        $x, y, &lt;, 42$
     </div>
     <p>To write special mathematical or scientific symbols, use a backslash followed by the symbol's name. For example, <span class="bordered-bg-white padin-half-em nobreakspan">$\lambda$</span> is rendered as $\lambda$.</p>
     <p>Below is a table of some common symbols.</p>
@@ -349,7 +473,7 @@ int main() {
     <p style="font-size: small;"><i>This list of symbols is far from complete, LaTeX has a more complete and comprehensive set of symbols. As always, LaTeX notation for a specific symbol can be found through some diligent googling. A more complete list of LaTeX symbols can be found <a target="_blank" href="https://oeis.org/wiki/List_of_LaTeX_mathematical_symbols#Set_and.2For_logic_notation">here</a>.</i></p>
     <h2>Superscripts and Subscripts</h2>
     <div class="display-equation">
-    <p>Superscripts are commonly used to denote exponents, Anything can be followed by a caret (^) to denote a superscript.  an underscore (_) to denote a subscript. <span class="bordered-bg-white padin-half-em nobreakspan">$x^n$</span> is rendered as $x^n$.</p>
+    <p>Superscripts are commonly used to denote exponents, Anything can be followed by a caret (^) to denote a superscript. <span class="bordered-bg-white padin-half-em nobreakspan">$x^n$</span> is rendered as $x^n$.</p>
     <p>Note that if the superscript has more than one term or digit, said superscript needs to be enclosed in braces.<span class="bordered-bg-white padin-half-em nobreakspan">$e^{1-\lambda}$</span> is rendered as $e^{1-\lambda}$.</p>
     <p>Subscripts are mostly used to denote indices in a series among other things, Anything followed by an underscore (_) is rendered as a subscript.<span class="bordered-bg-white padin-half-em nobreakspan">$F_X$</span> is rendered as $F_X$.</p>
     <p>If the subscript has more than one term or digit, it needs to be enclosed in braces.<span class="bordered-bg-white padin-half-em nobreakspan">$a_{i+n}$</span> is rendered as $a_{i+n}$.</p>
@@ -407,7 +531,7 @@ int main() {
     <p>Arrays can be combined with other arrays via using double backslashes (\\). </p>
     <div style="padding:0.5em;width:fit-content;" class="bordered-bg-white padin-half-em">a & b & c \\ {x+1} & {y+2} & {z+3}</div>
     <p> The above is a combination of two arrays with elements [a, b, c] in the first array and [x+1, y+2, z+3] in the second array.</p>
-    <h3>From arrays to matrices</h3>
+    <h3>Constructing matrices using arrays</h3>
     <p>On their own, combination of arrays aren't that useful. But when used with \begin function, they can easily represent a matrix.</p>
     <p style="line-height: 1.7em;">Enclose combinations of arrays between <span class="bordered-bg-white padin-half-em nobreakspan">\begin{bmatrix}</span> and <span class="bordered-bg-white padin-half-em nobreakspan">\end{bmatrix}</span> to create a square matrix.</p>
     <div style="padding:0.5em;width:fit-content;" class="bordered-bg-white padin-half-em">\begin{bmatrix} a & b & c \\ {x+1} & {y+2} & {z+3} \\ -1 & 17 & 10.2 \end{bmatrix}</div>
