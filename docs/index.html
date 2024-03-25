@@ -342,11 +342,11 @@ int main() {
     </blockquote>
     <blockquote>
     <p><b>Step 3:</b></p>
-    <p>The second-to-last position represents the month.<br><br> To set August, which is the 10th month, replace the second-to-last asterisk with 10, i.e. <span class="bordered-bg-white padin-half-em nobreakspan">@[* * * <b>10 1</b> Chest day]</span>.<br><br> This sets the event for <u>every minute, every hour, <b>every Monday</b> of <b>August</b></u>.</p>
+    <p>The second-to-last position represents the month.<br><br> To set August, which is the 8th month, replace the second-to-last asterisk with 8, i.e. <span class="bordered-bg-white padin-half-em nobreakspan">@[* * * <b>8 1</b> Chest day]</span>.<br><br> This sets the event for <u>every minute, every hour, <b>every Monday</b> of <b>August</b></u>.</p>
     </blockquote>
     <blockquote>
     <p><b>Step 4:</b></p>
-    <p>The first and second position represents minute and hour respectively.<br><br>To represent 5:00, which is 00 in minute and 5 in hour, replace the first and second position with 0 and 5, i.e. <span class="bordered-bg-white padin-half-em nobreakspan">@[<b>0 5</b> * <b>10 1</b> Chest day]</span>.<br><br> This sets the event for <u><b>5:00</b> <b>every Monday</b> of <b>August</b></u>.</p>
+    <p>The first and second position represents minute and hour respectively.<br><br>To represent 5:00, which is 00 in minute and 5 in hour, replace the first and second position with 0 and 5, i.e. <span class="bordered-bg-white padin-half-em nobreakspan">@[<b>0 5</b> * <b>8 1</b> Chest day]</span>.<br><br> This sets the event for <u><b>5:00</b> <b>every Monday</b> of <b>August</b></u>.</p>
     <p>In ryth calendar, The event "Chest Day" will show up at 5:00 every Monday of August.</p>
     </blockquote>
     <style>
@@ -378,7 +378,7 @@ int main() {
             box-shadow: 8px 11px #bcbcbc, 15px 27px gainsboro, 22px 38px whitesmoke;
         }
     </style>
-    <p>With some practice, setting repeated events with cron becomes super-easy. The tool below can be used to interpret cron expressions in Common English and gives the list on which the event will repeat.</p>
+    <p>With some practice, setting repeated events with cron becomes super-easy. The tool below can be used to interpret cron expressions in Common English and gives the list of dates on which the event will repeat.</p>
     <div class="dashed-border pad-1em" id="cron-docbox">
     <input id="croninput" placeholder="* * * * *" />
     <h1 id="cron-h1">Invalid expression</h1>
