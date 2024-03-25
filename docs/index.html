@@ -351,28 +351,34 @@ int main() {
     </blockquote>
     <style>
         #cron-h1 {
-        font-family: "Inter", sans-serif;
-        font-weight: 400;
+            font-family: "Inter", sans-serif;
+            font-weight: 400;
         }
 
         #cron-date-list {
-        font-family: "Inter", sans-serif;
-        letter-spacing: 1px;
-        font-weight: 300;
-        line-height: 1.2em;
+            font-family: "Inter", sans-serif;
+            letter-spacing: 1px;
+            font-weight: 300;
+            line-height: 1.2em;
         }
 
         #croninput {
-        font-size: 1.1em;
-        font-family: monospace;
-        border: 1px solid black;
-        border-radius: 2px;
-        padding: 4px;
-        box-shadow: 1px 1px black;
+            font-size: 1.1em;
+            font-family: monospace;
+            border: 1px solid black;
+            border-radius: 2px;
+            padding: 4px;
+            box-shadow: 1px 1px black;
+        }
+
+        #cron-docbox {
+            border: 2px solid black;
+            border-radius: 5px;
+            box-shadow: 8px 11px #bcbcbc, 15px 27px gainsboro, 22px 38px whitesmoke;
         }
     </style>
     <p>With some practice, setting repeated events with cron becomes super-easy. The tool below can be used to interpret cron expressions in Common English and gives the list on which the event will repeat.</p>
-    <div class="dashed-border pad-1em" style="border: 4px solid gainsboro; border-radius:8px">
+    <div class="dashed-border pad-1em" id="cron-docbox">
     <input id="croninput" placeholder="* * * * *" />
     <h1 id="cron-h1">Invalid expression</h1>
     <div id="cron-date-list">[ ]</div>
