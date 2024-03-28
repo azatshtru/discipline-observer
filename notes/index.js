@@ -1,5 +1,5 @@
 import { downloadWhere, upload, downloadDocument, deleteDocument, downloadFirst, paginatedDownload, setAuthInit, getAuthUser } from "../firebase.js"
-import { parseMarkdown, renderEmphasis, parseDate, } from "../utils.js";
+import { parseMarkdown, renderEmphasis, parseDate, cronUtilityCheck, } from "../utils.js";
 
 const firebaseDelegates = [];
 
@@ -415,8 +415,23 @@ function executeCommand(command) {
     if(!command) { return; }
     const c = command.dataset.command;
     const datetime = parseDate(c.trim());
+    const cron = cronUtilityCheck(c.trim());
     if(datetime) {
         command.firstChild.textContent = 'event';
+    } else if(cron) {
+        command.firstChild.textContent = 'event_repeat';
+    } else if(c=='reset') {
+        command.firstChild.textContent = 'restart_alt';
+        command.style.boxShadow = 'inset 0px -3px gainsboro'
+        command.style.paddingBottom = '3px'
+        command.style.fontSize = '1em'
+        command.onclick = () => {
+            document.querySelectorAll('.checkbox-outline').forEach(x => {if(x.dataset.check=='x') { x.click(); }})
+            document.querySelectorAll('.progress-container > button').forEach(x => {
+                x.dataset.value = -1;
+                x.click();
+            })
+        }
     } else {
         command.firstChild.textContent = 'error';
     }

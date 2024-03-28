@@ -20,7 +20,7 @@ const eventNoteContainer = document.querySelector('#event-note-container');
 const currentYear = createSignal(new Date().getFullYear());
 const timelineOpened = createSignal(false);
 const timelineFocus = createSignal('today');
-const timelineDateset = createSignal(new Array(Math.floor((new Date(currentYear.value+1, 0, 0) - new Date(currentYear.value, 0, 0))/(1000*60*60*24))));
+const timelineDateset = createSignal(new Array(Math.floor((new Date(currentYear.value+1, 0, 0) - new Date(currentYear.value, 0, 0))/(1000*60*60*24))+1));
 const currentSelectedEventNote = createSignal('');
 
 let eventCount = 0;
@@ -163,7 +163,7 @@ function renderCalendar() {
     for (let i = 0; i < 12; i++) {
         const monthEvents = {}
         const lastDay = new Date(currentYear.value, i+1, 0).getDate();
-        timelineDateset.value.slice(k, k+lastDay).forEach((x, i) => x[0].eventName?monthEvents[i]=x.length:'');
+        timelineDateset.value.slice(k, k+lastDay+1).forEach((x, i) => x[0].eventName?monthEvents[i]=x.length:'');
         k += lastDay;
         calendar.appendChild(CalendarMonth(`${currentYear.value}/${i+1}/1 hello`, monthEvents));
     }

@@ -128,7 +128,9 @@ pre {
     border-radius: 3px; 
     border: 1px solid whitesmoke;
     position: relative;
+    width: fit-content;
     overflow: hidden;
+    overflow-x: scroll;
     tab-size: 2;
 
     transition: background-color 0.1s ease-in;

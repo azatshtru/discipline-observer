@@ -127,11 +127,11 @@ export function ordinal(x) {
 }
 
 export function getAllThursdays(monthIndex, day = 4) {
-    const d = new Date(2024, monthIndex - 1, 1);
+    const d = new Date(new Date().getFullYear(), monthIndex - 1, 1);
     const l = [];
     while (d.getDay() != day) { d.setDate(d.getDate() + 1) }
     while (d.getMonth() == monthIndex - 1) {
-        l.push(new Date(2024, 0, (new Date(2024, monthIndex - 1, d.getDate()) - new Date(2024, 0, 0)) / (1000 * 60 * 60 * 24)).getDate());
+        l.push(new Date(new Date().getFullYear(), 0, (new Date(2024, monthIndex - 1, d.getDate()) - new Date(2024, 0, 0)) / (1000 * 60 * 60 * 24)).getDate());
         d.setDate(d.getDate() + 7);
     }
     return l;
@@ -142,10 +142,10 @@ export function cronDateList(cron) {
     let dateList = []
     monthList.forEach(month => {
         let tempDateList = [];
-        if (cron.dom != '*') { tempDateList.push(`2024/${month}/${cron.dom} `); }
-        if (cron.dow != '*') { getAllThursdays(month, cron.dow).forEach(x => tempDateList.push(`2024/${month}/${x} `)); }
+        if (cron.dom != '*') { tempDateList.push(`${new Date().getFullYear()}/${month}/${cron.dom} `); }
+        if (cron.dow != '*') { getAllThursdays(month, cron.dow).forEach(x => tempDateList.push(`${new Date().getFullYear()}/${month}/${x} `)); }
         if (tempDateList.length == 0) {
-            [...Array(new Date(2024, month, 0).getDate()).keys()].forEach(x => tempDateList.push(`2024/${month}/${x + 1} `));
+            [...Array(new Date(new Date().getFullYear(), month, 0).getDate()).keys()].forEach(x => tempDateList.push(`${new Date().getFullYear()}/${month}/${x + 1} `));
         }
         dateList.push(...tempDateList);
     });
