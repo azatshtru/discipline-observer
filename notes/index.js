@@ -424,7 +424,6 @@ function executeCommand(command) {
         command.firstChild.textContent = 'restart_alt';
         command.style.boxShadow = 'inset 0px -3px gainsboro'
         command.style.paddingBottom = '3px'
-        command.style.fontSize = '1em'
         command.onclick = () => {
             document.querySelectorAll('.checkbox-outline').forEach(x => {if(x.dataset.check=='x') { x.click(); }})
             document.querySelectorAll('.progress-container > button').forEach(x => {
