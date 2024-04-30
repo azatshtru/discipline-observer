@@ -156,6 +156,19 @@ const state = {
     }
 }
 
+function globalTagSearch() {
+    Object.keys(notesDataObjectModel.notes).forEach(noteIndex => notesDataObjectModel.notes[noteIndex].tags.forEach(tag => {
+        if(notesDataObjectModel.tags[tag]) {
+            notesDataObjectModel.tags[tag].push(noteIndex);
+        } else {
+            notesDataObjectModel.tags[tag] = [noteIndex];
+        }
+    }))
+    state.publish();
+    callFirebase(async () => upload(['base', 'tags'], notesDataObjectModel.tags));
+}
+document.querySelector('#hard-tag-reload').onclick = globalTagSearch;
+
 callFirebase(async () => downloadDocument(['base', 'tags']).then(x => {
     if(x.exists()) { notesDataObjectModel.tags = x.data() }
     state.setTagsLoaded();
