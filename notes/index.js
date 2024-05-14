@@ -24,8 +24,10 @@ const codeBlockRegex = /^```(.*\n)*?(.*?)```$/gim;
 const blockquoteRegex = /^(>.*)(\n>.*)*/gim;
 
 const getTitle = (x) => {
+    x = x.split('\n', 1)[0];
+    x = x.replace(/[^\p{L}\p{N}\w\d ]/gimu, '')
     if (x.trim() == '') { return 'untitled' }
-    x = x.replace(/^\s*\-?\s*\[x\]/, '');
+    //x = x.replace(/^\s*\-?\s*\[x\]/, '');
     return x.match(/[\p{L}\p{N}\w\d].*/gimu)[0];
 }
 
