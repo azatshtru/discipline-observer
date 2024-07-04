@@ -1,4 +1,4 @@
-import { signIn } from "../../firebase.js";
+import { signIn, callApiWithAppCheck } from "../../firebase.js";
 import { authenticationServerObject } from "../../setup.js";
 
 const authContainer = document.querySelector('.auth-container');
@@ -75,12 +75,18 @@ if(!urlParams.get('email')) {
 }
 const requestEmail = urlParams.get('email');
 
-authcodeForm.onsubmit = e => {
+authcodeForm.onsubmit = async (e) => {
     e.preventDefault();
     if(/^\d{6}$/gm.test(getAuthcodeFromCells())) {
         toggleLoadingScreen();
-        fetch(authenticationServerObject.authcodeDomain, {
+        const appCheckTokenResponse = await callApiWithAppCheck()
+        await fetch(authenticationServerObject.authcodeDomain, {
             method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Access-Control-Request-Headers': 'X-Firebase-AppCheck',
+                'X-Firebase-AppCheck': appCheckTokenResponse.token,
+            },
             body: new URLSearchParams({
                 email: requestEmail,
                 authcode: getAuthcodeFromCells(),
@@ -125,17 +131,31 @@ authcodeForm.onsubmit = e => {
     }
 }
 
-fetch(authenticationServerObject.sendmailDomain, {
+const firstAuthRequest = async () => {
+
+const appCheckTokenResponse = await callApiWithAppCheck()
+await fetch(authenticationServerObject.sendmailDomain, {
     method: 'POST',
+    mode: 'cors',
+    headers: {
+        'Access-Control-Request-Headers': 'X-Firebase-AppCheck',
+        'X-Firebase-AppCheck': appCheckTokenResponse.token,
+    },
     body: new URLSearchParams({
         email: requestEmail,
     }),
 }).then(r => {
     return r.json();
-}).then(r => {
+}).then(async (r) => {
     if(r['code'] === 'LT5'){
-        fetch(authenticationServerObject.sendmailDomain, {
+        const appCheckTokenResponse = await callApiWithAppCheck()
+        await fetch(authenticationServerObject.sendmailDomain, {
             method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Access-Control-Request-Headers': 'X-Firebase-AppCheck',
+                'X-Firebase-AppCheck': appCheckTokenResponse.token,
+            },
             body: new URLSearchParams({
                 email: requestEmail,
                 altdevice: '1',
@@ -162,6 +182,10 @@ fetch(authenticationServerObject.sendmailDomain, {
     console.log(e);
     alert('some problem occurred while sending you an email.');
 });
+
+}
+
+await firstAuthRequest();
 
 loadingScreen.style.display = 'none';
 

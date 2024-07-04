@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebas
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-analytics.js";
 import { getAuth, signInWithCustomToken, signOut, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js'
 import { getFirestore, query, where, limit, orderBy, startAfter, getDoc, getDocs, setDoc, deleteDoc, collection, doc } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js'
+import { initializeAppCheck, ReCaptchaV3Provider, getToken } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app-check.js";
 
 import { firebaseConfigObject } from "./setup.js";
 
@@ -10,6 +11,24 @@ const firebaseConfig = firebaseConfigObject;
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth();
+//self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
+const appCheck = initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider('6LdIlvkpAAAAAHlQKM95TIrEwh4zqHR0z2U3YFdh'),
+    isTokenAutoRefreshEnabled: true
+});
+
+
+export async function callApiWithAppCheck() {
+    let appCheckTokenResponse;
+    try {
+        appCheckTokenResponse = await getToken(appCheck, /* forceRefresh= */ false);
+    } catch (err) {
+        // Handle any errors if the token was not retrieved.
+        return;
+    }
+
+    return appCheckTokenResponse;
+}
 
 export function setAuthInit(inCallback, outCallback) {
     if(auth.currentUser == null){
@@ -67,6 +86,7 @@ export async function paginatedDownload(start, order, lim, path){
 }
 
 export async function upload(path=[], data){
+    console.log(data)
     const ref = doc(db, 'users', auth.currentUser.uid, ...path);
     await setDoc(ref, data);
 }

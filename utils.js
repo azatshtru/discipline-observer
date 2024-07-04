@@ -36,13 +36,13 @@ export function renderEmphasis(semiText) {
 
     const htmlText = semiText
         .replace(inlineLatexRegex, '%%%')
-        .replace(inlineCodeRegex, (v, p1) => `<code class="inline-code-block"><span>${p1.replaceAll('<', '\&lt;').replaceAll('>', '\&gt;').trim()}</span></code>`)
+        .replace(inlineCodeRegex, (v, p1) => `<code class="inline-code-block"><span>${p1.replaceAll('<', '\&lt;').replaceAll('>', '\&gt;').replaceAll('_', '&#95;').replaceAll('$', '&#36;').replaceAll('*', '&#42;').replaceAll('=', '&#61;').trim()}</span></code>`)
+        .replace(googleMaterialIconEmbedRegex, (v, p1) => `<span style="margin: 0; padding: 0; font-size: 165%; font-weight: inherit; vertical-align: text-bottom; line-height: 0.94em" class="material-symbols-outlined">${p1.replaceAll('_', '&#95;')}</span>`)
         .replace(underlineEmphasisRegex, '<u>$1</u>')
         .replace(boldEmphasisRegex, '<b>$2</b>')
         .replace(italicEmphasisRegex, '<i>$1</i>')
         .replace(strikethroughEmphasisRegex, '<s>$1</s>')
         .replace(highlightEmphasisRegex, '<mark>$1</mark>')
-        .replace(googleMaterialIconEmbedRegex, '<span style="margin: 0; padding: 0; font-size: 165%; font-weight: inherit; vertical-align: text-bottom; line-height: 0.94em" class="material-symbols-outlined">$1</span>')
         .replace(hyperlinkRegex, (v, p1, p2) => `<a href="${p2.trim()}" target="_blank">${p1}</a>`)
         .split('%%%').map((x, i) => x.concat(latices[i]?latices[i][0]:'')).join('')
         .replace(inlineLatexRegex, (v, p1) => `<span class="inline-equation">${p1.replaceAll('<', '\\lt ').replaceAll('>', '\\gt ')}</span>`)
@@ -52,7 +52,7 @@ export function renderEmphasis(semiText) {
 
 export function parseMarkdown(markdownText){
     const htmlText = markdownText
-        .replace(codeBlockRegex, (v) => `<pre><code>${v.slice(3, -3).replaceAll('<', '\&lt;').replaceAll('>', '\&gt;').trim().split('\n').map(x => `<span>${x}</span>`).join('\n')}</code></pre>`)
+        .replace(codeBlockRegex, (v) => `<pre><code>${v.slice(3, -3).replaceAll('<', '\&lt;').replaceAll('>', '\&gt;').replaceAll('_', '&#95;').replaceAll('$', '&#36;').replaceAll('*', '&#42;').replaceAll('=', '&#61;').trim().split('\n').map(x => `<span>${x}</span>`).join('\n')}</code></pre>`)
         .replace(displayLatexRegex, (v, p1) => `<div class="display-equation">${p1.replaceAll('<', '\\lt ').replaceAll('>', '\\gt ')}</div>`)
         .replace(h3Regex, '<h3>$1</h3>').replace(h2Regex, '<h2>$1</h2>')
         .replace(h0Regex, '<h1 style="font-size: calc(clamp(2.2em, 11vw, 3.1em))">$1</h1>').replace(h1Regex, '<h1>$1</h1>')

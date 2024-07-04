@@ -54,6 +54,7 @@ const state = {
     },
 
     publish(){
+        console.log('publishing')
         if(!this.renderOnPublish) { 
             this.renderOnPublish = true;
             return; 
@@ -101,6 +102,7 @@ const state = {
         });
         notesDataObjectModel.notes[this.currentActiveNoteIndex].content = str;
         notesDataObjectModel.notes[this.currentActiveNoteIndex].tags = [];
+        this.commandsLoaded = false;
         const localTaglist = [...new Set(str.replace(commandTagRegex, '')?.match(tagLineRegex)?.map(x => x.split('@'))
             .flat().map(x => x.replace(inlineLatexRegex, '').replace(specialCharacterRegex, '').trim()).filter(x => x != ""))];
         localTaglist?.map(x => x.trim()).forEach(x => {
@@ -209,6 +211,7 @@ window.addEventListener('scroll', async () => {
 function loadNotes(s) {
     if(!(s.commandsLoaded && s.tagsLoaded) || s.notesLoadedOnce) { return }
     callFirebase(async () => downloadFirst(['notes']).then((x) => {
+        state.notesLoadedOnce = true;
         if(x.length > 0) {
             lastDownloadedNote = x[x.length-1];
             x.forEach(doc => notesDataObjectModel.notes[doc.id] = doc.data())
@@ -458,8 +461,9 @@ function updateCommands(s) {
     });
     if(notesDataObjectModel.commands[s.currentActiveNoteIndex].length === 0) { delete notesDataObjectModel.commands[s.currentActiveNoteIndex]; }
     if(s.noteViewMode == 'view'){ document.querySelectorAll('span[data-command]').forEach(executeCommand); }
-    if(!s.commandsLoaded){ return; }
-    callFirebase(async () => upload(['base', 'commands'], notesDataObjectModel.commands));
+    if(s.commandsLoaded){ return; }
+    callFirebase(async () => await upload(['base', 'commands'], notesDataObjectModel.commands));
+    s.commandsLoaded = true;
 }
 state.subscribe(updateCommands);
 
@@ -559,3 +563,19 @@ addNoteButton.addEventListener('click', () => {
 markdownRenderCloseButton.addEventListener('click', () => state.setViewMode('none'));
 markdownEditButton.addEventListener('click', () => state.setViewMode('edit'));
 tagSearchBox.querySelector('input').addEventListener('input', () => state.setSearchText(tagSearchBox.querySelector('input').value));
+
+document.addEventListener('keydown', e => {
+    const isControl = e.ctrlKey || e.metaKey
+    if (isControl) {
+        e.preventDefault()
+        if (e.key === 's' && state.noteViewMode === 'edit') {
+            markdownSubmitButton.click()
+        }
+        if (e.key === 'e' && state.noteViewMode === 'view') {
+            markdownEditButton.click()
+        }
+        if (e.key === 'q' && state.noteViewMode === 'view') {
+            markdownRenderCloseButton.click()
+        }
+    }
+})
