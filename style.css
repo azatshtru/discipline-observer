@@ -203,6 +203,30 @@ hr.stylized::after {
     position: relative;
     top: -13px;
 }
+
+.spoiler {
+    background: black;
+    user-select: none;
+    outline: 1px solid whitesmoke;
+    box-shadow: 1px 1px gainsboro;
+    transition: background 0.24s cubic-bezier(.17,.67,.83,.67);
+}
+
+.spoiler > * {
+    pointer-events: none;
+}
+
+.spoiler-reveal {
+    background: #f8f8f8;
+    user-select: text;
+    outline: none;
+    box-shadow: none;
+    transition: background 0.24s cubic-bezier(.17,.67,.83,.67);
+}
+
+.spoiler-reveal > * {
+    pointer-events: none;
+}
   
 .progress-container {
     display: flex;

@@ -11,7 +11,7 @@ const firebaseConfig = firebaseConfigObject;
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth();
-//self.FIREBASE_APPCHECK_DEBUG_TOKEN = true
+//self.FIREBASE_APPCHECK_DEBUG_TOKEN = false
 const appCheck = initializeAppCheck(app, {
     provider: new ReCaptchaV3Provider('6LdIlvkpAAAAAHlQKM95TIrEwh4zqHR0z2U3YFdh'),
     isTokenAutoRefreshEnabled: true

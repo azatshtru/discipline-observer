@@ -2,7 +2,7 @@ const h0Regex = /^#!(.*$)/gim;
 const h1Regex = /^#(.*$)/gim;
 const h2Regex = /^##(.*$)/gim;
 const h3Regex = /^###(.*$)/gim;
-const paraRegex = /(^[ \t]*[\p{L}\p{N}\w\d=_~*`:\[\$].*)/gimu;
+const paraRegex = /(^[ \t]*[\p{L}\p{N}\w\d=_~*`:\[\$!].*)/gimu;
 const lineBreakRegex = /^\s*?\n(?=\s)/gim;
 const tagLineRegex = /^@(.*$)/gim;
 const tagRegex = /@.*?(?=@|$)/gim;
@@ -15,6 +15,7 @@ const horizontalRuleRegex = /(^\-|^\_)\1{2,}/gim;
 const codeBlockRegex = /^```(.*\n)*?(.*?)```$/gim;
 const blockquoteRegex = /^(>.*)(\n>.*)*/gim;
 const progressBarRegex = /^( *\-? *\[)((\d+)\/(\d+))\](.*$)/gim;
+const smilesChemRegex = /^\$\:\)\n(.*)\n\$/gim;
 const commandTagRegex = /^(\@\[.*?\]).*?$/gim;
 
 const inlineLatexRegex = /\$(.*?)\$/gim;
@@ -24,6 +25,7 @@ const underlineEmphasisRegex = /\_\_(.*?)\_\_/gim;
 const strikethroughEmphasisRegex = /\~(.*?)\~/gim;
 const highlightEmphasisRegex = /\=\=(.*?)\=\=/gim;
 const googleMaterialIconEmbedRegex = /::(.*?)::/gim;
+const spoilerRegex = /\!\!(.*?)\!\!/gim;
 const inlineCodeRegex = /`(.*?)`/gim;
 const hyperlinkRegex = /\[(.*?)\]\((.*?)\)/gim;
 
@@ -36,7 +38,7 @@ export function renderEmphasis(semiText) {
 
     const htmlText = semiText
         .replace(inlineLatexRegex, '%%%')
-        .replace(inlineCodeRegex, (v, p1) => `<code class="inline-code-block"><span>${p1.replaceAll('<', '\&lt;').replaceAll('>', '\&gt;').replaceAll('_', '&#95;').replaceAll('$', '&#36;').replaceAll('*', '&#42;').replaceAll('=', '&#61;').trim()}</span></code>`)
+        .replace(inlineCodeRegex, (v, p1) => `<code class="inline-code-block"><span>${p1.replaceAll('<', '\&lt;').replaceAll('>', '\&gt;').replaceAll('_', '&#95;').replaceAll('$', '&#36;').replaceAll('*', '&#42;').replaceAll('=', '&#61;').replaceAll('@', '&#64;').trim()}</span></code>`)
         .replace(googleMaterialIconEmbedRegex, (v, p1) => `<span style="margin: 0; padding: 0; font-size: 165%; font-weight: inherit; vertical-align: text-bottom; line-height: 0.94em" class="material-symbols-outlined">${p1.replaceAll('_', '&#95;')}</span>`)
         .replace(underlineEmphasisRegex, '<u>$1</u>')
         .replace(boldEmphasisRegex, '<b>$2</b>')
@@ -46,14 +48,16 @@ export function renderEmphasis(semiText) {
         .replace(hyperlinkRegex, (v, p1, p2) => `<a href="${p2.trim()}" target="_blank">${p1}</a>`)
         .split('%%%').map((x, i) => x.concat(latices[i]?latices[i][0]:'')).join('')
         .replace(inlineLatexRegex, (v, p1) => `<span class="inline-equation">${p1.replaceAll('<', '\\lt ').replaceAll('>', '\\gt ')}</span>`)
+        .replace(spoilerRegex, '<span class="spoiler">$1</span>')
 
     return htmlText.trim();
 }
 
 export function parseMarkdown(markdownText){
     const htmlText = markdownText
-        .replace(codeBlockRegex, (v) => `<pre><code>${v.slice(3, -3).replaceAll('<', '\&lt;').replaceAll('>', '\&gt;').replaceAll('_', '&#95;').replaceAll('$', '&#36;').replaceAll('*', '&#42;').replaceAll('=', '&#61;').trim().split('\n').map(x => `<span>${x}</span>`).join('\n')}</code></pre>`)
+        .replace(codeBlockRegex, (v) => `<pre><code>${v.slice(3, -3).replaceAll('<', '\&lt;').replaceAll('>', '\&gt;').replaceAll('_', '&#95;').replaceAll('$', '&#36;').replaceAll('*', '&#42;').replaceAll('=', '&#61;').replaceAll('@', '&#64;').trim().split('\n').map(x => `<span>${x}</span>`).join('\n')}</code></pre>`)
         .replace(displayLatexRegex, (v, p1) => `<div class="display-equation">${p1.replaceAll('<', '\\lt ').replaceAll('>', '\\gt ')}</div>`)
+        .replace(smilesChemRegex, (v, p1) => `<svg class="smiles-structure" data-smiles="${p1}"/>`)
         .replace(h3Regex, '<h3>$1</h3>').replace(h2Regex, '<h2>$1</h2>')
         .replace(h0Regex, '<h1 style="font-size: calc(clamp(2.2em, 11vw, 3.1em))">$1</h1>').replace(h1Regex, '<h1>$1</h1>')
         .replace(horizontalRuleRegex, '<hr class="stylized" rulemark="">')

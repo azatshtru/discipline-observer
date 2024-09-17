@@ -21,10 +21,12 @@ const inlineLatexRegex = /\$(.*?)\$/gim;
 const specialCharacterRegex = /[\$\&\[\]\%\^\*\(\)\#\\\/]/gim;
 const displayLatexRegex = /^\$\$\n?(.*)\n?\$\$$/gim;
 const codeBlockRegex = /^```(.*\n)*?(.*?)```$/gim;
+const smilesChemRegex = /^\$\:\)\n(.*)\n\$/gim;
 const blockquoteRegex = /^(>.*)(\n>.*)*/gim;
 
 const getTitle = (x) => {
     x = x.split('\n', 1)[0];
+    x = x.replace(/::(.*?)::/gim, '')
     x = x.replace(/[^\p{L}\p{N}\w\d ]/gimu, '')
     if (x.trim() == '') { return 'untitled' }
     //x = x.replace(/^\s*\-?\s*\[x\]/, '');
@@ -349,6 +351,14 @@ function openNote(s){
             markdownRenderBox.querySelectorAll('.inline-equation').forEach((x, i) => katex.render(String.raw`${x.textContent}`, x, { throwOnError: false, displayMode: false, newLineInDisplayMode: true, }, i));
         }, 0)
 
+        document.querySelectorAll('.spoiler').forEach(spoiler => {
+            spoiler.addEventListener('click', e => {
+                e.target.className = e.target.className == "spoiler-reveal" ? "spoiler" : "spoiler-reveal";
+            })
+        })
+
+        SmiDrawer.apply();
+
         markdownRenderBox.appendChild(footer());
 
     } else { markdownRenderBox.parentElement.style.display = 'none'; }
@@ -461,9 +471,9 @@ function updateCommands(s) {
     });
     if(notesDataObjectModel.commands[s.currentActiveNoteIndex].length === 0) { delete notesDataObjectModel.commands[s.currentActiveNoteIndex]; }
     if(s.noteViewMode == 'view'){ document.querySelectorAll('span[data-command]').forEach(executeCommand); }
-    if(s.commandsLoaded){ return; }
+    if(!s.commandsLoaded){ return; }
     callFirebase(async () => await upload(['base', 'commands'], notesDataObjectModel.commands));
-    s.commandsLoaded = true;
+    s.commandsLoaded = true
 }
 state.subscribe(updateCommands);
 
@@ -526,6 +536,7 @@ function getLookoutNote(str, recursionLevel=1) {
     let lookoutFormatted = str
         .replace(codeBlockRegex, (v) => `\`\`\`${v.slice(3, -3).replace(/^\n+/, v => ' '.repeat(v.length*recursionLevel)).replace(/\n+$/, v => ' '.repeat(v.length*recursionLevel))}\`\`\``)
         .replace(displayLatexRegex, (v) => `\$\$${v.slice(2, -2).replace(/^\n+/, v => ' '.repeat(v.length*recursionLevel)).replace(/\n+$/, v => ' '.repeat(v.length*recursionLevel))}\$\$`)
+        .replace(smilesChemRegex, (v) => `\$\:\)${v.slice(3, -1).replace(/^\n+/, v => ' '.repeat(v.length*recursionLevel)).replace(/\n+$/, v => ' '.repeat(v.length*recursionLevel))}\$`)
         .replace(blockquoteRegex, (v) => getLookoutNote(v.split('\n').map(x => x = x.slice(1, x.length)).join('\n'), recursionLevel+1).split('\n').map(x => x = '>'.concat(x)).join('\n'))
 
     return lookoutFormatted;
@@ -566,16 +577,16 @@ tagSearchBox.querySelector('input').addEventListener('input', () => state.setSea
 
 document.addEventListener('keydown', e => {
     const isControl = e.ctrlKey || e.metaKey
-    if (isControl) {
+    if (isControl && e.key === 's' && state.noteViewMode === 'edit') {
         e.preventDefault()
-        if (e.key === 's' && state.noteViewMode === 'edit') {
-            markdownSubmitButton.click()
-        }
-        if (e.key === 'e' && state.noteViewMode === 'view') {
-            markdownEditButton.click()
-        }
-        if (e.key === 'q' && state.noteViewMode === 'view') {
-            markdownRenderCloseButton.click()
-        }
+        markdownSubmitButton.click()
+    }
+    if (isControl && e.key === 'e' && state.noteViewMode === 'view') {
+        e.preventDefault()
+        markdownEditButton.click()
+    }
+    if (isControl && e.key === 'a' && state.noteViewMode === 'view') {
+        e.preventDefault()
+        navigator.clipboard.writeText(state.currentActiveNoteIndex)
     }
 })

@@ -150,6 +150,11 @@
         <li>To <u>underline something</u>, enclose it between a pair of double underscores (__).</li><hr>
         <li>To <s>strike-through stuff</s>, put tilde (~) around it.</li><hr>
         <li>To <mark>highlight</mark> something, use a pair of double equals (==) around it.</li>
+        <li><span class="spoiler">To mark something as a spoiler, put it between a pair of double bangs (!!)</span></li>
+        <script>
+            document.querySelector('.spoiler').addEventListener('click',
+                e => e.target.className=e.target.className==="spoiler-reveal"?"spoiler":"spoiler-reveal")
+        </script>
     </ul>
     <br>
     <div style="padding:0.5em;width:fit-content;" class="bordered-bg-white padin-half-em">
