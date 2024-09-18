@@ -370,6 +370,11 @@ hr.stylized::after {
     align-items: center;
 }
 
+.smiles-structure {
+    width: 100%;
+    height: 50%;
+}
+
 .display-equation * {
     font-family: unset;
 }

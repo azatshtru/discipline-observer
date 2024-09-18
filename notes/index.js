@@ -340,6 +340,7 @@ function renderNotelist(s){
 state.subscribe(renderNotelist);
 
 let latexRenderTimeout;
+let smilesRenderTimeout;
 function openNote(s){
     if(s.noteViewMode == 'view'){
         markdownRenderBox.parentElement.style.display = 'initial';
@@ -355,9 +356,20 @@ function openNote(s){
             spoiler.addEventListener('click', e => {
                 e.target.className = e.target.className == "spoiler-reveal" ? "spoiler" : "spoiler-reveal";
             })
-        })
+        });
 
-        SmiDrawer.apply();
+        let moleculeOptions = {};
+        let reactionOptions = {};
+        let smiDrawer = new SmiDrawer(moleculeOptions, reactionOptions);
+
+        clearTimeout(smilesRenderTimeout);
+        smilesRenderTimeout = setTimeout(() => {
+            markdownRenderBox.querySelectorAll('.smiles-structure').forEach((x, i) => {
+                setTimeout(() => smiDrawer.draw(x.dataset.smiles, x), i*100);
+            });
+        }, 100)
+        
+        //SmiDrawer.apply();
 
         markdownRenderBox.appendChild(footer());
 
